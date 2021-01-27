@@ -38,7 +38,7 @@ cpr_institution_abm <- function(
   regrow = .05,               # the regrowth rate
   mutation = 0.01,            # Rate of mutation on traits
   tech = 0.05,                # Used for scaling Cobb Douglas production function
-  labor = .5,                 # The elasticity of labor on production
+  labor = .5,                 # The elasticity of labor on harvesting production
   labor_market = FALSE,       # This controls labor market competition
   market_size = 1,            # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
   lattice = c(3, 5),          # This controls the dimensions of the lattice that the world exists on
@@ -185,7 +185,7 @@ cpr_institution_abm <- function(
       w <- wages
       if(labor_market == TRUE) w <- wages-wages^(1-log(mean((1-effort))))^market_size
       a <- labor
-      b <- K/kmax     
+      b <- K/kmax * (kmax - mean(kmax))     
       
       
       #######################
@@ -312,7 +312,7 @@ cpr_institution_abm <- function(
       ######################################
       ############## ERROR CHECK ###########
       
-      if(sum(round(payoff,3)==0) == n-1){
+      if(all(is.numeric(payoff)==FALSE)) {
         
         
         stock[year] <- mean(round(K/kmax,2))

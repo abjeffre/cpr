@@ -1,52 +1,35 @@
 source("cpr/code/abm/cpr_inst_wlimit_continious_gen.R")
-sweeps <- expand.grid(n = c(150, 300, 900),
+source("cpr/paths.R")
+library(parallel)
+sweeps <- expand.grid(n = c(150),#, 300, 900),
                       #wages = c(0.025, 0.05, 0.075),
-                      max_forest = c(100, 500, 1000),
-                      regrow = c(0.04, 0.05, 0.06),
-                      self_policing =c(TRUE, FALSE),
-                      fine = c(0.1, 0.5, 1 ),
-                      outgroup = c(0.1, .5, .9),
-                      travel_cost = c(0.1, .5, 1), 
+                      max_forest = c(100, 200),#, 500, 1000),
+                      var_forest = c(1, 50),
+                      regrow = c(0.03, 0.05, 0.07),
+                      self_policing =c(TRUE),#, FALSE),
+                      fine = c(0.00),#, 0.5, 1 ),
+                      outgroup = c(.5),#, .9, 0.1, ),
+                      travel_cost = c(0.1),#, .5, 1), 
                       monitor_tech = c(0.1, 1, 5),
-                      marginal = c(TRUE, FALSE)
+                      harvest_limit = c(0.01, .10, .20),
+                      labor = c(0.3, .7),
+                      marginal = c(FALSE)
 )
 
 
-iter <- c(seq(1, nrow(sweeps), by = 100), nrow(sweeps))
-
-for (i in 1:(length(iter)-1)){
-  cpr_sweeps <- mclapply(iter[i]:(iter[i+1]-1),   #that -1 is a correction that was not implmented the first time run
+  cpr_sweeps <- mclapply(1:nrow(sweeps),   #that -1 is a correction that was not implmented the first time run
                          function(i) cpr_institution_abm(n=sweeps$n[[i]], max_forest=sweeps$max_forest[[i]],
-                                                         regrow=sweeps$regrow[[i]], self_policing=sweeps$self_policing[[i]], fine=sweeps$fine[[i]], outgroup=sweeps$outgroup[[i]], travel_cost=sweeps$travel_cost[[i]], 
-                                                         marginal = sweeps$marginal[[i]], monitor_tech= sweeps$monitor_tech[[i]]),
-                         mc.cores =24
+                                                         regrow=sweeps$regrow[[i]], var_forest = sweeps$var_forest[[i]], labor = sweeps$labor[[i]], 
+                                                         self_policing=sweeps$self_policing[[i]], fine=sweeps$fine[[i]], outgroup=sweeps$outgroup[[i]], travel_cost=sweeps$travel_cost[[i]], 
+                                                         marginal = sweeps$marginal[[i]], monitor_tech= sweeps$monitor_tech[[i]], harvest_limit = sweeps$harvest_limit[[i]], nsim = 20),
+                         mc.cores =1
   )
   
-  saveRDS(cpr_sweeps, file = paste0("cpr_sweeps",i,".RDS"))
-  print(i)
-}
+  saveRDS(cpr_sweeps, file = paste0(path$dataAbm, "cpr_sweeps_prop.RDS"))
 
-last <- cpr_institution_abm(n=sweeps$n[[i]], max_forest=sweeps$max_forest[[i]],
-                            regrow=sweeps$regrow[[i]], self_policing=sweeps$self_policing[[i]], fine=sweeps$fine[[i]], outgroup=sweeps$outgroup[[i]], travel_cost=sweeps$travel_cost[[i]],
-) 
-
-saveRDS(cpr_sweeps, file = paste0("cpr_sweeps",i+1,".RDS"))
-
+  
 ###################################################
-############ CPR SWEEPS FULL DF ###################
-
-######## CHECK SIZES OF EACH FILE ######### 
-size <- rep(NA, 44) 
-for(i in 1:44){
-  temp <- readRDS(paste0("cpr_sweeps",i,".RDS"))
-  size[[i]] <- length(temp) 
-}
-
-cpr_sims <- list() 
-for(i in 1:44){
-  temp <- readRDS(paste0("cpr_sweeps",i,".RDS"))
-  cpr_sims[[i]] <- temp 
-}
+############ Get Full list ########################
 
 
 
@@ -54,14 +37,14 @@ for(i in 1:44){
 flattenlist <- function(x){  
   out <- list()
   for(i in 1:length(x)){
-    out <- c(out, cpr_sims[[i]])
+    out <- c(out, x[[i]])
   }
   return(out)
 }
 
-temp <- flattenlist(cpr_sims)
+temp <- flattenlist(cpr_sweeps)
 
-cpr_sims<- temp
+cpr_sims<- cpr_sweeps
 
 
 
@@ -105,7 +88,7 @@ punish_payoff <- rep(0, length(cpr_sims))
 leakage_mean <- rep(0, length(cpr_sims))
 limit <-rep(0, length(cpr_sims))
 stock<-rep(0, length(cpr_sims))
-effrot<-rep(0, length(cpr_sims))
+effort<-rep(0, length(cpr_sims))
 
 
 
