@@ -4,7 +4,7 @@ library(parallel)
 sweeps <- expand.grid(n = c(150),#, 300, 900),
                       #wages = c(0.025, 0.05, 0.075),
                       max_forest = c(100, 200),#, 500, 1000),
-                      var_forest = c(1, 50),
+                      var_forest = c(10, 50),
                       regrow = c(0.03, 0.05, 0.07),
                       self_policing =c(TRUE),#, FALSE),
                       fine = c(0.00),#, 0.5, 1 ),
@@ -13,36 +13,50 @@ sweeps <- expand.grid(n = c(150),#, 300, 900),
                       monitor_tech = c(0.1, 1, 5),
                       harvest_limit = c(0.01, .10, .20),
                       labor = c(0.3, .7),
-                      marginal = c(FALSE)
+                      tech = c(0.04, 0.06)
 )
 
 
-  cpr_sweeps <- mclapply(1:nrow(sweeps),   #that -1 is a correction that was not implmented the first time run
-                         function(i) cpr_institution_abm(n=sweeps$n[[i]], max_forest=sweeps$max_forest[[i]],
-                                                         regrow=sweeps$regrow[[i]], var_forest = sweeps$var_forest[[i]], labor = sweeps$labor[[i]], 
-                                                         self_policing=sweeps$self_policing[[i]], fine=sweeps$fine[[i]], outgroup=sweeps$outgroup[[i]], travel_cost=sweeps$travel_cost[[i]], 
-                                                         marginal = sweeps$marginal[[i]], monitor_tech= sweeps$monitor_tech[[i]], harvest_limit = sweeps$harvest_limit[[i]], nsim = 20),
-                         mc.cores =1
-  )
-  
-  saveRDS(cpr_sweeps, file = paste0(path$dataAbm, "cpr_sweeps_prop.RDS"))
+cpr_sweeps <- mclapply(1:nrow(sweeps),   #that -1 is a correction that was not implmented the first time run
+                       function(i) cpr_institution_abm(n=sweeps$n[[i]], 
+                                                       max_forest=sweeps$max_forest[[i]],
+                                                       regrow=sweeps$regrow[[i]], 
+                                                       var_forest = sweeps$var_forest[[i]], 
+                                                       labor = sweeps$labor[[i]], 
+                                                       self_policing=sweeps$self_policing[[i]], 
+                                                       fine=sweeps$fine[[i]], 
+                                                       outgroup=sweeps$outgroup[[i]], 
+                                                       travel_cost=sweeps$travel_cost[[i]], 
+                                                       tech = sweeps$tech[[i]], 
+                                                       monitor_tech= sweeps$monitor_tech[[i]], 
+                                                       harvest_limit = sweeps$harvest_limit[[i]], 
+                                                       nsim = 20,
+                                                       nrounds = 1000),
+                       mc.cores =50
+)
 
-  
+
+sweep_prop <- list(par = sweeps,
+                   data = cpr_sweeps)
+
+saveRDS(sweep_prop, file = paste0(path$dataAbm, "cpr_sweeps_prop.RDS"))
+
+
 ###################################################
 ############ Get Full list ########################
 
 
 
+# 
+#  flattenlist <- function(x){  
+#   out <- list()
+#   for(i in 1:length(x)){
+#     out <- c(out, x[[i]])
+#   }
+#   return(out)
+# }
 
-flattenlist <- function(x){  
-  out <- list()
-  for(i in 1:length(x)){
-    out <- c(out, x[[i]])
-  }
-  return(out)
-}
-
-temp <- flattenlist(cpr_sweeps)
+# temp <- flattenlist(cpr_sweeps)
 
 cpr_sims<- cpr_sweeps
 
@@ -57,28 +71,148 @@ apply(sweeps[errors,],2,unique)
 apply(sweeps[errors,],2,table)
 
 
-
-
-
 ####################################################################
 ######################## RERUN ERROR MODELS ########################
 
 
 
 cpr_errors_rerun <- mclapply(errors,   
-                             function(i) cpr_institution_abm(n=sweeps$n[[i]], wages=sweeps$wages[[i]], max_forest=sweeps$max_forest[[i]],
-                                                             regrow=sweeps$regrow[[i]], self_policing=sweeps$self_policing[[i]], fine=sweeps$fine[[i]], outgroup=sweeps$outgroup[[i]], travel_cost=sweeps$travel_cost[[i]]), 
+                             function(i) cpr_institution_abm(n=sweeps$n[[i]], 
+                                                             max_forest=sweeps$max_forest[[i]],
+                                                             regrow=sweeps$regrow[[i]], 
+                                                             var_forest = sweeps$var_forest[[i]], 
+                                                             labor = sweeps$labor[[i]], 
+                                                             self_policing=sweeps$self_policing[[i]], 
+                                                             fine=sweeps$fine[[i]], 
+                                                             outgroup=sweeps$outgroup[[i]], 
+                                                             travel_cost=sweeps$travel_cost[[i]], 
+                                                             tech = sweeps$tech[[i]], 
+                                                             monitor_tech= sweeps$monitor_tech[[i]], 
+                                                             harvest_limit = sweeps$harvest_limit[[i]], 
+                                                             nsim = 20,
+                                                             nrounds = 1000),
                              mc.cores =8
 )
 
-saveRDS(cpr_errors_rerun, file = "cpr_sweeps_errors.RDS")
-readRDS
+cpr_sweeps[errors] <- cpr_errors_rerun
+
+sweep_prop <- list(par = sweeps,
+                   data = cpr_sweeps)
+
+
+saveRDS(cpr_sweeps, file = paste0(path$dataAbm, "cpr_sweeps_prop.RDS"))
+
+
+################################################################################################
+########################## WITHOUT INSITUTIONS #################################################
+
+
+sweeps2 <- expand.grid(n = c(150),#, 300, 900),
+                       #wages = c(0.025, 0.05, 0.075),
+                       max_forest = c(100, 200),#, 500, 1000),
+                       var_forest = c(10, 50),
+                       regrow = c(0.03, 0.05, 0.07),
+                       self_policing =c(TRUE),#, FALSE),
+                       fine = c(0.00),#, 0.5, 1 ),
+                       outgroup = c(.5),#, .9, 0.1, ),
+                       travel_cost = c(0.1),#, .5, 1), 
+                       monitor_tech = c(0.1),
+                       harvest_limit = c(0.01),
+                       labor = c(0.3, .7),
+                       tech = c(0.04, 0.06)
+)
+
+
+cpr_sweeps_base <- mclapply(1:nrow(sweeps2),   #that -1 is a correction that was not implmented the first time run
+                            function(i) cpr_institution_abm(n=sweeps2$n[[i]], 
+                                                            max_forest=sweeps2$max_forest[[i]],
+                                                            regrow=sweeps2$regrow[[i]], 
+                                                            var_forest = sweeps2$var_forest[[i]], 
+                                                            labor = sweeps2$labor[[i]], 
+                                                            self_policing=sweeps2$self_policing[[i]], 
+                                                            fine=sweeps2$fine[[i]],
+                                                            outgroup=sweeps2$outgroup[[i]], 
+                                                            travel_cost=sweeps2$travel_cost[[i]], 
+                                                            tech = sweeps2$tech[[i]],
+                                                            monitor_tech= sweeps2$monitor_tech[[i]],
+                                                            harvest_limit = sweeps2$harvest_limit[[i]], 
+                                                            nsim = 20,
+                                                            nrounds = 1000,
+                                                            inst = FALSE),
+                            mc.cores =48
+)
+
+
+sweep_prop_base <- list(par = sweeps2,
+                        data = cpr_sweeps_base)
+
+saveRDS(sweep_prop_base, file = paste0(path$dataAbm, "cpr_sweeps_prop_base.RDS"))
+
+
+cpr_sims_base<- cpr_sweeps_base
+
+
+# Check where the errors occured in the ABM  
+errors <- which(unlist(lapply(cpr_sims_base, function(x) length(x)<2)))
+
+if(length(errors)>0){
+  
+  
+  # Check for why errors occur
+  
+  apply(sweeps[errors,],2,unique)
+  apply(sweeps[errors,],2,table)
+  
+  
+  ####################################################################
+  ######################## RERUN ERROR MODELS ########################
+  
+  
+  
+  cpr_errors_rerun_base <- mclapply(errors,   
+                                    function(i) cpr_institution_abm(n=sweeps2$n[[i]], 
+                                                                    max_forest=sweeps2$max_forest[[i]],
+                                                                    regrow=sweeps2$regrow[[i]], 
+                                                                    var_forest = sweeps2$var_forest[[i]], 
+                                                                    labor = sweeps2$labor[[i]], 
+                                                                    self_policing=sweeps2$self_policing[[i]], 
+                                                                    fine=sweeps2$fine[[i]],
+                                                                    outgroup=sweeps2$outgroup[[i]], 
+                                                                    travel_cost=sweeps2$travel_cost[[i]], 
+                                                                    tech = sweeps2$tech[[i]],
+                                                                    monitor_tech= sweeps2$monitor_tech[[i]],
+                                                                    harvest_limit = sweeps2$harvest_limit[[i]], 
+                                                                    nsim = 20,
+                                                                    nrounds = 1000,
+                                                                    inst = FALSE),
+                                    mc.cores =8
+  )
+  
+  cpr_sweeps_base[errors] <- cpr_errors_rerun_base
+  
+  sweep_prop_base <- list(par = sweeps2,
+                          data = cpr_sweeps_base)
+  
+  
+  saveRDS(cpr_sweeps_base, file = paste0(path$dataAbm, "cpr_sweeps_prop_base.RDS"))
+  
+  
+}
+
+
+
 
 ########################################################################
 ########################################################################
-
 cpr_sims[errors] <- cpr_errors_rerun
 
+for(j in which((sweeps$harvest_limit==.20 & sweeps$regrow==.03) & sweeps$labor ==0.07)){
+  plot(cpr_sims[[j]]$limit[[1]], type = "l", ylim = c(0, 1), col=col.alpha("red", .3))
+  for(i in 2:10) lines(cpr_sims[[j]]$limit[[i]], col=col.alpha("red", .3))
+  for(i in 1:10) lines(cpr_sims[[j]]$stock[[i]][,1], col=col.alpha("green", .3))
+  for(i in 1:10) lines(cpr_sims[[j]]$punish[[i]], col=col.alpha("goldenrod", .3))
+  for(i in 1:10) lines(cpr_sims[[j]]$effort[[i]], col=col.alpha("purple", .3))
+}
 
 punish_mean <- rep(0, length(cpr_sims))
 punish_sds<- rep(0, length(cpr_sims))
@@ -181,3 +315,23 @@ for(j in 1:ncol(sweeps)){
 }
 
 names(corrs) <- paste("|",colnames(sweeps))
+
+
+
+
+
+
+a <- cpr_sims[which(sweeps$regrow ==.)]
+temp <- list()
+for(i in 1:length(a)){
+  temp[[i]] <- a[[i]][[13]]
+}
+
+mean(unlist(lapply(temp, function(x) mean(sapply(lapply(x, mean), mean)))))
+
+plot(a[[1]]$stock[[1]][,1], type = "l", col=col.alpha("black",.2))
+for(i in 1:19)lines(a[[2]]$stock[[i]][,1], col=col.alpha("black",.2))
+
+means <- rep(NA, length(a))
+for(i in 1:length(a)) means[i] <- mean(unlist(a[[i]]$limit[[1]][1]))
+mean(means)
