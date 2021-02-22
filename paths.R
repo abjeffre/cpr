@@ -5,5 +5,6 @@ path <- list(  home = "/home/jeffrey_andrews",
                plot = "cpr/code/plotting/",
                models = "cpr/code/models/",
                paper = "cpr/paper/",
+               output = "cpr/output/",
                load = "/home/jeffrey_andrews/forests/data/dataframes/load_df.R"
 )
