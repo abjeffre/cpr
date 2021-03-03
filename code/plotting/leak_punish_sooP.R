@@ -31,7 +31,7 @@ plot(rowMeans(dat[[a]]$punish[[i]]), type = "l", col=col.alpha("turquoise4", 1),
        main = "Relationship between leakage and insitutional enforcement", cex = .8)
        lines(rowMeans(dat[[a]]$leakage[[i]]), col=col.alpha("goldenrod3", 1))
        
-legend("topleft", c("Enforcers", "Leakers"),
+legend("topleft", c("Leakers", "Enforcers"),
        fill = sapply(c("goldenrod3", "turquoise4"), col.alpha, .8), cex = 1)
 
 dev.off()

@@ -1,24 +1,24 @@
 source("cpr/code/abm/cpr_inst_wlimit_continious_gen.R")
 source("cpr/paths.R")
 library(parallel)
-sweeps <- expand.grid(n = c(135, 675),#, 300, 900),
-                      wages = c(.1),#, .25, .5),
-                      max_forest = c(1000, 10000),#, 500, 1000),
-                      var_forest = c(10, 300),
-                      regrow = c(0.005, 0.01, 0.05),
-                      self_policing =c(FALSE),#, FALSE),
+sweeps <- expand.grid(n = c(135, 675),
+                      #wages = c(0.025, 0.05, 0.075),
+                      max_forest = c(200, 2000),
+                      var_forest = c(10, 50),
+                      regrow = c(0.03, 0.07),
+                      self_policing =c(TRUE),
                       fine = c(0.00),#, 0.5, 1 ),
                       outgroup = c(.1, .9),# 0.1, ),
                       travel_cost = c(0.1),#, .5, 1), 
                       monitor_tech = c(0.1, 1, 5),
-                      harvest_limit = c(0.5),
+                      harvest_limit = c(0.95, .80),
                       labor = c(0.3, .7),
-                      tech = c(1, 0.5),
+                      tech = c(0.04, 0.06),
                       defensibility = c(15, 30)
 )
 
 set.seed(2021)
-cpr_sweeps <- mclapply(1:nrow(sweeps),   #that -1 is a correction that was not implmented the first time run
+cpr_sweeps <- mclapply(1:nrow(sweeps),  
                        function(i) cpr_institution_abm(n=sweeps$n[[i]], 
                                                        max_forest=sweeps$max_forest[[i]],
                                                        regrow=sweeps$regrow[[i]], 
@@ -36,45 +36,38 @@ cpr_sweeps <- mclapply(1:nrow(sweeps),   #that -1 is a correction that was not i
                                                        ngroups = 9,
                                                        leak = TRUE,
                                                        lattice = c(3, 3),
-                                                       nrounds = 1000),
+                                                       nrounds = 1000,
+                                                       REDD = TRUE,
+                                                       cofma_gid = 5),
                        mc.cores =40
 )
 
 
-sweep_leak <- list(par = sweeps,
-                     data = cpr_sweeps)
+sweep_redd <- list(par = sweeps,
+                   data = cpr_sweeps)
 
-saveRDS(sweep_leak, file = paste0(path$dataAbm, "cpr_sweeps_leak.RDS"))
+saveRDS(sweep_redd, file = paste0(path$dataAbm, "cpr_sweeps_redd.RDS"))
 
-
-
-
-#####################################################################
-################# ADD IN WAGES ######################################
-
-rm(list = ls())
-source("cpr/code/abm/cpr_inst_wlimit_continious_gen.R")
-source("cpr/paths.R")
-
-
+#########################################################################
+######################### ADDING IN VARIATION IN WAGES ##################
 sweeps2 <- expand.grid(n = c(135, 675),#, 300, 900),
-                       wages = c(.25, .5),
-                       max_forest = c(1000, 10000),#, 500, 1000),
-                       var_forest = c(10, 300),
-                       regrow = c(0.005, 0.01, 0.05),
-                       self_policing =c(FALSE),#, FALSE),
+                       wages = c(0.03, 0.07),
+                       max_forest = c(200, 2000),#, 500, 1000),
+                       var_forest = c(10, 50),
+                       regrow = c(0.03, 0.07),
+                       self_policing =c(TRUE),#, TRUE),
                        fine = c(0.00),#, 0.5, 1 ),
                        outgroup = c(.1, .9),# 0.1, ),
                        travel_cost = c(0.1),#, .5, 1), 
                        monitor_tech = c(0.1, 1, 5),
-                       harvest_limit = c(0.5),
+                       harvest_limit = c(.95, .8),
                        labor = c(0.3, .7),
-                       tech = c(1, 0.5),
+                       tech = c(0.04, 0.06),
                        defensibility = c(15, 30)
 )
 
 set.seed(2021)
-cpr_sweeps2 <- mclapply(1:nrow(sweeps2),   
+cpr_sweeps2 <- mclapply(1:nrow(sweeps2),   #that -1 is a correction that was not implmented the first time run
                         function(i) cpr_institution_abm(n=sweeps2$n[[i]], 
                                                         max_forest=sweeps2$max_forest[[i]],
                                                         regrow=sweeps2$regrow[[i]], 
@@ -93,44 +86,43 @@ cpr_sweeps2 <- mclapply(1:nrow(sweeps2),
                                                         ngroups = 9,
                                                         leak = TRUE,
                                                         lattice = c(3, 3),
-                                                        nrounds = 1000),
+                                                        nrounds = 1000,
+                                                        REDD = TRUE,
+                                                        cofma_gid = 5),
                         mc.cores =40
 )
 
 
-sweep_leak2 <- list(par = sweeps2,
-                      data = cpr_sweeps2)
-
-saveRDS(sweep_leak2, file = paste0(path$dataAbm, "cpr_sweeps_leak2.RDS"))
+sweep_redd2 <- list(par = sweeps2,
+                    data = cpr_sweeps2)
 
 
-#########################################################################################
-########################## ADD In degradability ########################################
-
-rm(list = ls())
-source("cpr/code/abm/cpr_inst_wlimit_continious_gen.R")
-source("cpr/paths.R")
+saveRDS(sweep_redd2, file = paste0(path$dataAbm, "cpr_sweeps_redd2.RDS"))
 
 
+
+
+#########################################################################
+######################### Degregdation ###################################
 sweeps3 <- expand.grid(n = c(135, 675),#, 300, 900),
-                       wages = c(.1),#, .25, .5),
-                       max_forest = c(1000, 10000),#, 500, 1000),
-                       var_forest = c(10, 300),
-                       regrow = c(0.005, 0.01, 0.05),
-                       self_policing =c(FALSE),#, FALSE),
+                       wages = c(0.03,  0.05, 0.07),
+                       max_forest = c(200, 2000),#, 500, 1000),
+                       var_forest = c(10, 50),
+                       regrow = c(0.03, 0.07),
+                       self_policing =c(TRUE),#, TRUE),
                        fine = c(0.00),#, 0.5, 1 ),
                        outgroup = c(.1, .9),# 0.1, ),
                        travel_cost = c(0.1),#, .5, 1), 
                        monitor_tech = c(0.1, 1, 5),
-                       harvest_limit = c(0.5),
+                       harvest_limit = c(0.95, .8),
                        labor = c(0.3, .7),
-                       tech = c(1, 0.5),
+                       tech = c(0.04, 0.06),
                        defensibility = c(15, 30),
                        degradability = c(0)
 )
 
 set.seed(2021)
-cpr_sweeps3 <- mclapply(1:nrow(sweeps3),   
+cpr_sweeps3 <- mclapply(1:nrow(sweeps3),   #that -1 is a correction that was not implmented the first time run
                         function(i) cpr_institution_abm(n=sweeps3$n[[i]], 
                                                         max_forest=sweeps3$max_forest[[i]],
                                                         regrow=sweeps3$regrow[[i]], 
@@ -150,75 +142,15 @@ cpr_sweeps3 <- mclapply(1:nrow(sweeps3),
                                                         ngroups = 9,
                                                         leak = TRUE,
                                                         lattice = c(3, 3),
-                                                        nrounds = 1000),
+                                                        nrounds = 1000,
+                                                        REDD = TRUE,
+                                                        cofma_gid = 5),
                         mc.cores =40
 )
 
 
-sweep_leak3 <- list(par = sweeps3,
-                      data = cpr_sweeps3)
-
-saveRDS(sweep_leak3, file = paste0(path$dataAbm, "cpr_sweeps_leak3.RDS"))
+sweep_redd3 <- list(par = sweeps3,
+                    data = cpr_sweeps3)
 
 
-
-
-##################################################################################################
-################# ADD IN WEALTH LEARNING #########################################################
-
-rm(list = ls())
-source("cpr/code/abm/cpr_inst_wlimit_continious_gen.R")
-source("cpr/paths.R")
-
-sweeps4 <- expand.grid(n = c(135, 675),#, 300, 900),
-                       wages = c(.1),#, .25, .5),
-                       max_forest = c(1000, 10000),#, 500, 1000),
-                       var_forest = c(10, 300),
-                       regrow = c(0.005, 0.01, 0.05),
-                       self_policing =c(FALSE),#, FALSE),
-                       fine = c(0.00),#, 0.5, 1 ),
-                       outgroup = c(.1, .9),# 0.1, ),
-                       travel_cost = c(0.1),#, .5, 1), 
-                       monitor_tech = c(0.1, 1, 5),
-                       harvest_limit = c(0.5),
-                       labor = c(0.3, .7),
-                       tech = c(1, 0.5),
-                       defensibility = c(15, 30),
-                       degradability = c(0, 1),
-                       learn_type = c("wealth")
-)
-
-set.seed(2021)
-cpr_sweeps4 <- mclapply(1:nrow(sweeps4),   
-                        function(i) cpr_institution_abm(n=sweeps4$n[[i]], 
-                                                        max_forest=sweeps4$max_forest[[i]],
-                                                        regrow=sweeps4$regrow[[i]], 
-                                                        var_forest = sweeps4$var_forest[[i]], 
-                                                        wages = sweeps4$wages[[i]],
-                                                        labor = sweeps4$labor[[i]], 
-                                                        self_policing=sweeps4$self_policing[[i]], 
-                                                        fine=sweeps4$fine[[i]], 
-                                                        outgroup=sweeps4$outgroup[[i]], 
-                                                        travel_cost=sweeps4$travel_cost[[i]], 
-                                                        tech = sweeps4$tech[[i]], 
-                                                        monitor_tech= sweeps4$monitor_tech[[i]], 
-                                                        harvest_limit = sweeps4$harvest_limit[[i]],
-                                                        defensibility = sweeps4$defensibility[[i]],
-                                                        degradability = sweeps4$degradability[[i]],
-                                                        learn_type = sweeps4$learn_type[[i]],
-                                                        nsim = 10,
-                                                        ngroups = 9,
-                                                        leak = TRUE,
-                                                        lattice = c(3, 3),
-                                                        nrounds = 1000),
-                        mc.cores =40
-)
-
-
-sweep_leak4 <- list(par = sweeps4,
-                      data = cpr_sweeps4)
-
-saveRDS(sweep_leak4, file = paste0(path$dataAbm, "cpr_sweeps_leak4.RDS"))
-
-
-rm(list = ls())
+saveRDS(sweep_redd3, file = paste0(path$dataAbm, "cpr_sweeps_redd3.RDS"))

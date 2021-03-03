@@ -6,12 +6,12 @@ sweeps <- expand.grid(n = c(135, 675),#, 300, 900),
                       max_forest = c(1000, 10000),#, 500, 1000),
                       var_forest = c(10, 300),
                       regrow = c(0.005, 0.01, 0.05),
-                      self_policing =c(FALSE),#, FALSE),
+                      self_policing =c(TRUE),#, FALSE),
                       fine = c(0.00),#, 0.5, 1 ),
                       outgroup = c(.1, .9),# 0.1, ),
                       travel_cost = c(0.1),#, .5, 1), 
                       monitor_tech = c(0.1, 1, 5),
-                      harvest_limit = c(0.5),
+                      harvest_limit = c(0.5,.80),
                       labor = c(0.3, .7),
                       tech = c(1, 0.5),
                       defensibility = c(15, 30)
@@ -41,10 +41,10 @@ cpr_sweeps <- mclapply(1:nrow(sweeps),   #that -1 is a correction that was not i
 )
 
 
-sweep_leak <- list(par = sweeps,
+sweep_full <- list(par = sweeps,
                      data = cpr_sweeps)
 
-saveRDS(sweep_leak, file = paste0(path$dataAbm, "cpr_sweeps_leak.RDS"))
+saveRDS(sweep_full, file = paste0(path$dataAbm, "cpr_sweeps_full.RDS"))
 
 
 
@@ -62,12 +62,12 @@ sweeps2 <- expand.grid(n = c(135, 675),#, 300, 900),
                        max_forest = c(1000, 10000),#, 500, 1000),
                        var_forest = c(10, 300),
                        regrow = c(0.005, 0.01, 0.05),
-                       self_policing =c(FALSE),#, FALSE),
+                       self_policing =c(TRUE),#, FALSE),
                        fine = c(0.00),#, 0.5, 1 ),
                        outgroup = c(.1, .9),# 0.1, ),
                        travel_cost = c(0.1),#, .5, 1), 
                        monitor_tech = c(0.1, 1, 5),
-                       harvest_limit = c(0.5),
+                       harvest_limit = c(0.5,.80),
                        labor = c(0.3, .7),
                        tech = c(1, 0.5),
                        defensibility = c(15, 30)
@@ -98,10 +98,10 @@ cpr_sweeps2 <- mclapply(1:nrow(sweeps2),
 )
 
 
-sweep_leak2 <- list(par = sweeps2,
+sweep_full2 <- list(par = sweeps2,
                       data = cpr_sweeps2)
 
-saveRDS(sweep_leak2, file = paste0(path$dataAbm, "cpr_sweeps_leak2.RDS"))
+saveRDS(sweep_full2, file = paste0(path$dataAbm, "cpr_sweeps_full2.RDS"))
 
 
 #########################################################################################
@@ -117,12 +117,12 @@ sweeps3 <- expand.grid(n = c(135, 675),#, 300, 900),
                        max_forest = c(1000, 10000),#, 500, 1000),
                        var_forest = c(10, 300),
                        regrow = c(0.005, 0.01, 0.05),
-                       self_policing =c(FALSE),#, FALSE),
+                       self_policing =c(TRUE),#, FALSE),
                        fine = c(0.00),#, 0.5, 1 ),
                        outgroup = c(.1, .9),# 0.1, ),
                        travel_cost = c(0.1),#, .5, 1), 
                        monitor_tech = c(0.1, 1, 5),
-                       harvest_limit = c(0.5),
+                       harvest_limit = c(0.5,.80),
                        labor = c(0.3, .7),
                        tech = c(1, 0.5),
                        defensibility = c(15, 30),
@@ -155,10 +155,10 @@ cpr_sweeps3 <- mclapply(1:nrow(sweeps3),
 )
 
 
-sweep_leak3 <- list(par = sweeps3,
+sweep_full3 <- list(par = sweeps3,
                       data = cpr_sweeps3)
 
-saveRDS(sweep_leak3, file = paste0(path$dataAbm, "cpr_sweeps_leak3.RDS"))
+saveRDS(sweep_full3, file = paste0(path$dataAbm, "cpr_sweeps_full3.RDS"))
 
 
 
@@ -175,12 +175,12 @@ sweeps4 <- expand.grid(n = c(135, 675),#, 300, 900),
                        max_forest = c(1000, 10000),#, 500, 1000),
                        var_forest = c(10, 300),
                        regrow = c(0.005, 0.01, 0.05),
-                       self_policing =c(FALSE),#, FALSE),
+                       self_policing =c(TRUE),#, FALSE),
                        fine = c(0.00),#, 0.5, 1 ),
                        outgroup = c(.1, .9),# 0.1, ),
                        travel_cost = c(0.1),#, .5, 1), 
                        monitor_tech = c(0.1, 1, 5),
-                       harvest_limit = c(0.5),
+                       harvest_limit = c(0.5,.80),
                        labor = c(0.3, .7),
                        tech = c(1, 0.5),
                        defensibility = c(15, 30),
@@ -215,10 +215,10 @@ cpr_sweeps4 <- mclapply(1:nrow(sweeps4),
 )
 
 
-sweep_leak4 <- list(par = sweeps4,
+sweep_full4 <- list(par = sweeps4,
                       data = cpr_sweeps4)
 
-saveRDS(sweep_leak4, file = paste0(path$dataAbm, "cpr_sweeps_leak4.RDS"))
+saveRDS(sweep_full4, file = paste0(path$dataAbm, "cpr_sweeps_full4.RDS"))
 
 
 rm(list = ls())
