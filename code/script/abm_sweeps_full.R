@@ -222,3 +222,66 @@ saveRDS(sweep_full4, file = paste0(path$dataAbm, "cpr_sweeps_full4.RDS"))
 
 
 rm(list = ls())
+
+
+
+
+########################################################################################################
+################# ADD IN WEALTH LEARNING WAGES #########################################################
+
+rm(list = ls())
+source("cpr/code/abm/cpr_inst_wlimit_continious_gen.R")
+source("cpr/paths.R")
+
+sweeps5 <- expand.grid(n = c(135, 675),#, 300, 900),
+                       wages = c(.25, .5),
+                       max_forest = c(1000, 10000),#, 500, 1000),
+                       var_forest = c(10, 300),
+                       regrow = c(0.005, 0.01, 0.05),
+                       self_policing =c(TRUE),#, FALSE),
+                       fine = c(0.00),#, 0.5, 1 ),
+                       outgroup = c(.1, .9),# 0.1, ),
+                       travel_cost = c(0.1),#, .5, 1), 
+                       monitor_tech = c(0.1, 1, 5),
+                       harvest_limit = c(0.5,.80),
+                       labor = c(0.3, .7),
+                       tech = c(1, 0.5),
+                       defensibility = c(15, 30),
+                       degradability = c(0, 1),
+                       learn_type = c("wealth")
+)
+
+set.seed(2021)
+cpr_sweeps5 <- mclapply(1:nrow(sweeps5),   
+                        function(i) cpr_institution_abm(n=sweeps5$n[[i]], 
+                                                        max_forest=sweeps5$max_forest[[i]],
+                                                        regrow=sweeps5$regrow[[i]], 
+                                                        var_forest = sweeps5$var_forest[[i]], 
+                                                        wages = sweeps5$wages[[i]],
+                                                        labor = sweeps5$labor[[i]], 
+                                                        self_policing=sweeps5$self_policing[[i]], 
+                                                        fine=sweeps5$fine[[i]], 
+                                                        outgroup=sweeps5$outgroup[[i]], 
+                                                        travel_cost=sweeps5$travel_cost[[i]], 
+                                                        tech = sweeps5$tech[[i]], 
+                                                        monitor_tech= sweeps5$monitor_tech[[i]], 
+                                                        harvest_limit = sweeps5$harvest_limit[[i]],
+                                                        defensibility = sweeps5$defensibility[[i]],
+                                                        degradability = sweeps5$degradability[[i]],
+                                                        learn_type = sweeps5$learn_type[[i]],
+                                                        nsim = 10,
+                                                        ngroups = 9,
+                                                        leak = TRUE,
+                                                        lattice = c(3, 3),
+                                                        nrounds = 1000),
+                        mc.cores =40
+)
+
+
+sweep_full5 <- list(par = sweeps5,
+                    data = cpr_sweeps5)
+
+saveRDS(sweep_full5, file = paste0(path$dataAbm, "cpr_sweeps_full5.RDS"))
+
+
+rm(list = ls())
