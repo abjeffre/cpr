@@ -9,8 +9,8 @@ addprocs(40)
 @everywhere using(JLD)
 
 #Load code
-@everywhere include("cpr\\code\\abm\\cpr_setup.jl")
-@everywhere include("cpr\\code\\abm\\cpr_lim.jl")
+@everywhere include("cpr_setup.jl")
+@everywhere include("cpr_lim.jl")
 
 
 S =expand_grid( [1800],         #Population Size

@@ -734,9 +734,6 @@ function cpr_abm(
         # if all(sample_payoff .<= 0)  break end #CHECK
         pos_parents = id[(id .∈ Ref(pop)) .== (id .∉ Ref(died))]
         pos_payoff = convert.(Float64, vec(sample_payoff[pos_parents]))
-        println(string("length died: ", length(died), " ", typeof(length(died)), " ", ndims(length(died)) ))
-        println(string("POS PArents: ",pos_parents, " ", typeof(pos_parents), " ", size(pos_parents), " ", ndims(pos_parents)  ))
-        println(string("POS PAYOFFS: ",pos_payoff, " ", typeof(pos_payoff), " ", size(pos_payoff), " ", ndims(pos_payoff)))
         babies = wsample(pos_parents, pos_payoff, length(died), replace = true)
 
         #note that there can be eigenmodels
