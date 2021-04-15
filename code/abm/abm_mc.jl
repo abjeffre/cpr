@@ -6,7 +6,7 @@ addprocs(40)
 
 @everywhere using(Distributions)
 @everywhere using(DataFrames)
-@everywhere using(JLD)
+@everywhere using(JLD2)
 
 #Load code
 #@everywhere cd("cpr\\code\\abm")
@@ -67,14 +67,4 @@ abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7], S[:,8]
 
 
 #save the code
-save("abm_dat_lg.jld", "x")
-
-using(JLD)
-
-using JLD2, FileIO
-d = Dict(
-        ("a", "b") => [1, 2, 3],
-        ("c", "d") => [4, 5, 6],
-        ("e", "f") => [7, 8, 9]
-    )
-save("data.jld2", "data", d)
+save("abm_dat_lg.jld2", abm_dat)
