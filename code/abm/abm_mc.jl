@@ -9,6 +9,7 @@ addprocs(40)
 @everywhere using(JLD)
 
 #Load code
+#@everywhere cd("cpr\\code\\abm")
 @everywhere include("cpr_setup.jl")
 @everywhere include("cpr_lim.jl")
 
@@ -31,14 +32,15 @@ S =expand_grid( [1800],         #Population Size
 for i in 1:size(S)[1]
     if S[i,2].==60
         S[i,3] =[6,10]
-        S[i,8] =[1,2,3,4,5,6]
+        S[i,9] =[1,2,3,4,5,6]
     end
 end
 
 #set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(n, ng, l, v, dg, df, el, ep, eg, c)
     cpr_abm(n = n,
-            nsim = 30,
+            nrounds = 10,
+            nsim = 1,
             ngroups = ng,
             lattice = l,
             var_forest = v,
@@ -50,8 +52,19 @@ end
             cmls = c )
 end
 
+#Verify
+check = false
+
+if check == true
+    for i = 1:128
+        println(i)
+        abm_dat = g(S[i,1], S[i,2], S[i,3], S[i,4], S[i,5], S[i,6], S[i,7], S[i,8], S[i,9], S[i,10])
+    end
+end
 #run the code
 abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7], S[:,8], S[:,9], S[:,10])
+
+
 
 #save the code
 save("cpr\\data\\abm\\abm_dat_lg.jld" , abm_dat)
