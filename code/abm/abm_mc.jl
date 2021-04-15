@@ -39,8 +39,8 @@ end
 #set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(n, ng, l, v, dg, df, el, ep, eg, c)
     cpr_abm(n = n,
-            nrounds = 10,
-            nsim = 1,
+            nrounds = 2000,
+            nsim = 30,
             ngroups = ng,
             lattice = l,
             var_forest = v,
@@ -67,4 +67,14 @@ abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7], S[:,8]
 
 
 #save the code
-save("cpr\\data\\abm\\abm_dat_lg.jld" , abm_dat)
+save("abm_dat_lg.jld", "x")
+
+using(JLD)
+
+using JLD2, FileIO
+d = Dict(
+        ("a", "b") => [1, 2, 3],
+        ("c", "d") => [4, 5, 6],
+        ("e", "f") => [7, 8, 9]
+    )
+save("data.jld2", "data", d)
