@@ -142,6 +142,7 @@ function cpr_abm(
 
 
   gs = zeros(nrounds, ngroups, nsim)
+  gs2 = zeros(nrounds, ngroups, nsim)
   grs = zeros(nrounds, ngroups, nsim)
 
   am = zeros(nrounds, nsim)
@@ -218,7 +219,7 @@ function cpr_abm(
     effort = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
     #Random.seed(seed)
 
-    harv_limit = abs.(rand(Normal(harvest_limit, .03), n))
+    harv_limit = abs.(rand(Normal(harvest_limit, .08), n))
     leak_temp =zeros(gs_init)
 
     leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
@@ -514,16 +515,12 @@ function cpr_abm(
 
         payoff += payoff_round
 
-
-      end
+    else
 
 
     ##################################################################
     ############ In a world without boundaries .... ##################
 
-
-
-      if inst == false
         X_non_siezed = 0 #just for reporting
         X = zeros(ngroups)
 
@@ -588,22 +585,22 @@ function cpr_abm(
             model_temp = model_list[findmax(payoff[model_list])[2]]
             models[i] = ifelse(payoff[model_temp] > payoff[i], model_temp, i)
           else # Now check for income learners
-              model_temp = model_list[findmax(payoff[model_list])[2]]
-              models[i] = ifelse(payoff[model_temp] > payoff[i], model_temp, i)
+              model_temp = model_list[findmax(payoff_round[model_list])[2]]
+              models[i] = ifelse(payoff_round[model_temp] > payoff_round[i], model_temp, i)
           end
         end # End finding models
         models = asInt.(models)
 
         #note that there can be eigenmodels
         trans_error = rand(n, 5) .< fidelity
-        n_error = [[rand(Normal(), n)] [rand(Normal(1, .15), n)]]
+        n_error = [[rand(Normal(), n)] [rand(Normal(1, .02), n)]]
 
         #apply mutations in learning
         effort = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[models]) .+ n_error[1]), effort[models])
         leakage_type  =ifelse.(trans_error[:,2], ifelse.(leakage_type[models].==1,0,1), leakage_type[models])
         punish_type  =ifelse.(trans_error[:,3], ifelse.(punish_type[models].==1,0,1), punish_type[models])
         harv_limit = ifelse.(trans_error[:,4], harv_limit[models] .* n_error[2], harv_limit[models])
-        punish_type2  =ifelse.(trans_error[:,3], ifelse.(punish_type2[models].==1,0,1), punish_type2[models])
+        punish_type2  =ifelse.(trans_error[:,5], ifelse.(punish_type2[models].==1,0,1), punish_type2[models])
 
       if verbose ==true println(string("Year: ", year, ", Social Learning: COMPLETED ")) end
       end
@@ -672,9 +669,8 @@ function cpr_abm(
       l0p1r0hl[year,:,sim] .= round.(report(harv_limit[((leakage_type.==0) .& (punish_type.==1)).& (punish_type2.==0)], gid[((leakage_type.==0) .& (punish_type.==1)).& (punish_type2.==0)], ngroups), digits=2)
       l1p1r0hl[year,:,sim] .= round.(report(harv_limit[((leakage_type.==1) .& (punish_type.==1)).& (punish_type2.==0)], gid[((leakage_type.==1) .& (punish_type.==1)).& (punish_type2.==0)],  ngroups), digits=2)
 
-
+    cnt = zeros(ngroups)
       for i = 1:ngroups
-        cnt = zeros(ngroups)
         if sum((gid.==i) .& (leakage_type.==0))==0
           cnt[i] = NaN
         else
@@ -714,12 +710,13 @@ function cpr_abm(
 
       lmr[year,:,sim] .= round.(cnt, digits=3)
 
-      gs[year,:,sim] .= round.(X-X_non_siezed, digits=2)
+      gs2[year,:,sim] .= round.(X-X_non_siezed_ig, digits=2)
+      gs[year,:,sim] .= round.(X-X_non_siezed_og, digits=2)
 
       lpt1[year, sim] = round.(mean(payoff_round[leakage_type.==1]), digits = 2)
       ppt1[year, sim] =  round.(mean(payoff_round[punish_type.==1]), digits = 2)
       lpt0[year, sim] = round.(mean(payoff_round[leakage_type.==0]), digits = 2)
-      ppt1[year, sim] = round.(mean(payoff_round[punish_type.==0]), digits = 2)
+      ppt0[year, sim] = round.(mean(payoff_round[punish_type.==0]), digits = 2)
       rpt1[year, sim] = round.(mean(payoff_round[punish_type2.==1]), digits = 2)
       rpt0[year, sim] = round.(mean(payoff_round[punish_type2.==0]), digits = 2)
 
@@ -819,7 +816,7 @@ function cpr_abm(
 
         #note that there can be eigenmodels
         trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .15), length(babies))] ]
+        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] ]
 
 
 
@@ -849,7 +846,7 @@ function cpr_abm(
 
         #note that there can be eigenmodels
         trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .15), length(babies))]]
+        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))]]
 
         #apply mutations in learning
         effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
@@ -880,7 +877,7 @@ function cpr_abm(
         babies = wsample(pos_parents, pos_payoff, length(died), replace = true)
 
         trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .15), length(babies))]]
+        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))]]
 
         #apply mutations in learning
         effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
@@ -966,7 +963,7 @@ function cpr_abm(
     "leakage" => lt,
     "payoffR" => pr,
     "payoff_punish" => ppt1,
-    "payoff_punish" => rpt1,
+    "payoff_punish2" => rpt1,
     "payoff_leakage" => lpt1,
     "payoff_no_punish" => ppt0,
     "payoff_no_punish2" => rpt0,
@@ -976,6 +973,7 @@ function cpr_abm(
     "age_max" => am,
     "age_mean" => ma,
     "seized" => gs,
+    "seized2" => gs2,
     "forsize" => fm,
     "reddyear" => ry,
     "group_size" => grs

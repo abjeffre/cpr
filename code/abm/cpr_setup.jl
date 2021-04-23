@@ -78,7 +78,7 @@ end
   end
 
 
-function wsample2(data, weights, size) 
+function wsample2(data, weights, size)
             w = convert.(Float64, vec(sample_payoff[weights]))
             wsample(data, w, size)
         end

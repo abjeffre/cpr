@@ -1,11 +1,10 @@
 ######################################
 ########## Plotting ##################
 
-ngroups = 2
+test =copy(abm_dat[1])
+
+ngroups = 6
 nrounds =2000
-
-
-hl = zeros(1000, 4)
 
 
 vars = ["l0p0hl", "l0p1hl", "l1p0hl", "l1p1hl"]
@@ -66,56 +65,47 @@ plot!(pdi[kpdi[4]])
 ############################################################################
 ################# Means ####################################################
 
-iter = size(deg0["effort"])[3]
-rnds = size(deg1["effort"])[1]
 
-m = zeros(rnds, iter)
-c = zeros(rnds, iter)
-p = zeros(rnds, iter)
-s = zeros(rnds, iter)
-l = zeros(rnds, iter)
+comb=size(abm_dat)[1]
+test = copy(abm_dat)
+iter = size(test[1]["effort"])[3]
+rnds = size(test[1]["effort"])[1]
 
-for i in 1:iter
-    m[:,i]=mean(deg0["limit"][:,:,i], dims = 2)
-    c[:,i]=mean(deg0["limit"][:,:,i].-deg0["effort"][:,:,i], dims = 2)
-    p[:,i]=mean(deg0["punish"][:,:,i], dims = 2)
-    s[:,i]=mean(deg0["stock"][:,:,i], dims = 2)
-    l[:,i]=mean(deg0["leakage"][:,:,i], dims = 2)
+limit = Plots.Plot{Plots.GRBackend}[]
+punish = Plots.Plot{Plots.GRBackend}[]
+leak = Plots.Plot{Plots.GRBackend}[]
+differ = Plots.Plot{Plots.GRBackend}[]
+harvest = Plots.Plot{Plots.GRBackend}[]
+effort = Plots.Plot{Plots.GRBackend}[]
+stock = Plots.Plot{Plots.GRBackend}[]
+
+
+temp1 = zeros(comb,7,rnds, iter)
+temp2 = zeros(comb, 7, rnds)
+
+for j in 1:comb
+    for i in 1:iter
+        temp1[j,1,:,i]=median(test[j]["limit"][:,:,i], dims = 2)
+        temp1[j,2,:,i]=mean(test[j]["effort"][:,:,i], dims = 2)
+        temp1[j,3,:,i]=mean(test[j]["harvest"][:,:,i], dims = 2)./300
+        temp1[j,4,:,i]=median(test[j]["limit"][:,:,i].-test[j]["harvest"][:,:,i]./300, dims = 2)
+        temp1[j,5,:,i]=mean(test[j]["punish"][:,:,i], dims = 2)
+        temp1[j,6,:,i]=mean(test[j]["stock"][:,:,i], dims = 2)
+        temp1[j,7,:,i]=mean(test[j]["leakage"][:,:,i], dims = 2)
+    end
+
+    for k in 1:7
+        for i in 1:size(test[1]["effort"])[1]
+            temp2[j,k,i]=nanmedian(temp1[j,k,i,:])
+        end
+    end
+
+    push!(limit, plot(temp2[j,1,:]))
+    push!(effort, plot(temp2[j,2,:]))
+    push!(harvest, plot(temp2[j,3,:]))
+    push!(differ, plot(temp2[j,4,:]))
+    push!(punish, plot(temp2[j,5,:]))
+    push!(stock, plot(temp2[j,6,:]))
+    push!(leak, plot(temp2[j,7,:]))
+
 end
-
-a=plot(mean(m, dims =2))
-b=plot(mean(c, dims =2))
-d=plot(mean(p, dims =2))
-d1=plot(mean(s, dims =2))
-d2 =plot(mean(l, dims =2))
-
-m = zeros(rnds, iter)
-c = zeros(rnds, iter)
-
-for i in 1:iter
-    m[:,i]=mean(deg1["limit"][:,:,i], dims = 2)
-    c[:,i]=mean(deg1["limit"][:,:,i].-deg1["effort"][:,:,i], dims = 2)
-    p[:,i]=mean(deg1["punish"][:,:,i], dims = 2)
-    s[:,i]=mean(deg1["stock"][:,:,i], dims = 2)
-    l[:,i]=mean(deg1["leakage"][:,:,i], dims = 2)
-end
-
-e=plot(mean(m, dims =2))
-f=plot(mean(c, dims =2))
-g=plot(mean(p, dims =2))
-g1=plot(mean(s, dims =2))
-g2=plot(mean(l, dims = 2))
-
-
-plot(a,b,d,d1,d2,e,f,g,g1,g2, layout = (2,5))
-
-
-
-
-
-
-
-
-b =plot(mean(m, dims =2))
-
-plot(a, b,  layout = (2,1))
