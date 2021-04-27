@@ -1,3 +1,4 @@
+#load in at home/jeffrey_andrews/
 #call include("cpr/code/script/server/abm_env.jl")
 
 
@@ -13,9 +14,8 @@ addprocs(40)
 @everywhere using(Dates)
 
 #Load code
-@everywhere cd("cpr/code/abm/")
-@everywhere include("cpr_setup.jl")
-@everywhere include("cpr_sep.jl")
+@everywhere include("cpr/code/abm/cpr_setup.jl")
+@everywhere include("cpr/code/abm/cpr_sep.jl")
 
 
 S =expand_grid( [900],               #Population Size
