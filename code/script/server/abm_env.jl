@@ -10,7 +10,7 @@ addprocs(40)
 @everywhere using(Dates)
 
 #Load code
-@everywhere cd("\\cpr\\code\\abm")
+@everywhere cd("\\home\\jeffrey_andrews\\cpr\\code\\abm")
 @everywhere include("cpr_setup.jl")
 @everywhere include("cpr_sep.jl")
 
@@ -18,7 +18,7 @@ addprocs(40)
 S =expand_grid( [900],               #Population Size
                 [6, 60],                #ngroups
                 [[3, 2]],           #lattice, will be replaced below
-                [.01 ,0.05]         #Regrowth
+                [.01 ,0.05],         #Regrowth
                 [1, 1500],          #Variance
                 [0,1],              #Degradability
                 [.5, 1],            #Defensibility
@@ -52,7 +52,7 @@ end
             nsim = 30,
             ngroups = ng,
             lattice = l,
-            regrow = rg
+            regrow = rg,
             var_forest = v,
             degradability = dg,
             defensibility = df,
@@ -76,10 +76,9 @@ if check == true
          S[i,9], S[i,10], S[i,11], S[i,12], S[i,13], S[i,14], S[i,15])
     end
 end
+
 abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
  S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12], S[:,13], S[:,15])
 
-@JLD2.save("abm_dat_envWS.jld2", abm_dat, S)
-@JLD2.save("abm_dat_env.jld2", abm_dat)
-
-@JLD2.load("abm_dat_env.jld2")
+@JLD2.save("\\cpr\\data\\abm\\abm_dat_envWS.jld2", abm_dat, S)
+@JLD2.save("\\cpr\\data\\abm\\abm_dat_env.jld2", abm_dat)
