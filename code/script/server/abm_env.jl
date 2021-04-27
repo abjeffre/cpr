@@ -1,3 +1,6 @@
+#call include("cpr/code/script/server/abm_env.jl")
+
+
 using(Distributed)
 
 Threads.nthreads()
@@ -10,7 +13,7 @@ addprocs(40)
 @everywhere using(Dates)
 
 #Load code
-@everywhere cd("\\home\\jeffrey_andrews\\cpr\\code\\abm")
+@everywhere cd("cpr/code/abm/")
 @everywhere include("cpr_setup.jl")
 @everywhere include("cpr_sep.jl")
 
