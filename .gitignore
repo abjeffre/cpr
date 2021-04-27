@@ -5,4 +5,5 @@
 /data/dataframes/
 .rds
 .RDS
+.jld2
 /output/
