@@ -77,7 +77,7 @@ if check == true
 end
 
 #For daytime
-S1=S[isodd.(collect(1:64)), :]
+S1=S[isodd.(collect(1:128)), :]
 abm_dat = pmap(g, S1[:,1], S1[:,2], S1[:,3], S1[:,4], S1[:,5], S1[:,6], S1[:,7],
  S1[:,8], S1[:,9], S1[:,10] , S1[:,11], S1[:,12], S1[:,13], S1[:,14], S1[:,15])
 
