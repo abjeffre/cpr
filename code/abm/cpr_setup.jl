@@ -9,6 +9,12 @@ function nanmean(x)
   mean(filter(!isnan, x))
 end
 
+
+function nanmedian(x)
+  median(filter(!isnan, x))
+end
+
+
   function inv_logit(x)
      1/(1+exp(-x))
   end

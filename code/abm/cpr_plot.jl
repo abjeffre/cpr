@@ -65,6 +65,8 @@ plot!(pdi[kpdi[4]])
 ############################################################################
 ################# Means ####################################################
 
+@JLD2.load("C:\\Users\\jeffr\\Documents\\Work\\cpr\\data\\abm\\abm_dat_env1.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\Work\\cpr\\data\\abm\\abm_dat_econ1.jld2")
 
 comb=size(abm_dat)[1]
 test = copy(abm_dat)
@@ -78,23 +80,32 @@ differ = Plots.Plot{Plots.GRBackend}[]
 harvest = Plots.Plot{Plots.GRBackend}[]
 effort = Plots.Plot{Plots.GRBackend}[]
 stock = Plots.Plot{Plots.GRBackend}[]
+punish2 = Plots.Plot{Plots.GRBackend}[]
+seized = Plots.Plot{Plots.GRBackend}[]
+seized2 = Plots.Plot{Plots.GRBackend}[]
+payoffR = Plots.Plot{Plots.GRBackend}[]
 
 
-temp1 = zeros(comb,7,rnds, iter)
-temp2 = zeros(comb, 7, rnds)
+temp1 = zeros(comb,11,rnds, iter)
+temp2 = zeros(comb, 11, rnds)
 
 for j in 1:comb
     for i in 1:iter
         temp1[j,1,:,i]=median(test[j]["limit"][:,:,i], dims = 2)
         temp1[j,2,:,i]=mean(test[j]["effort"][:,:,i], dims = 2)
-        temp1[j,3,:,i]=mean(test[j]["harvest"][:,:,i], dims = 2)./300
-        temp1[j,4,:,i]=median(test[j]["limit"][:,:,i].-test[j]["harvest"][:,:,i]./300, dims = 2)
+        temp1[j,3,:,i]=mean(test[j]["harvest"][:,:,i], dims = 2)./150
+        temp1[j,4,:,i]=median(test[j]["limit"][:,:,i].-test[j]["harvest"][:,:,i]./150, dims = 2)
         temp1[j,5,:,i]=mean(test[j]["punish"][:,:,i], dims = 2)
         temp1[j,6,:,i]=mean(test[j]["stock"][:,:,i], dims = 2)
         temp1[j,7,:,i]=mean(test[j]["leakage"][:,:,i], dims = 2)
+        temp1[j,8,:,i]=mean(test[j]["punish2"][:,:,i], dims = 2)
+        temp1[j,9,:,i]=mean(test[j]["seized"][:,:,i], dims = 2)
+        temp1[j,10,:,i]=mean(test[j]["seized2"][:,:,i], dims = 2)
+        temp1[j,11,:,i]=mean(test[j]["payoffR"][:,:,i], dims = 2)
+
     end
 
-    for k in 1:7
+    for k in 1:11
         for i in 1:size(test[1]["effort"])[1]
             temp2[j,k,i]=nanmedian(temp1[j,k,i,:])
         end
@@ -107,5 +118,10 @@ for j in 1:comb
     push!(punish, plot(temp2[j,5,:]))
     push!(stock, plot(temp2[j,6,:]))
     push!(leak, plot(temp2[j,7,:]))
+    push!(punish2, plot(temp2[j,8,:]))
+    push!(seized, plot(temp2[j,9,:]))
+    push!(seized2, plot(temp2[j,10,:]))
+    push!(payoffR, plot(temp2[j,11,:]))
+
 
 end

@@ -1,5 +1,5 @@
 #load in at home/jeffrey_andrews/
-#call include("cpr/code/abm/abm_env.jl")
+#call include("cpr/code/abm/abm_env_server.jl")
 
 
 using(Distributed)
@@ -15,7 +15,7 @@ Threads.nthreads()
 #Load code
 @everywhere include("cpr/code/abm/cpr_setup.jl")
 @everywhere include("cpr/code/abm/cpr_sep.jl")
-
+rm
 
 S =expand_grid( [900],               #Population Size
                 [6, 60],                #ngroups
@@ -24,7 +24,7 @@ S =expand_grid( [900],               #Population Size
                 [1, 1500],          #Variance
                 [0,1],              #Degradability
                 [.5, 1],            #Defensibility
-                [0.  9],            #Experiment_leak
+                [0.  .9],            #Experiment_leak
                 [0],                #experiment_punish
                 [1],                #experiment_group
                 [false],            #cmls
@@ -82,5 +82,5 @@ end
 abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
  S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12], S[:,13], S[:,15])
 
-@JLD2.save("\\cpr\\data\\abm\\abm_dat_envWS.jld2", abm_dat, S)
-@JLD2.save("\\cpr\\data\\abm\\abm_dat_env.jld2", abm_dat)
+@JLD2.save("abm_dat_envWS.jld2", abm_dat, S)
+@JLD2.save("abm_dat_env.jld2", abm_dat)
