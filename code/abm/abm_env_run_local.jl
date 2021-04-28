@@ -25,11 +25,11 @@ S =expand_grid( [900],               #Population Size
                 [0.  .9],            #Experiment_leak
                 [0],                #experiment_punish
                 [1],                #experiment_group
-                [false],            #cmls
+                [false, true],      #cmls
                 [true],             #social learning
-                [true],              #leakage
-                [true],               #self policing
-                [10000,100000]              #max forest
+                [true],             #leakage
+                [true],             #self policing
+                [10000,100000]      #max forest
                 )
 
 for i in 1:size(S)[1]
@@ -55,7 +55,7 @@ end
 @everywhere function g(n, ng, l, rg, v, dg, df, el, ep, eg, c, sl, lk, sp, mf)
     cpr_abm(n = n,
             nrounds = 2000,
-            nsim = 20,
+            nsim = 15,
             ngroups = ng,
             lattice = l,
             regrow = rg,
@@ -93,7 +93,7 @@ abm_dat = pmap(g, S1[:,1], S1[:,2], S1[:,3], S1[:,4], S1[:,5], S1[:,6], S1[:,7],
 @JLD2.save("abm_dat_env1.jld2", abm_dat)
 
 #For Evening
-S2=S[iseven.(collect(1:128)), :]
+S2=S[iseven.(collect(1:256)), :]
 
 abm_dat = pmap(g, S2[:,1], S2[:,2], S2[:,3], S2[:,4], S2[:,5], S2[:,6], S2[:,7],
  S2[:,8], S2[:,9], S2[:,10] , S2[:,11], S2[:,12], S2[:,13], S2[:,14], S2[:,15])

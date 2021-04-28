@@ -10,7 +10,6 @@ addprocs(40)
 @everywhere using(Dates)
 
 #Load code
-@everywhere cd("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm")
 @everywhere include("cpr_setup.jl")
 @everywhere include("sep_test.jl")
 
