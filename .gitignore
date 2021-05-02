@@ -5,5 +5,9 @@
 /data/dataframes/
 .rds
 .RDS
-.jld2
+*.jld2
+*.gif
+*.pdf
+*.docx
+*.png
 /output/

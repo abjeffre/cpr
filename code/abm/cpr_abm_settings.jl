@@ -1,6 +1,6 @@
 nsim = 1                   # Number of simulations per call
 nrounds = 2000              # Number of rounds per generation
-n = 1800                     # Size of the population
+n = 9000                     # Size of the population
 ngroups = 40                # Number of Groups in the population
 lattice = (5,  8)           # This controls the dimensions of the lattice that the world exists on
 

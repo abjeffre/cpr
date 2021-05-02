@@ -1,3 +1,33 @@
+function makebabies(popu, ids, ages, mort, pay)
+        sample_payoff = ifelse.(payoff .!=0, payoff, 0.000001)
+        if asInt.(unique(age[pop]))[1]==1
+            ma = mean(age[pop])
+            length(age[pop])
+            age[pop] .=age[pop].+rand(0:1, length(age[pop]))
+        end
+        mortality_risk = softmax(standardize(age[pop].^5) .- standardize(sample_payoff[pop].^.25))
+        to_die = asInt(round(mortality_rate*n *((ngroups-1)/ngroups), digits =0))
+        died = wsample(id[pop], mortality_risk, to_die)
+        pos_parents = id[(id .∈ Ref(pop)) .== (id .∉ Ref(died))]
+        pos_payoff = convert.(Float64, vec(sample_payoff[pos_parents]))
+        #return(pos_parents, pos_payoff, length(died))
+        babies =wsample(pos_parents, pos_payoff, length(died), replace = true)
+        return(babies)
+    end
+
+
+function mutatebabies(babies, mutate)
+        trans_error = rand(length(babies), 5) .< mutate
+        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))]]
+        effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
+        leakage_type[babies]  =ifelse.(trans_error[:,2], ifelse.(leakage_type[babies].==1,0,1), leakage_type[babies])
+        punish_type[babies]  =ifelse.(trans_error[:,3], ifelse.(punish_type[babies].==1,0,1), punish_type[babies])
+        harv_limit[babies] = ifelse.(trans_error[:,4], abs.(harv_limit[babies] .* n_error[2]), harv_limit[babies])
+        punish_type2[babies]  =ifelse.(trans_error[:,5], ifelse.(punish_type2[babies].==1,0,1), punish_type2[babies])
+end
+
+
+
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
   nrounds = 2000,               # Number of rounds per generation
@@ -19,6 +49,12 @@ function cpr_abm(
   degradability = 0,                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
 
+  pollution = false,
+  pol_slope = .1,                 # As the slope increases the rate at which pollution increases as the resource declines increase
+  pol_C = .1,                    # As the constant increases the total amount of polution increases
+  ecosys = false,
+  eco_slope = 1,                 # As the slope increases the resource will continue to produce ecosystem servies
+  eco_C = .01,                    # As the constant increases the total net benifit of the ecosystem services increases
 
   tech = 1,                     # Used for scaling Cobb Douglas production function
   labor = .7,                   # The elasticity of labor on harvesting production
@@ -29,7 +65,7 @@ function cpr_abm(
   monitor_tech = 1,             # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
   defensibility = 1,            # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
   def_perc = true,              # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
-  punish_cost = 0.009,           # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
+  punish_cost = 0.001,           # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
   fine = 0.0,                   # This controls the size of the fine issued when caught, note that in a real world situation this could be recouped by the injured parties but it is not
   self_policing = true,         # Toggles if Punishers also target members of their own ingroup for harvesting over limit
   harvest_limit = 0.25,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
@@ -46,6 +82,7 @@ function cpr_abm(
   fidelity = 0.01,              # This is the fidelity of social transmission
   learn_type = "income",        # Two Options - "wealth" and "income" indiviudals can choose to copy wealth or income if copy wealth they copy total overall payoffs, if copy income they copy payoffs from the previous round
   outgroup = 0.01,              # This is the probability that the individual samples from the whole population and not just his group when updating0...
+  baseline = .01,                # Baseline payoff to be added each round -
 
   REDD = false,                 # This controls whether or not the natural experiment REDD+ is on, if REDD is on INST must be on
   REDD_dates = 300,             # This can either be an int or vector of dates that development initative try and seed insitutions
@@ -435,7 +472,28 @@ function cpr_abm(
         X_siezed_og = X-X_non_siezed_og
         X_siezed_ig = X-X_non_siezed_ig
 
+        #Calculate ecosystem service benifits
+        eco = zeros(ngroups)
+        if ecosys > 0
+           for i in 1:ngroups
+             eco[i]=cdf.(Beta(1, eco_slope), K[i]/maximum(kmax))*eco_C
+           end
+         end
+
+      #Calcualte pollition costs
+       pol = zeros(ngroups)
+       if pollution > 0
+          for i in 1:ngroups
+            pol[i]=(1 .- cdf.(Beta(pol_slope, 1), K[i]/maximum(kmax)))*pol_C
+            pol[i] = mean(effort[loc .==i])*pol[i]
+          end
+        end
+
+
+
         if verbose ==true println(string("Year: ", year, ", Harvest: COMPLETED ")) end
+        if verbose ==true println(string("Pollution: ", round.(pol, digits =2))) end
+        if verbose ==true println(string("Eco_sys: ", round.(eco, digits = 2))) end
 
 
 
@@ -463,8 +521,6 @@ function cpr_abm(
         sg_og = zeros(ngroups)
         hg = zeros(ngroups)
         eg = zeros(ngroups)
-
-
 
         for i = 1:ngroups
           # Outgroup
@@ -522,9 +578,11 @@ function cpr_abm(
             fp_ig[gid].*punish_type2 -
             mc1 - mc2 -
              fc.*caught - fc.*caught2 -
-              travel_cost.*leakage_type
+              travel_cost.*leakage_type -
+              pol[gid] +
+              eco[gid]
 
-        payoff += payoff_round
+        payoff += payoff_round .+ baseline
 
     else
 
@@ -558,9 +616,11 @@ function cpr_abm(
            ((effort./eg[loc]) .* X[loc] .- necessity) .* price)
 
 
-        payoff_round = hg + wl - travel_cost.*leakage_type
+        payoff_round = hg + wl - travel_cost.*leakage_type  -
+        pol[gid] +
+        eco[gid]
 
-        payoff += payoff_round
+        payoff += payoff_round  .+ baseline
 
       end
 
@@ -811,115 +871,41 @@ function cpr_abm(
       age .+= 1
 
 
+
+
+
       ####################################
       ###### Evolutionary dynamics #######
 
       #ADD BASELINE PAYOFFS
-      #payoff = ifelse.(payoff .<= 0, 0, payoff)
-      if all(payoff_round .<=0)
-        min_pay=findmin(payoff_round)[2]
-        payoff_round .= abs.(min_pay.-payoff_round)
-      end
-
-      payoff .= payoff .+ .1
-
+      payoff_round[payoff_round.<=0] .=0
+      payoff[payoff.<=0] .=0
 
       if experiment==true
         #ensure that the experimental group is a seperate breeding population
         pop = id[gid .∈  [experiment_group]]
-        mortality_risk = softmax(standardize(age[pop].^5) .- standardize(payoff[pop].^.25))
-        to_die = asInt(round(mortality_rate*n *((ngroups-1)/ngroups), digits =0))
-        died = wsample(id[pop], mortality_risk, to_die)
-        sample_payoff = ifelse.(payoff .!=0, payoff, 0)
-        # if all(sample_payoff .<= 0)  break end #CHECK
-        pos_parents = id[(id .∈ Ref(pop)) .== (id .∉ Ref(died))]
-        pos_payoff = convert.(Float64, vec(sample_payoff[pos_parents]))
 
-        #return(pos_parents, pos_payoff, length(died))
-        babies =wsample(pos_parents, pos_payoff, length(died), replace = true)
-
-        #note that there can be eigenmodels
-        trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] ]
-
-        #apply mutations in learning
-        effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
-        leakage_type[babies]  =ifelse.(trans_error[:,2], ifelse.(leakage_type[babies].==1,0,1), leakage_type[babies])
-        punish_type[babies]  =ifelse.(trans_error[:,3], ifelse.(punish_type[babies].==1,0,1), punish_type[babies])
-        harv_limit[babies] = ifelse.(trans_error[:,4], harv_limit[babies] .* n_error[2], harv_limit[babies])
-        punish_type2[babies]  =ifelse.(trans_error[:,5], ifelse.(punish_type2[babies].==1,0,1), punish_type2[babies])
+        makebabies(pop, id, age, mortality_rate, payoff)
+        mutatebabies(babies, mutation)
 
         payoff[died] .= 0
         age[died]  .= 0
 
-
         #For all other groups are part of a breeding population
-
         pop = id[gid .∉  [experiment_group]]
+        makebabies(pop, id, age, mortality_rate, payoff)
+        mutatebabies(babies, mutation)
 
-        mortality_risk = softmax(standardize(age[pop].^5) .- standardize(payoff[pop].^.25))
-        to_die = asInt(round(mortality_rate*n *((ngroups-1)/ngroups), digits =0))
-        died = wsample(id[pop], mortality_risk, to_die)
-        sample_payoff = ifelse.(payoff .!=0, payoff, 0)
-        # if all(sample_payoff .<= 0)  break end #CHECK
-        pos_parents = id[(id .∈ Ref(pop)) .== (id .∉ Ref(died))]
-        pos_payoff = convert.(Float64, vec(sample_payoff[pos_parents]))
+        #CMLS dynamic
 
-                try
-                        babies = wsample(pos_parents, pos_payoff, length(died), replace = true)
-                      catch
-                        return(pos_parents, pos_payoff, length(died))
-                      end
-
-        #note that there can be eigenmodels
-        trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))]]
-
-        #apply mutations in learning
-        effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
-        leakage_type[babies]  =ifelse.(trans_error[:,2], ifelse.(leakage_type[babies].==1,0,1), leakage_type[babies])
-        punish_type[babies]  =ifelse.(trans_error[:,3], ifelse.(punish_type[babies].==1,0,1), punish_type[babies])
-        harv_limit[babies] = ifelse.(trans_error[:,4], abs.(harv_limit[babies] .* n_error[2]), harv_limit[babies])
-        punish_type2[babies]  =ifelse.(trans_error[:,5], ifelse.(punish_type2[babies].==1,0,1), punish_type2[babies])
-
-
-        #CMLS dynamic - new babies enter the group of the parent - in non-cmls the babies stay as a part of died group.
         if cmls== true  gid[died] = copy(gid[babies]) end
-
-
 
       else #end experiment
 
-        #NON Experiment Breeding Dynamics
+        makebabies(id, id, age, mortality_rate, payoff)
+        mutatebabies(babies, mutation)
 
-        mortality_risk = softmax(standardize(age.^5) .- standardize(payoff.^(.25)))
-        to_die = asInt(round(mortality_rate*n, digits =0))
-        died = wsample(id, mortality_risk, to_die)
-        sample_payoff = ifelse.(payoff .!=0, payoff, 0)
-        # if all(sample_payoff .<= 0)  break end #CHECK
-        pos_parents = asInt.(id[id .∉ Ref(died)])
-        pos_payoff = convert.(Float64, vec(sample_payoff[pos_parents]))
-        #if verbose == true println(string("pos_parents: ", round.(pos_parents, digits =2), ", pos_payoff: ", round.(pos_payoff, digits = 2), ", size: ",  length(died)))end
-
-        try
-                babies = wsample(pos_parents, pos_payoff, length(died), replace = true)
-              catch
-                return(pos_parents, pos_payoff, length(died))
-              end
-
-
-        trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))]]
-
-        #apply mutations in learning
-        effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
-        leakage_type[babies]  =ifelse.(trans_error[:,2], ifelse.(leakage_type[babies].==1,0,1), leakage_type[babies])
-        punish_type[babies]  =ifelse.(trans_error[:,3], ifelse.(punish_type[babies].==1,0,1), punish_type[babies])
-        harv_limit[babies] = ifelse.(trans_error[:,4], abs.(harv_limit[babies] .* n_error[2]), harv_limit[babies])
-        punish_type2[babies]  =ifelse.(trans_error[:,5], ifelse.(punish_type2[babies].==1,0,1), punish_type2[babies])
-
-
-        #CMLS dynamic - new babies enter the group of the parent - in non-cmls the babies stay as a part of died group.
+        #CMLS dynamic
         if cmls == true  gid[died] = gid[babies] end
 
     end

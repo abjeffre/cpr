@@ -12,12 +12,12 @@ addprocs(15)
 #Load code
 @everywhere cd("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm")
 @everywhere include("cpr_setup.jl")
-@everywhere include("sep_test.jl")
+@everywhere include("abm_red.jl")
 
 
-S =expand_grid( [900],              # Population Size
-                [6, 60],            # Ngroups
-                [[3, 2]],           # lattice, will be replaced below
+S =expand_grid( [300],              # Population Size
+                [2, 20],            # Ngroups
+                [[1, 2]],           # lattice, will be replaced below
                 [.005, .015],       # Wages
                 [.5, 1.5],          # Tech
                 [0, 0.05],          # Necessity
@@ -29,16 +29,16 @@ S =expand_grid( [900],              # Population Size
                 [true],             # social learning
                 [true],             # leakage
                 [true],             # self policing
-                [10000]              # max forest
+                [1650]                    # max forest
                 )
 
 for i in 1:size(S)[1]
-    if S[i,2].==60
-        S[i,3] =[6,10]
-        S[i,1] =9000
-        S[i, 15]=100000
+    if S[i,2].==20
+        S[i,3] =[4,5]
+        S[i,1] =3000
+        S[i, 15]=16500
         if S[i,8] .==9
-                S[i,10] =[1,2,3,4,5,6]
+                S[i,10] =[1,2,3,4]
                 S[i,11] =.9
         end
     end
@@ -47,7 +47,7 @@ end
 @everywhere function g(n, ng, l, w, te, ne, lm, el, ep, eg, c, sl, lk, sp, mf)
     cpr_abm(n = n,
             nrounds = 2000,
-            nsim = 20,
+            nsim = 10,
             ngroups = ng,
             lattice = l,
             wages = w,
@@ -62,6 +62,7 @@ end
             leak = lk,
             self_policing = sp,
             max_forest = mf,
+            regrow = 3,
             verbose = false )
 end
 
@@ -88,7 +89,7 @@ abm_dat = pmap(g, S1[:,1], S1[:,2], S1[:,3], S1[:,4], S1[:,5], S1[:,6], S1[:,7],
 
 
 
-S2=S[iseven.(collect(1:128)), :]
+S2=S[iseven.(collect(1:64)), :]
 
 abm_dat = pmap(g, S2[:,1], S2[:,2], S2[:,3], S2[:,4], S2[:,5], S2[:,6], S2[:,7],
  S2[:,8], S2[:,9], S2[:,10] , S2[:,11], S2[:,12], S2[:,13], S2[:,14], S2[:,15])

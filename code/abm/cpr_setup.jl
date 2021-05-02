@@ -14,6 +14,12 @@ function nanmedian(x)
   median(filter(!isnan, x))
 end
 
+function benchmark(x)
+  rn1 = Dates.Time(Dates.now())
+  x
+  rn2 = Dates.Time(Dates.now())
+  return(rn2-rn1)
+end
 
   function inv_logit(x)
      1/(1+exp(-x))
