@@ -33,7 +33,7 @@ end
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
   nrounds = 2000,               # Number of rounds per generation
-  n = 1800,                     # Size of the population
+  n = 900,                     # Size of the population
   ngroups = 20,                 # Number of Groups in the population
   lattice = (4, 5),             # This controls the dimensions of the lattice that the world exists on
 
@@ -51,6 +51,7 @@ function cpr_abm(
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
   volatility = 0,                 #the volatility of the resource each round - set as variance on a normal
+  vol_beta = nothing,               #data on volatility
 
   pollution = false,
   pol_slope = .1,                 # As the slope increases the rate at which pollution increases as the resource declines increase
@@ -60,6 +61,7 @@ function cpr_abm(
   eco_C = .01,                    # As the constant increases the total net benifit of the ecosystem services increases
 
   tech = 1,                     # Used for scaling Cobb Douglas production function
+  tech_data = nothing,          # data used for updating technological effeciency.
   labor = .7,                   # The elasticity of labor on harvesting production
   price = 1,                    # This sets the price of the resource on the market
   necessity = 0,                # This sets the minimum amount of the good the household requires
@@ -261,7 +263,7 @@ function cpr_abm(
 
     #assign agent values
     Random.seed!(seed+1)
-    effort = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
+    effort = rand(Beta(.1,10), n) #THIS STARTS AROUND 50%
 
     Random.seed!(seed+2)
     temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
@@ -318,6 +320,20 @@ function cpr_abm(
       ########Check Config #######
 
       if leak == false  leakage_type = zeros(n) end
+
+
+      #############################
+      ###### UPDATES ##############
+      tech = isnothing(tech_data) ? tech : tech_data[year]
+
+      if isnothing(vol_beta)
+        vola = ones(ngroups).*volatility
+      else
+        vol_pop = cdf(Beta(vol_beta[1],vol_beta[2]), sum(K)/sum(kmax))
+        vol_group = cdf.(Beta(vol_beta[1],vol_beta[2]), K./kmax) .+ vol_pop
+        vola=rand(TDist(1), ngroups).*vol_group
+      end
+
 
       ############################
       ### RUN EXPERIMENT #########
@@ -674,7 +690,6 @@ function cpr_abm(
       K += K*regrow.*(1 .- K./kmax)
 
       #apply volatility
-      vola=rand(Normal(1, volatility), ngroups)
       K .= K.*vola
 
       #Check to make sure stock follows logical constraints
@@ -770,7 +785,7 @@ function cpr_abm(
       lpt0[year, sim] = round.(mean(payoff_round[leakage_type.==0]), digits = 2)
       am[year, sim] = median(age)
       am[year, sim] = maximum(age)
-      lmr[year,:,sim] .= round.(report(harv_limit, gid, ngroups), digits=4)
+      lmr[year,:,sim] .= round.(reportMedian(harv_limit, gid, ngroups), digits=4)
       ages = age
 
 

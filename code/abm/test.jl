@@ -176,103 +176,130 @@ cd("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm")
 include("cpr_setup.jl")
 include("abm_red.jl")
 
-r1i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-    max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-    pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
+r1i1 = cpr_abm(nsim = 20, nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
 
 
 
-r1i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-       max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-       pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false)
+r1i0 = cpr_abm(nsim = 20,nrounds =2000, n=3600, ngroups = 24, lattice = [6,4],
+       max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+       pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false)
 
 
 
 ########################################################################################
 ################# INCREASE ECOSYSTEM SERVICES ##########################################
-r2i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+r2i1 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
    max_forest = 20000, ecosys = true, eco_C=.05, harvest_limit = .1,
-   pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
+   pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
 
-r2i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+r2i0 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
       max_forest = 20000, ecosys = true, eco_C=.05, harvest_limit = .1,
-      pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false)
+      pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false)
 
 
 
 
 ########################################################################################
 ################# DECREASE REGROW  ##########################################
-r3i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-               max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-               pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.03, verbose = false)
+r3i1 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+               max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+               pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.03, verbose = false)
 
-r3i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-      max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-      pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.03, verbose = false, inst = false)
+r3i0 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+      max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+      pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.03, verbose = false, inst = false)
 
 
 
 
 ########################################################################################
 ################# Increase degradeability  ##########################################
-r4i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-             max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-             pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,  degradability = .5)
+r4i1 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+             max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+             pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,  degradability = .5)
 
-r4i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-    max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-    pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false, degradability = .5)
+r4i0 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false, degradability = .5)
 
 
 
 
 ########################################################################################
 ################# Increase Volatility ##########################################
-r5i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-             max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-             pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,  volatility = .1)
+r5i1 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+             max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+             pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,  volatility = .1)
 
-r5i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-    max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-    pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false, volatility = .1)
+r5i0 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false, volatility = .1)
 
 
 ########################################################################################
 ################# Increase Patchiness ##########################################
-r6i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-             max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-             pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,  var_forest = 3000)
+r6i1 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+             max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+             pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,  var_forest = 3000)
 
-r6i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-    max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-    pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false,  var_forest = 3000)
+r6i0 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false,  var_forest = 3000)
 
 
 
 ########################################################################################
 ################# Increase Pollution ##########################################
-r7i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-             max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-             pollution = true, pol_C = 0.5,  punish_cost = .001, regrow = 0.05, verbose = false,  var_forest = 1)
+r7i1 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+             max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+             pollution =true, pol_C = 0.01,  punish_cost = .001, regrow = 0.05, verbose = false,  var_forest = 1)
 
-r7i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-    max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-    pollution = true, pol_C = 0.5,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false,  var_forest = 1)
+r7i0 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = true, pol_C = 0.01,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false,  var_forest = 1)
 
 
 
 
 ########################################################################################
 ################# Increase Defensibility ##########################################
-r8i1 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-             max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
+r8i1 = cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+             max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
              pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,  defensibility = .51)
 
-r8i0 = cpr_abm(nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
-    max_forest = 20000, ecosys = true, eco_C=.01, harvest_limit = .1,
-    pollution = true, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false,  defensibility = .51)
+r8i0 = [cpr_abm(nsim = 20,nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false,  defensibility = .51)]
 
+
+
+
+
+
+    @everywhere function g(n, ng, l, rg, v, dg, df, el, ep, eg, c, sl, lk, sp, mf, po, ec)
+        cpr_abm(n = n,
+                nrounds = 2000,
+                nsim = 10,
+                harvest_limit = .1,
+                ngroups = ng,
+                lattice = l,
+                regrow = rg,
+                var_forest = v,
+                degradability = dg,
+                defensibility = df,
+                experiment_leak = el,
+                experiment_punish1 = ep,
+                experiment_group = eg,
+                cmls = c,
+                social_learning = sl,
+                leak = lk,
+                self_policing = sp,
+                max_forest = mf,
+                pollution = po,
+                ecosys = ec)
+    end
 
 
 
@@ -395,6 +422,8 @@ using(JLD2)
 
 #Collect targets
 cond=findall(x->x==1, S2[:,7])
+
+
 data = abm_dat[cond]
 function collate(x)
     dat=x
@@ -405,6 +434,7 @@ function collate(x)
     rnds = length(dat[1]["effort"][:,1,1])
     temp1 = zeros(comb,11,rnds, iter)
     temp2 = zeros(comb, 11, rnds)
+    d = zeros(rnds,11)
 
     for j in 1:comb
         for i in 1:iter
@@ -421,7 +451,7 @@ function collate(x)
             temp1[j,11,:,i]=mean(dat[j]["payoffR"][:,:,i], dims = 2)
 
         end
-        d = zeros(rnds,11)
+
         for k in 1:11
             for i in 1:length(dat[1]["effort"][:,1,1])
                 temp2[j,k,i]=nanmedian(temp1[j,k,i,:])
@@ -432,10 +462,12 @@ function collate(x)
         for i = 1:11
             d[:,i] =  mean(temp2[:,i,:]', dims =2)
         end
-    end
-        limit = normalize(d[:,1])
+        #d[:,1] = median(temp2[:,1,:], dims = 2)
+        end
+
+        limit = d[:,1]
         effort =d[:,2]
-        harvest = normalize(d[:,3])
+        harvest = d[:,3]
         differ = d[:,4]
         punish = d[:,5]
         stock = d[:,6]
@@ -482,21 +514,148 @@ roi1 = normalize(roi1)
 roi2 = w2["harvest"]./w2["effort"]
 roi2 = normalize(roi2)
 
+animtime(2000, 40, 10, w1["stock"], w2["stock"])
+animtime(2000, 40, 10, roi1, roi2)
+animtime(2000, 40, 10, w1["payoffR"], w2["payoffR"])
+animtime(2000, 40, 10, w1["effort"], w2["effort"])
+animtime(2000, 40, 10, w1["punish2"], w2["punish2"])
+animtime(2000, 40, 10, w1["punish"], w2["punish"])
+animtime(2000, 40, 10, w1["limit"], w2["limit"])
+animtime(2000, 40, 10, w1["leak"], w2["leak"])
+
+
+
+
 animtime(2000, 40, 10, w1["effort"], w1["stock"])
 animtime(2000, 40, 10, w2["effort"], w2["stock"])
-
 animtime(2000, 40, 10, w1["effort"], roi1)
 animtime(2000, 40, 10, w2["effort"], roi2)
-
 animtime(2000, 40, 10, w1["harvest"], roi1)
-animtime(2000, 40, 10, w2["harvest"], roi2)
+animtime(2000, 40, 10, w2["punish2"], w2["leak"])
+animtime(2000, 40, 10, w2["punish2"], w2["limit"])
+animtime(2000, 40, 10, w1["limit"], w2["limit"])
+animtime(2000, 40, 10, (roi1./roi2).- .5)
+animtime(2000, 40, 10, (w1["harvest"]./w2["harvest"])./5)
+animtime(2000, 40, 10, (w1["payoffR"]./w2["payoffR"]))
+animtime(2000, 40, 10, w1["payoffR"], w2["payoffR"])
 
 
-roi2-roi1
+ test = cpr_abm(nsim = 10,nrounds =1000, n=3600, ngroups = 24, lattice = [6,4],
+     max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .2,
+     pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false,
+      inst = true, degrade = [1, 1])
 
 
-animtime(2000, 40, 1)
 
-animtime(2000,40, 10, stock, harvest)
-animtime(2000, 40, 10, roi,stock)
-animtime(2000, 40, 10, roi,stock)
+
+
+temp=zeros(1000, 10)
+for sim in 1:10
+     temp[:,sim] = mean(test["leakage"][:,:,sim], dims =2)
+ end
+L=zeros(1000)
+L = mean(temp, dims =2)
+
+
+
+  temp=zeros(1000, 10)
+  for sim in 1:10
+       temp[:,sim] = mean(test["punish"][:,:,sim], dims =2)
+   end
+  P=zeros(1000)
+  P = mean(temp, dims =2)
+
+animtime(1000, 30, 10, [C1 D1 ], [0, 1], "Out Group Enforce / Roamers", L,P)
+
+
+
+
+  temp=zeros(1000, 10)
+  for sim in 1:10
+       temp[:,sim] = mean(test["effort"][:,:,sim], dims =2)
+   end
+  E=zeros(1000)
+  E = mean(temp, dims =2)
+
+
+
+  temp=zeros(1000, 10)
+  for sim in 1:10
+       temp[:,sim] = mean(test["limit"][:,:,sim], dims =2)
+   end
+  L=zeros(1000)
+  L= mean(temp, dims =2)
+
+
+
+  temp=zeros(1000, 10)
+  for sim in 1:10
+       temp[:,sim] = mean(test["stock"][:,:,sim], dims =2)
+   end
+  S=zeros(1000)
+  S= mean(temp, dims =2)
+
+
+  temp=zeros(1000, 10)
+  for sim in 1:10
+       temp[:,sim] = mean(test["punish2"][:,:,sim], dims =2)
+   end
+  P2=zeros(1000)
+  P2= mean(temp, dims =2)
+
+
+  temp=zeros(1000, 10)
+  for sim in 1:10
+       temp[:,sim] = mean(test["harvest"][:,:,sim]./150, dims =2)
+   end
+  H=zeros(1000)
+  H= mean(temp, dims =2)
+
+
+
+  temp=zeros(1000, 10)
+  for sim in 1:10
+       temp[:,sim] = mean(test["leakage"][:,:,sim], dims =2)
+   end
+   K=zeros(1000)
+   K= mean(temp, dims =2)
+
+
+
+
+
+
+animtime(1000, 30, 5, ["orangered" "forestgreen" "goldenrod" "cyan" "blue3"  "firebrick" "springgreen2"],
+ [0, 1],
+"Out Group Enforce / Roamers",P2, S, L, H, E, P, K)
+
+
+tech_data = Float64[]
+ for i in 0.00001:.00001:1 push!(tech_data, cdf(Beta(9, 2), i)) end
+tech_data*1.5
+
+ test = cpr_abm(nsim = 1,nrounds =100000, n=3600, ngroups = 24, lattice = [6,4],
+     max_forest = 2000000, ecosys = false, eco_C=.01, harvest_limit = .2,
+     pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.01, verbose = false,
+      inst = true, degrade = [1, 1], tech_data = tech_data)
+
+
+dat=collate(abm_dat)
+
+
+a=findall(x->x==0.9, S[:,11])
+a = a[iseven.(a)]
+dat1=collate(abm_dat[a], 6:20)
+
+plot(dat1["differ"])
+
+
+b=findall(x->x==0.0, S[:,11])
+b = b[iseven.(b)]
+dat2=collate(abm_dat[b])
+
+plot(dat2["differ"])
+
+
+
+b=findall(x->x==0.0, S[:,11])

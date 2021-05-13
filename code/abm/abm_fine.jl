@@ -17,6 +17,35 @@ function makebabies(pop, id, sample_payoff, died)
     return(babies)
 end
 
+function mutateagent(x, mutationrate, type, subpop = nothing)
+  subpop == nothing ? n = length(x) : n =  length(x[subpop])
+  trans_error = rand(n) .< mutationrate
+  if subpop == nothing subpop = collect(1:n) end
+
+
+    if type == "binary"
+      out = ifelse.(trans_error, ifelse.(x[subpop].==1,0,1), x[subpop])
+    end
+    if type == "prob"
+      n_error = rand(Normal(), n)
+      out = ifelse.(trans_error, inv_logit.(logit.(x[subpop]) .+ n_error), x[subpop])
+    end
+    if type == "positivecont"
+      n_error = rand(Normal(1, .02), n)
+      out = ifelse.(trans_error, x[subpop].*n_error, x[subpop])
+    end
+    if type == "cont"
+      n_error = rand(Normal(), n)
+      out = ifelse.(trans_error, x[subpop].+n_error, x[subpop])
+    end
+    if subpop != nothing
+       x[subpop] = out
+       out = x
+     end
+    return(out)
+  end
+
+
 
 #
 #
@@ -33,7 +62,7 @@ end
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
   nrounds = 2000,               # Number of rounds per generation
-  n = 1800,                     # Size of the population
+  n = 3000,                     # Size of the population
   ngroups = 20,                 # Number of Groups in the population
   lattice = (4, 5),             # This controls the dimensions of the lattice that the world exists on
 
@@ -46,7 +75,7 @@ function cpr_abm(
   labor_market = false,         # This controls labor market competition
   market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
 
-  max_forest = 10000,               # Average max stock
+  max_forest = 16500,               # Average max stock
   var_forest = 1,                   # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
@@ -73,6 +102,9 @@ function cpr_abm(
   self_policing = true,         # Toggles if Punishers also target members of their own ingroup for harvesting over limit
   harvest_limit = 0.25,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
   harvest_var = .07,
+
+  fine_start = .1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
+  fine_var = .02,                #Determines the group offset for fines at the begining
 
 
   distance_adj =0.9,            # This affects the proboabilty of sampling a more close group.
@@ -132,48 +164,11 @@ function cpr_abm(
   lt = zeros(nrounds, ngroups, nsim)
   lr = zeros(nrounds, ngroups, nsim)
   lmr = zeros(nrounds, ngroups, nsim)
-  l0p0 = zeros(nrounds, ngroups, nsim)
-  l0p1 = zeros(nrounds, ngroups, nsim)
-  l1p0 = zeros(nrounds, ngroups, nsim)
-  l1p1 = zeros(nrounds, ngroups, nsim)
-
-  l0p0r1 = zeros(nrounds, ngroups, nsim)
-  l0p1r1 = zeros(nrounds, ngroups, nsim)
-  l1p0r1 = zeros(nrounds, ngroups, nsim)
-  l1p1r1 = zeros(nrounds, ngroups, nsim)
-
-
-  l0p0r0 = zeros(nrounds, ngroups, nsim)
-  l0p1r0 = zeros(nrounds, ngroups, nsim)
-  l1p0r0 = zeros(nrounds, ngroups, nsim)
-  l1p1r0 = zeros(nrounds, ngroups, nsim)
-
+  fi1 = zeros(nrounds, ngroups, nsim)
+  fi2 = zeros(nrounds, ngroups, nsim)
 
   lc =  zeros(nrounds, ngroups, nsim)
   elh =  zeros(nrounds, ngroups, nsim)
-
-  l1p1r0hl = zeros(nrounds, ngroups, nsim)
-  l1p0r0hl = zeros(nrounds, ngroups, nsim)
-  l0p0r0hl = zeros(nrounds, ngroups, nsim)
-  l0p1r0hl = zeros(nrounds, ngroups, nsim)
-
-  l1p1r1hl = zeros(nrounds, ngroups, nsim)
-  l1p0r1hl = zeros(nrounds, ngroups, nsim)
-  l0p0r1hl = zeros(nrounds, ngroups, nsim)
-  l0p1r1hl = zeros(nrounds, ngroups, nsim)
-
-
-  l1p1r0e = zeros(nrounds, ngroups, nsim)
-  l1p0r0e = zeros(nrounds, ngroups, nsim)
-  l0p0r0e = zeros(nrounds, ngroups, nsim)
-  l0p1r0e = zeros(nrounds, ngroups, nsim)
-
-  l1p1r1e = zeros(nrounds, ngroups, nsim)
-  l1p0r1e = zeros(nrounds, ngroups, nsim)
-  l0p0r1e = zeros(nrounds, ngroups, nsim)
-  l0p1r1e = zeros(nrounds, ngroups, nsim)
-
-
 
   lpt1 = zeros(nrounds, nsim)
   ppt1 = zeros(nrounds, nsim)
@@ -254,6 +249,8 @@ function cpr_abm(
     leakage_type = zeros(n)
     punish_type = zeros(n)
     punish_type2 = zeros(n)
+    fines1 = zeros(n)
+    fines2 = zeros(n)
     harv_limit = zeros(n)
     loc = zeros(n)
     Random.seed!(seed)
@@ -263,6 +260,8 @@ function cpr_abm(
     Random.seed!(seed+1)
     effort = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
 
+    #Setup harvest limit
+
     Random.seed!(seed+2)
     temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
     for i in 1:ngroups
@@ -270,6 +269,25 @@ function cpr_abm(
       harv_limit[gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
     end
 
+    # Setup fines
+    if fine_start != nothing
+      Random.seed!(seed+20)
+      temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
+      for i in 1:ngroups
+        Random.seed!(seed+i+20)
+        fines1[gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
+      end
+
+      Random.seed!(seed+21)
+      temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
+      for i in 1:ngroups
+        Random.seed!(seed+i+21)
+        fines2[gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
+      end
+    end
+
+
+    # Setup leakage
     leak_temp =zeros(gs_init)
     leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
 
@@ -278,6 +296,7 @@ function cpr_abm(
       leakage_type[gid.==i] = sample(leak_temp, gs_init)
     end
 
+    # Setup punishment
     for i = 1:ngroups
       Random.seed!(seed+(i)+2+(ngroups*2))
       punish_type2[gid.==i] = rand(Beta(1, (1/.1-1)), gs_init) # the denominator in the beta term determines the mean
@@ -404,6 +423,8 @@ function cpr_abm(
           #note that the if else captures the case when no individuals harvest from the location and sum would result in na
 
         X =zeros(ngroups)
+
+        #Set up effort invested by location
         eg2 = zeros(ngroups)
 
 
@@ -423,12 +444,15 @@ function cpr_abm(
         end
 
 
-
+        #Determine harvesting baseline values before investigation and confiscation
 
         hg_temp =ifelse.(isnan.(effort./eg2[loc]), 0,
            ((effort./eg2[loc]) .* X[loc] .- necessity) .* price)
 
 
+
+
+        #inspect agents
         caught = asInt.(zeros(n))
         caught2 = asInt.(zeros(n))
 
@@ -526,6 +550,21 @@ function cpr_abm(
         hg = zeros(ngroups)
         eg = zeros(ngroups)
 
+        #Caclulate effort from non-confiscated harvests
+        loc = asInt.(loc)
+        for i = 1:ngroups
+            temp = sum(effort2[loc.==i]).*price
+          if isinf(temp) | isnan(temp)
+            eg[i] = 0
+          else
+            eg[i] = temp
+          end
+        end
+        hg =ifelse.(isnan.(effort2./eg[loc]), 0,
+           ((effort2./eg[loc]) .* X_non_siezed[loc] .- necessity) .* price)
+
+
+        #determine fines
         for i = 1:ngroups
           # Outgroup
           temp = (X_siezed_og[i]).*price
@@ -534,12 +573,14 @@ function cpr_abm(
           else
             sg_og[i] = temp
           end
-          temp = (sg_og[i]).*fine
+
+          temp = (sg_og[i]).*median(fines1[gid .==i])
           if isinf(temp) | isnan(temp)
             fp_og[i] = 0
           else
             fp_og[i] = temp
           end
+
           #Ingroup
           # Outgroup
           temp = (X_siezed_ig[i]).*price
@@ -548,7 +589,8 @@ function cpr_abm(
           else
             sg_ig[i] = temp
           end
-          temp = (sg_ig[i]).*fine
+
+          temp = (sg_ig[i]).*median(fines2[gid .==i])
           if isinf(temp) | isnan(temp)
             fp_ig[i] = 0
           else
@@ -556,39 +598,48 @@ function cpr_abm(
           end
         end
 
-        loc = asInt.(loc)
-        for i = 1:ngroups
-            #Effort for normal harvests
-          temp = sum(effort2[loc.==i]).*price
-          if isinf(temp) | isnan(temp)
-            eg[i] = 0
-          else
-            eg[i] = temp
-          end
-        end
+        #fine cost paid by the person who committed the infraction.
+           fine1 = zeros(n)
+           fine2 = zeros(n)
+        if fine_start != nothing
+           for i = 1:ngroups
+             if sum(loc.==i) != 0
+               fine1[loc .==i] = caught[loc.==i] .* median(fines1[loc .==i])
+             end
+             fine2[gid .==i] = caught2[gid.==i] .* median(fines2[gid .==i])
+           end
+         end
 
-
-
-        hg =ifelse.(isnan.(effort2./eg[loc]), 0,
-           ((effort2./eg[loc]) .* X_non_siezed[loc] .- necessity) .* price)
-
-        fc = fine*ifelse.(isnan.(effort./eg2[loc]), 0,
+        fc1 = fine1.*ifelse.(isnan.(effort./eg2[loc]), 0,
            ((effort./eg2[loc]) .* X[loc]) .* price)
 
+        fc2 = fine2.*ifelse.(isnan.(effort./eg2[loc]), 0,
+          ((effort./eg2[loc]) .* X[loc]) .* price)
+
+        # calculate each individuals relative contribution to protecting the resource
+        p1_tot = zeros(ngroups)
+        p2_tot = zeros(ngroups)
+        for i = 1:ngroups
+          p1_tot[i] = sum(punish_type[gid .==i])
+          p2_tot[i] = sum(punish_type2[gid .==i])
+        end
+
         payoff_round = hg.*(1 .- caught3) + wl +
-         sg_og[gid].*punish_type +
-          sg_ig[gid].*punish_type2  +
-           fp_og[gid].*punish_type +
-            fp_ig[gid].*punish_type2 -
+         sg_og[gid].*(punish_type./p1_tot[gid]) +
+          sg_ig[gid].*(punish_type2./p2_tot[gid])  +
+           fp_og[gid].*(punish_type./p1_tot[gid]) +
+            fp_ig[gid].*(punish_type2./p2_tot[gid]) -
             mc1 - mc2 -
-             fc.*caught - fc.*caught2 -
+             fc1 - fc2 -
               travel_cost.*leakage_type -
               pol[gid] +
               eco[gid]
 
+
         payoff += payoff_round .+ baseline
         payoff_round[isnan.(payoff_round)] .=0
         payoff[isnan.(payoff)] .=0
+
 
     else
 
@@ -608,7 +659,8 @@ function cpr_abm(
         caught = zeros(n)
         X_non_siezed_ig = zeros(ngroups)
         X_non_siezed_og = zeros(ngroups)
-
+        fine1 = zeros(n)
+        fine2 = zeros(n)
 
 
         for i in 1:ngroups
@@ -708,8 +760,8 @@ function cpr_abm(
 
 
         #note that there can be eigenmodels
-        trans_error = rand(n, 5) .< fidelity
-        n_error = [[rand(Normal(), n)] [rand(Normal(1, .02), n)] [rand(Normal(), n)] [rand(Normal(), n)]]
+        trans_error = rand(n,7) .< fidelity
+        n_error = [[rand(Normal(), n)] [rand(Normal(1, .02), n)] [rand(Normal(), n)] [rand(Normal(), n)] [rand(Normal(1, .02), n)] [rand(Normal(1, .02), n)]]
         #Ensure there is no transmission error for indiviudals who did not copy
         self = models .== id
         trans_error[self,:] .=0
@@ -720,6 +772,10 @@ function cpr_abm(
         punish_type =  ifelse.(trans_error[:,3], inv_logit.(logit.(punish_type[models]) .+ n_error[3]), punish_type[models])
         harv_limit = ifelse.(trans_error[:,4], harv_limit[models] .* n_error[2], harv_limit[models])
         punish_type2  = ifelse.(trans_error[:,5], inv_logit.(logit.(punish_type2[models]) .+ n_error[4]), punish_type2[models])
+        fines1 = ifelse.(trans_error[:,6], fines1[models] .* n_error[5], fines1[models])
+        fines2 = ifelse.(trans_error[:,7], fines2[models] .* n_error[6], fines2[models])
+
+
 
       if verbose ==true println(string("Year: ", year, ", Social Learning: COMPLETED ")) end
       end
@@ -770,7 +826,9 @@ function cpr_abm(
       lpt0[year, sim] = round.(mean(payoff_round[leakage_type.==0]), digits = 2)
       am[year, sim] = median(age)
       am[year, sim] = maximum(age)
-      lmr[year,:,sim] .= round.(report(harv_limit, gid, ngroups), digits=4)
+      lmr[year,:,sim] .= round.(reportMedian(harv_limit, gid, ngroups), digits=4)
+      fi1[year,:,sim] .= round.(reportMedian(fines1, gid, ngroups), digits=3)
+      fi2[year,:,sim] .= round.(reportMedian(fines2, gid, ngroups), digits=3)
       ages = age
 
 
@@ -898,14 +956,17 @@ function cpr_abm(
         died =  killagents(pop, id, age, mortality_rate, sample_payoff)
         babies = makebabies(pop, id, sample_payoff, died)
 
-        trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(), length(babies))]]
+        trans_error = rand(length(babies), 7) .< mutation
+        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(1, .02), length(babies))]]
 
         effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
         leakage_type[babies]  =ifelse.(trans_error[:,2], ifelse.(leakage_type[babies].==1,0,1), leakage_type[babies])
         punish_type[babies] =  ifelse.(trans_error[:,3], inv_logit.(logit.(punish_type[babies]) .+ n_error[3]), punish_type[babies])
         harv_limit[babies] = ifelse.(trans_error[:,4], harv_limit[babies] .* n_error[2], harv_limit[babies])
         punish_type2[babies] =  ifelse.(trans_error[:,5], inv_logit.(logit.(punish_type2[babies]) .+ n_error[4]), punish_type2[babies])
+        fines1[babies] = ifelse.(trans_error[:,6], fines1[babies] .* n_error[5], fines1[babies])
+        fines2[babies] = ifelse.(trans_error[:,7], fines2[babies] .* n_error[6], fines2[babies])
+
 
         payoff[died] .= 0
         age[died]  .= 0
@@ -916,14 +977,16 @@ function cpr_abm(
         died =  killagents(pop, id, age, mortality_rate, sample_payoff)
         babies = makebabies(pop, id, sample_payoff, died)
 
-        trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(), length(babies))]]
+        trans_error = rand(length(babies), 7) .< mutation
+        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(1, .02), length(babies))]]
         effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
         leakage_type[babies]  =ifelse.(trans_error[:,2], ifelse.(leakage_type[babies].==1,0,1), leakage_type[babies])
         punish_type[babies]  = ifelse.(trans_error[:,3], inv_logit.(logit.(punish_type[babies]) .+ n_error[3]), punish_type[babies])
         harv_limit[babies] = ifelse.(trans_error[:,4], harv_limit[babies] .* n_error[2], harv_limit[babies])
         punish_type2[babies]  = ifelse.(trans_error[:,5], inv_logit.(logit.(punish_type2[babies]) .+ n_error[4]), punish_type2[babies])
-        payoff[died] .= 0
+        fines1[babies] = ifelse.(trans_error[:,6], fines1[babies] .* n_error[5], fines1[babies])
+        fines2[babies] = ifelse.(trans_error[:,7], fines2[babies] .* n_error[6], fines2[babies])
+
         age[died]  .= 0
         #CMLS dynamic
 
@@ -935,13 +998,17 @@ function cpr_abm(
         died =  killagents(id, id, age, mortality_rate, sample_payoff)
         babies = makebabies(id, id, sample_payoff, died)
 
-        trans_error = rand(length(babies), 5) .< mutation
-        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(), length(babies))]]
+        trans_error = rand(length(babies), 7) .< mutation
+        n_error = [[rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(), length(babies))] [rand(Normal(1, .02), length(babies))] [rand(Normal(1, .02), length(babies))]]
         effort[babies] = ifelse.(trans_error[:,1], inv_logit.(logit.(effort[babies]) .+ n_error[1]), effort[babies])
         leakage_type[babies]  =ifelse.(trans_error[:,2], ifelse.(leakage_type[babies].==1,0,1), leakage_type[babies])
         punish_type[babies]  = ifelse.(trans_error[:,3], inv_logit.(logit.(punish_type[babies]) .+ n_error[3]), punish_type[babies])
         harv_limit[babies] = ifelse.(trans_error[:,4], harv_limit[babies] .* n_error[2], harv_limit[babies])
         punish_type2[babies] =  ifelse.(trans_error[:,5], inv_logit.(logit.(punish_type2[babies]) .+ n_error[4]), punish_type2[babies])
+        fines1[babies] = ifelse.(trans_error[:,6], fines1[babies] .* n_error[5], fines1[babies])
+        fines2[babies] = ifelse.(trans_error[:,7], fines2[babies] .* n_error[6], fines2[babies])
+
+
         payoff[died] .= 0
         age[died]  .= 0
     #CMLS dynamic
@@ -997,6 +1064,8 @@ function cpr_abm(
     "loc_caught" => lc,
     "leakage" => lt,
     "payoffR" => pr,
+    "fine1"=>fi1,
+    "fine2"=>fi2,
     "payoff_leakage" => lpt1,
     "payoff_no_leakage" => lpt0,
     "leakage_rate" => lr,

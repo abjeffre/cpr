@@ -12,7 +12,7 @@ addprocs(15)
 #Load code
 @everywhere cd("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm")
 @everywhere include("cpr_setup.jl")
-@everywhere include("abm_poleco.jl")
+@everywhere include("abm_cont.jl")
 
 
 S =expand_grid( [300],               #Population Size
@@ -22,7 +22,7 @@ S =expand_grid( [300],               #Population Size
                 [1, 150],          #Variance
                 [0,1],              #Degradability
                 [.5, 1],            #Defensibility
-                [0.  .9],            #Experiment_leak
+                [0,  .9],            #Experiment_leak
                 [0],                #experiment_punish
                 [1],                #experiment_group
                 [false],              #cmls
@@ -60,8 +60,8 @@ end
 #set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(n, ng, l, rg, v, dg, df, el, ep, eg, c, sl, lk, sp, mf, po, ec)
     cpr_abm(n = n,
-            nrounds = 2000,
-            nsim = 10,
+            nrounds = 1000,
+            nsim = 1,
             harvest_limit = .1,
             ngroups = ng,
             lattice = l,
@@ -84,10 +84,10 @@ end
 check = false
 
 if check == true
-    for i = 1:2
+    for i = 17:256
         println(i)
-        abm_dat = g(S[i,1], S[i,2], S[i,3], S[i,4], S[i,5], S[i,6], S[i,7], S[i,8],
-         S[i,9], S[i,10], S[i,11], S[i,12], S[i,13], S[i,14], S[i,15], S[i, 16], S[i, 17])
+        abm_dat = g(S1[i,1], S1[i,2], S1[i,3], S1[i,4], S1[i,5], S1[i,6], S1[i,7], S1[i,8],
+         S1[i,9], S1[i,10], S1[i,11], S1[i,12], S1[i,13], S1[i,14], S1[i,15], S1[i, 16], S1[i, 17])
     end
 end
 
