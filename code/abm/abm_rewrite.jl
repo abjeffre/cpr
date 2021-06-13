@@ -83,45 +83,42 @@ function cpr_abm(
 
   ################################################
   ##### The multiverse will be recorded  #########
-  # Dict(
-  #   e = zeros(nrounds, ngroups, nsim)
-  #   el = zeros(nrounds, ngroups, nsim)
-  #   enl = zeros(nrounds, ngroups, nsim)
-  #   h = zeros(nrounds, ngroups, nsim)
-  #   p = zeros(nrounds, ngroups, nsim)
-  #   pr = zeros(nrounds, ngroups, nsim)
-  #   s = zeros(nrounds, ngroups, nsim)
-  #   pt = zeros(nrounds, ngroups, nsim)
-  #   pt2 =zeros(nrounds, ngroups, nsim)
-  #   lt = zeros(nrounds, ngroups, nsim)
-  #   lr = zeros(nrounds, ngroups, nsim)
-  #   lmr = zeros(nrounds, ngroups, nsim)
-  #   fi1 = zeros(nrounds, ngroups, nsim)
-  #   fi2 = zeros(nrounds, ngroups, nsim)
-  #   ogt = zeros(nrounds, ngroups, nsim)
-  #   lc =  zeros(nrounds, ngroups, nsim)
-  #   elh =  zeros(nrounds, ngroups, nsim)
-  #   cel = zeros(nrounds, ngroups, nsim)
-  #   cep2 = zeros(nrounds, ngroups, nsim)
-  #   clp2 = zeros(nrounds, ngroups, nsim)
-  #   vl = zeros(nrounds, ngroups, nsim)
-  #   vp2 = zeros(nrounds, ngroups, nsim)
-  #   ve = zeros(nrounds, ngroups, nsim)
-  #   lpt1 = zeros(nrounds, nsim)
-  #   ppt1 = zeros(nrounds, nsim)
-  #   lpt0 = zeros(nrounds, nsim)
-  #   ppt0 = zeros(nrounds, nsim)
-  #   rpt0 = zeros(nrounds, nsim)
-  #   rpt1 = zeros(nrounds, nsim)
-  #   gs = zeros(nrounds, ngroups, nsim)
-  #   gs2 = zeros(nrounds, ngroups, nsim)
-  #   grs = zeros(nrounds, ngroups, nsim)
-  #   am = zeros(nrounds, nsim)
-  #   ma = zeros(nrounds, nsim)
-  #   fm = zeros(ngroups, nsim)
-  #   ry = zeros(nsim)
-  #   ages = zeros(n)
-  # )
+   history=Dict(
+     :stock => zeros(nrounds, ngroups, nsim),
+     :effort => zeros(nrounds, ngroups, nsim),
+     :limit => zeros(nrounds, ngroups, nsim),
+     :leakage => zeros(nrounds, ngroups, nsim),
+     :og => zeros(nrounds, ngroups, nsim),
+     :harvest => zeros(nrounds, ngroups, nsim),
+     :punish => zeros(nrounds, ngroups, nsim),
+     :punish2 => zeros(nrounds, ngroups, nsim),
+     :fine1 => zeros(nrounds, ngroups, nsim),
+     :fine2 =>zeros(nrounds, ngroups, nsim),
+     :effortLeak => zeros(nrounds, ngroups, nsim),
+     :effortNoLeak => zeros(nrounds, ngroups, nsim),
+     :harvestLeak => zeros(nrounds, ngroups, nsim),
+     :harvestNoLeak => zeros(nrounds, ngroups, nsim),
+     :payoffR => zeros(nrounds, ngroups, nsim),
+     :age_max => zeros(nrounds, ngroups, nsim),
+     :seized => zeros(nrounds, ngroups, nsim),
+     :seized2 => zeros(nrounds, ngroups, nsim),
+     :forsize =>  zeros(nrounds, ngroups, nsim),
+     :cel =>  zeros(nrounds, ngroups, nsim),
+     :clp2 => zeros(nrounds, ngroups, nsim),
+     :cep2 => zeros(nrounds, ngroups, nsim),
+     :ve => zeros(nrounds, ngroups, nsim),
+     :vp2 => zeros(nrounds, ngroups, nsim),
+     :vl => zeros(nrounds, ngroups, nsim),
+     :roi => zeros(nrounds, ngroups, nsim),
+     :fstEffort => zeros(nrounds, nsim),
+     :fstLimit => zeros(nrounds, nsim),
+     :fstLeakage => zeros(nrounds, nsim),
+     :fstPunish => zeros(nrounds, nsim),
+     :fstPunish2 => zeros(nrounds, nsim),
+     :fstFine1 => zeros(nrounds, nsim),
+     :fstFine2 => zeros(nrounds, nsim),
+     :fstOg => zeros(nrounds, nsim)
+     )
 
 
 #Store Parameters for Sweep Verification
@@ -392,12 +389,13 @@ function cpr_abm(
       WL = wages*effort[:,1]
 
       #Calculate agents.payoffs
-      agents.payoff_round = HG .*(1 .- caught_sum) + WL + SP1 + SP2 + FP1 + FP2 +
-      MC1 + MC1 - TC- POL[agents.gid] + ECO[agents.gid]
+      agents.payoff_round = HG .*(1 .- caught_sum).*price
+       + WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
+      MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid]
 
-      agents.payoff += payoff_round .+ baseline
-      agents.payoff_round[isnan.(payoff_round)] .=0
-      agents.payoff[isnan.(payoff)] .=0
+      agents.payoff += agents.payoff_round .+ baseline
+      agents.payoff_round[isnan.(agents.payoff_round)] .=0
+      agents.payoff[isnan.(agents.payoff)] .=0
 
       if verbose == true
         println("harvest, ", sum(isnan.(hg.*(1 .- caught3))))
@@ -417,8 +415,45 @@ function cpr_abm(
 
       ################################################
       ########### ECOSYSTEM DYNAMICS #################
-      START HERES
+      
+      K=ResourceDynamics(GH, K, k_max, regrow, volatility, ngroups)
 
+
+      #################################################
+      ############# RECORD HISTORY ####################
+        history[:stock][year,:,sim] .=round.(K./kmax, digits=3)      
+        history[:effort][year,:,sim] .=round.(report(effort[:,2], agents.gid, ngroups), digits=2)
+        history[:limit][year,:,sim] .= round.(reportMedian(traits.harv_limit, gid, ngroups), digits=2)
+        history[:leakage][year,:,sim] .= round.(report(traits.leakage_type, gid, ngroups), digits=2)
+        history[:og][year,:,sim] .= round.(report(traits.og_type, gid, ngroups), digits=2)
+        history[:harvest][year,:,sim] .= round.(report(HG, gid, ngroups), digits=2)
+        history[:punish][year,:,sim]  .= round.(report(traits.punish_type, gid, ngroups), digits=2)
+        history[:punish2][year,:,sim]  .= round.(report(traits.punish_type2, gid, ngroups), digits=2)
+        history[:fine1][year,:,sim] .= round.(reportMedian(traits.fine1, gid, ngroups), digits=2)
+        history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fine2, gid, ngroups), digits=2)
+        history[:effortLeak][year,:,sim] .= round.(report(effort[agents.leakage_type.==1, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
+        history[:effortNoLeak][year,:,sim] .= round.(report(effort[agents.leakage_type.==0, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
+        history[:harvestLeak][year,:,sim] .= round.(report(HG[agents.leakage_type.==1, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
+        history[:harvestNoLeak][year,:,sim] .= round.(report(HG[agents.leakage_type.==0, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
+        history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round, gid, ngroups), digits=2)
+        history[:age_max][year,:,sim] => round.(report(agents.age, gid, ngroups), digits=2)
+        history[:seized][year,:,sim] .=  round.(tab(SP1, ngroups), digits =2)
+        history[:seized2][year,:,sim] .= round.(tab(SP2, ngroups), digits =2)
+        history[:forsize][sim] .= kmax
+        history[:cel][year,:,sim] =>  round.(reportCor(effort, harv_limit, gid, ngroups), digits=3)
+        history[:clp2][year,:,sim] => round.(reportCor(effort, punish_type2, gid, ngroups), digits=3)
+        history[:cep2][year,:,sim] => round.(reportCor(harv_limit, punish_type2, gid, ngroups), digits=3)
+        history[:ve][year,:,sim] => round.(reportVar(punish_type2, gid, ngroups), digits=3)
+        history[:vp2][year,:,sim] => round.(reportVar(harv_limit, gid, ngroups), digits=3)
+        history[:vl][year,:,sim] => round.(reportVar(effort, gid, ngroups), digits=3)
+        history[:fstEffort][year,sim] .= round.(reportVar(effort[:,2], agents.gid, ngroups), digits=2)./var(effort[:,2])
+        history[:fstLimit][year,sim]  .= round.(reportVar(traits.harv_limit, agents.gid, ngroups), digits=2)./var(traits.harv_limit)
+        history[:fstLeakage][year,sim]  .= round.(reportVar(traits.leakge_type, agents.gid, ngroups), digits=2)./var(traits.leakge_type)
+        history[:fstPunish][year,sim]  .= round.(reportVar(traits.punish_type, agents.gid, ngroups), digits=2)./var(traits.punish_type)
+        history[:fstPunish2][year,sim] .= round.(reportVar(traits.punish_type2, agents.gid, ngroups), digits=2)./var(traits.punish_type2)
+        history[:fstFine1][year,sim] .= round.(reportVar(traits.fines1, agents.gid, ngroups), digits=2)./var(traits.fines1)
+        history[:fstFine2][year,sim] .= round.(reportVar(traits.fines2, agents.gid, ngroups), digits=2)./var(traits.fines2)
+        history[:fstOg][year,sim] .= round.(reportVar(traits.og_type, agents.gid, ngroups), digits=2)./var(traits.og_type_type)
 
       #################################################
       ########### SOCIAL LEARNING #####################
@@ -449,9 +484,57 @@ function cpr_abm(
       end
 
       models=GetModels(agents, ngroups, gmean, nmodels, out)
-      traits=MutateAgents(traits, models, fidelity, traitTypes)
+      traits=SocialTransmission(traits, models, fidelity, traitTypes)
+      
 
-end
-end
-end
-end
+      #########################################
+      ############# GENERAL UPDATING ##########
+      agents.age .+= 1
+      
+      ####################################
+      ###### Evolutionary dynamics #######
+      
+      agents.payoff_round[agents.payoff_round.<=0] .=0
+      agents.payoff[agents.payoff.<=0] .=0
+      sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
+
+      if experiment==true
+        pop = agents.id[agents.gid .∈  [experiment_group]]
+        died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
+        babies = MakeBabies(pop, agents.id, sample_payoff, died)
+        traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
+        #ADD IN ERROR AND DIRECHLET
+        payoff[died] .= 0
+        age[died]  .= 0
+        #Non-experimental Group
+        pop = agents.id[agents.gid .∉  [experiment_group]]
+        died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
+        babies = MakeBabies(pop, agents.id, sample_payoff, died)
+        traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
+        #ADD IN ERROR AND DIRECHLET
+        payoff[died] .= 0
+        age[died]  .= 0
+        if cmls == true  agents.gid[died] = agents.gid[babies] end
+      else
+        died =  KillAgents(agents.id, agents.id, agents.age, mortality_rate, sample_payoff)
+        babies = MakeBabies(agents.id, agents.id, sample_payoff, died)
+        traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
+        #ADD IN ERROR AND DIRECHLET
+        payoff[died] .= 0
+        age[died]  .= 0  
+        if cmls == true  agents.gid[died] = agents.gid[babies] end
+      end
+
+
+      #############################################
+      ############ GROUP DEATH AND SPLITTING ######
+      #When one group gets so small that they will be absorbed entirely by other groups, 
+      #Then the remaining individuals are distributed evenly amongst other groups and the largest group will fission.
+      #The fissioning can have diffrent rules by which this happens, a. Random, b. split according to policy beleifs. just get the median and split down the middle.
+      agents.gid=SplitGroups(agents.gid, groups, nmodels, id, traits, split_method)
+
+      year += 1  
+    end #End the year
+    ry[sim] = REDD_year
+  end #End Sims
+end#End Function

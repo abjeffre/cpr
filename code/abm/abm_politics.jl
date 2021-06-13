@@ -1175,7 +1175,6 @@ function cpr_abm(
 
     end #end years
 
-    fm[:, sim] = kmax
     ry[sim] = REDD_year
 
 
