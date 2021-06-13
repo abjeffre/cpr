@@ -538,3 +538,13 @@ function cpr_abm(
     ry[sim] = REDD_year
   end #End Sims
 end#End Function
+
+
+
+
+
+
+
+
+
+
