@@ -17,7 +17,7 @@ B2=[]
 for i in 1:500 push!(B2,"#006D2C") end
 
 C1=[]
-for i in 1:500 push!(C1, "#810F7C") end
+for i in 1:500 push!(C1, "red") end
 C2=[]
 for i in 1:500 push!(C2,"#8C6BB1") end
 C3 = []
@@ -43,16 +43,33 @@ for i = 1:500 push!(H3, "#ABD9E9") end
 
 
 
-r1i1 = cpr_abm(nsim = 10, nrounds = 3000, n=3600, ngroups = 24, lattice = [6,4],
-    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+r1i1 = cpr_abm(nsim = 10, nrounds = 2000, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 200000, ecosys = false, eco_C=.01, harvest_limit = .1,
     pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
 
 
+r1i1sm = cpr_abm(nsim = 10, nrounds = 200, n=300, ngroups = 2, lattice = [2,1],
+    max_forest = 1666.5, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
 
-r1i0 = cpr_abm(nsim = 20,nrounds =3000, n=3600, ngroups = 24, lattice = [6,4],
+
+r1i0 = cpr_abm(nsim = 10,nrounds =200, n=3600, ngroups = 24, lattice = [6,4],
        max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
        pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false, inst = false)
 
+
+r1i1l25 = cpr_abm(nsim = 10, nrounds = 200, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .25,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
+
+
+r1i1l025 = cpr_abm(nsim = 10, nrounds = 200, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .001, harvest_var = 0.001,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.05, verbose = false)
+
+r1i1b = cpr_abm(nsim = 10, nrounds = 200, n=3600, ngroups = 24, lattice = [6,4],
+    max_forest = 20000, ecosys = false, eco_C=.01, harvest_limit = .1,
+    pollution = false, pol_C = 0.1,  punish_cost = .001, regrow = 0.01, verbose = false)
 
 
 ########################################################################################
@@ -372,7 +389,7 @@ LB1=zeros(3000)
 LB1 = mean(temp, dims =2)
 
 
-animtime(300, 30, 3, [D1 D2 B1 B2], [0, 1], SB1, S1, PB1, P1)
+animtime(300, 30, 3, [D1], [0, 1], SB1, S1, PB1, P1)
 
 
 animtime(200, 30, 2, [D1 D2 B1 B2], [0, 1], SB1, ZS0, Z1, Z0)
@@ -562,6 +579,7 @@ animtime(200, 30, 3, [D1 D2 D3], [0, 1], PB1, P1, P2)
 
 
 
+temp=zeros(3000, 20)
 
 
 
@@ -595,7 +613,7 @@ L = mean(temp, dims =2)
 
 
 
-animtime(200, 20, 2, [B1 A1 C1 H1 ], [0, 1],S ,H, E, L)
+animtime(200, 20, 2, ["goldenrod" "pink" "blue" "red" ], [0, 1],S ,H, E, L)
 
 
 

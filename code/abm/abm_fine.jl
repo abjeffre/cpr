@@ -2,7 +2,7 @@ function killagents(pop, id, age, mortality_rate, sample_payoff)
     if  length(unique(age[pop])) == 1
         age[pop] .=age[pop].+rand(0:1, length(age[pop]))
     end
-    mortality_risk = softmax(standardize(age[pop].^5) .- standardize(sample_payoff[pop].^.25))
+    mortality_risk = softmax(standardize(age[pop].^5.5) .- standardize(sample_payoff[pop].^.25))
     to_die = asInt(round(mortality_rate*length(pop), digits =0))
     died = rand(1:300, to_die)
     died=wsample(pop, sample_payoff[pop], to_die, replace = false)
@@ -85,6 +85,7 @@ function cpr_abm(
   pol_slope = .1,                 # As the slope increases the rate at which pollution increases as the resource declines increase
   pol_C = .1,                    # As the constant increases the total amount of polution increases
   ecosys = false,
+
   eco_slope = 1,                 # As the slope increases the resource will continue to produce ecosystem servies
   eco_C = .01,                    # As the constant increases the total net benifit of the ecosystem services increases
 
@@ -102,6 +103,9 @@ function cpr_abm(
   self_policing = true,         # Toggles if Punishers also target members of their own ingroup for harvesting over limit
   harvest_limit = 0.25,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
   harvest_var = .07,
+  pun2_on = true,
+  pun1_on = true,
+  seized_on = true,
 
   fine_start = .1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
   fine_var = .02,                #Determines the group offset for fines at the begining
@@ -114,7 +118,7 @@ function cpr_abm(
 
   social_learning = true,       # Toggels whether Presitge Biased Tranmission is on
   nmodels = 3,                  # The number of models sampled to copy from in social learning
-  fidelity = 0.01,              # This is the fidelity of social transmission
+  fidelity = 0.02,              # This is the fidelity of social transmission
   learn_type = "income",        # Two Options - "wealth" and "income" indiviudals can choose to copy wealth or income if copy wealth they copy total overall payoffs, if copy income they copy payoffs from the previous round
   outgroup = 0.01,              # This is the probability that the individual samples from the whole population and not just his group when updating0...
   baseline = .01,                # Baseline payoff to be added each round -
@@ -169,6 +173,14 @@ function cpr_abm(
 
   lc =  zeros(nrounds, ngroups, nsim)
   elh =  zeros(nrounds, ngroups, nsim)
+  cel = zeros(nrounds, ngroups, nsim)
+  cep2 = zeros(nrounds, ngroups, nsim)
+  clp2 = zeros(nrounds, ngroups, nsim)
+  vl = zeros(nrounds, ngroups, nsim)
+  vp2 = zeros(nrounds, ngroups, nsim)
+  ve = zeros(nrounds, ngroups, nsim)
+
+
 
   lpt1 = zeros(nrounds, nsim)
   ppt1 = zeros(nrounds, nsim)
@@ -308,11 +320,15 @@ function cpr_abm(
     group_status = ones(ngroups)
 
     #set defensibility
-    if def_perc==true
-        def = gs_init/defensibility
-    else
-        def =defensibility
-    end
+      def = zeros(ngroups)
+      for i in 1:ngroups
+         if def_perc==true
+            def[i] = gs_init/defensibility
+          else
+              def[i] =defensibility
+          end
+        end
+
 
 
 
@@ -337,6 +353,8 @@ function cpr_abm(
       ########Check Config #######
 
       if leak == false  leakage_type = zeros(n) end
+      if pun1_on == false  punish_type = zeros(n) end
+      if pun2_on == false  punish_type2 = zeros(n) end
 
       ############################
       ### RUN EXPERIMENT #########
@@ -354,7 +372,7 @@ function cpr_abm(
           harv_limit[gid .==experiment_group[i]] .=experiment_limit
         end
 
-        if experiment_limit != 0
+        if experiment_effort != 0
           effort[gid.==experiment_group[i]] .= experiment_effort
         end
       end
@@ -399,6 +417,7 @@ function cpr_abm(
           temp = findall(x->x==0, group_status)
           weights[temp] .=0
           weights[gid[i]]=0
+          if experiment == true weights[1:ngroups .∈ Ref(experiment_group)].=0 end
           proposal = wsample(collect(1:ngroups),  weights, groups_sampled, replace = false)
         end
           loc[i] = ifelse(leakage_type[i]==1, proposal[findmax(K[proposal])[2]], gid[i])
@@ -418,6 +437,23 @@ function cpr_abm(
 
       if inst == true
 
+
+        #Determine defensibility
+
+        if cmls == true
+          if year > 1
+            def = zeros(ngroups)
+            for i in 1:ngroups
+               if def_perc==true
+                  def[i] = sum(gid.==i)/defensibility
+               else
+                  def[i] =defensibility
+               end
+             end
+            end
+          end
+
+
         # calculate total harvest
         # first evaluate those caught and have their harvests removed
           #note that the if else captures the case when no individuals harvest from the location and sum would result in na
@@ -435,7 +471,7 @@ function cpr_abm(
 
         loc = asInt.(loc)
         for i = 1:ngroups
-          temp = sum(effort[loc.==i]).*price
+          temp = sum(effort[loc.==i])
           if isinf(temp) | isnan(temp)
             eg2[i] = 0
           else
@@ -451,14 +487,13 @@ function cpr_abm(
 
 
 
-
         #inspect agents
         caught = asInt.(zeros(n))
         caught2 = asInt.(zeros(n))
 
         for i = 1:n
-          prob_caught = cdf.(Beta(1, monitor_tech), sum(punish_type[gid .== loc[i]])/def)
-          prob_caught2 = cdf.(Beta(1, monitor_tech), sum(punish_type2[gid .== loc[i]])/def)
+          prob_caught = cdf.(Beta(1, monitor_tech), sum(punish_type[gid .== loc[i]])/def[gid[i]])
+          prob_caught2 = cdf.(Beta(1, monitor_tech), sum(punish_type2[gid .== loc[i]])/def[gid[i]])
           if loc[i] != gid[i]
             caught[i] = rbinom(1, 1, prob_caught)[1]
           else
@@ -553,7 +588,7 @@ function cpr_abm(
         #Caclulate effort from non-confiscated harvests
         loc = asInt.(loc)
         for i = 1:ngroups
-            temp = sum(effort2[loc.==i]).*price
+            temp = sum(effort2[loc.==i])
           if isinf(temp) | isnan(temp)
             eg[i] = 0
           else
@@ -567,6 +602,7 @@ function cpr_abm(
         #determine fines
         for i = 1:ngroups
           # Outgroup
+
           temp = (X_siezed_og[i]).*price
           if isinf(temp) | isnan(temp)
             sg_og[i] = 0
@@ -582,7 +618,6 @@ function cpr_abm(
           end
 
           #Ingroup
-          # Outgroup
           temp = (X_siezed_ig[i]).*price
           if isinf(temp) | isnan(temp)
             sg_ig[i] = 0
@@ -624,16 +659,34 @@ function cpr_abm(
           p2_tot[i] = sum(punish_type2[gid .==i])
         end
 
+        if seized_on == false sg_ig = sg_og = zeros(n) end
+
+
         payoff_round = hg.*(1 .- caught3) + wl +
-         sg_og[gid].*(punish_type./p1_tot[gid]) +
-          sg_ig[gid].*(punish_type2./p2_tot[gid])  +
-           fp_og[gid].*(punish_type./p1_tot[gid]) +
-            fp_ig[gid].*(punish_type2./p2_tot[gid]) -
+         ifelse.(isnan.(sg_og[gid].*(punish_type./p1_tot[gid])), 0, sg_og[gid].*(punish_type./p1_tot[gid])) +
+          ifelse.(isnan.(sg_ig[gid].*(punish_type2./p2_tot[gid])), 0, sg_ig[gid].*(punish_type2./p2_tot[gid]))  +
+            ifelse.(isnan.(fp_og[gid].*(punish_type./p1_tot[gid])), 0, fp_og[gid].*(punish_type./p1_tot[gid]))  +
+              ifelse.(isnan.(fp_ig[gid].*(punish_type2./p2_tot[gid])), 0,fp_ig[gid].*(punish_type2./p2_tot[gid]))  -
             mc1 - mc2 -
              fc1 - fc2 -
               travel_cost.*leakage_type -
               pol[gid] +
               eco[gid]
+
+        if verbose == true
+          println("harvest, ", sum(isnan.(hg.*(1 .- caught3))))
+          println("sg_og, ", sum(isnan.(punish_type)))
+          println("sg_ig, ", sum(isnan.(sg_ig[gid].*(punish_type2./p2_tot[gid]))))
+          println("fp_ig, ", sum(isnan.(fp_ig[gid].*(punish_type2./p2_tot[gid]))))
+          println("fp_og, ", sum(isnan.(punish_type)))
+          println("travel_cost:", sum(isnan.(travel_cost.*leakage_type)))
+          println("wl, ", sum(isnan.(wl)))
+          println("mc1,", sum(isnan.(mc1)))
+          println("mc2,", sum(isnan.(mc2)))
+          println("pol,", sum(isnan.(pol[gid])))
+          println("eco,", sum(isnan.(eco[gid])))
+        end
+
 
 
         payoff += payoff_round .+ baseline
@@ -674,7 +727,7 @@ function cpr_abm(
         loc = asInt.(loc)
 
         for i = 1:ngroups
-          temp = sum(effort[loc.==i]).*price
+          temp = sum(effort[loc.==i])
           if isinf(temp) | isnan(temp)
             eg[i] = 0
           else
@@ -796,7 +849,7 @@ function cpr_abm(
           harv_limit[gid .==experiment_group[i]] .=experiment_limit
         end
 
-        if experiment_limit != 0
+        if experiment_effort != 0
           effort[gid.==experiment_group[i]] .= experiment_effort
         end
       end
@@ -813,7 +866,7 @@ function cpr_abm(
       el[year,:,sim] .= round.(report(effort[leakage_type.==1], gid[leakage_type.==1], ngroups), digits=2)
       enl[year,:,sim] .= round.(report(effort[leakage_type.==0], gid[leakage_type.==0], ngroups), digits=2)
       p[year,:,sim] .= round.(report(payoff, gid, ngroups), digits=2)
-      pr[year,:,sim] .= round.(report(payoff_round, gid, ngroups), digits=2)
+      pr[year,:,sim] .= round.(report(payoff_round, gid, ngroups), digits=3)
       lc[year,:,sim] = tab(caught[gid.==loc], ngroups)
       pt[year,:,sim] .= round.(report(punish_type, gid, ngroups), digits=2)
       pt2[year,:,sim] .= round.(report(punish_type2, gid, ngroups), digits=2)
@@ -829,6 +882,13 @@ function cpr_abm(
       lmr[year,:,sim] .= round.(reportMedian(harv_limit, gid, ngroups), digits=4)
       fi1[year,:,sim] .= round.(reportMedian(fines1, gid, ngroups), digits=3)
       fi2[year,:,sim] .= round.(reportMedian(fines2, gid, ngroups), digits=3)
+      cel[year,:,sim] .= round.(reportCor(effort, harv_limit, gid, ngroups), digits=3)
+      cep2[year,:,sim] .= round.(reportCor(effort, punish_type2, gid, ngroups), digits=3)
+      clp2[year,:,sim] .= round.(reportCor(harv_limit, punish_type2, gid, ngroups), digits=3)
+      vp2[year,:,sim] .= round.(reportVar(punish_type2, gid, ngroups), digits=3)
+      vl[year,:,sim] .= round.(reportVar(harv_limit, gid, ngroups), digits=3)
+      ve[year,:,sim] .= round.(reportVar(effort, gid, ngroups), digits=3)
+
       ages = age
 
 
@@ -987,6 +1047,7 @@ function cpr_abm(
         fines1[babies] = ifelse.(trans_error[:,6], fines1[babies] .* n_error[5], fines1[babies])
         fines2[babies] = ifelse.(trans_error[:,7], fines2[babies] .* n_error[6], fines2[babies])
 
+        payoff[died] .= 0
         age[died]  .= 0
         #CMLS dynamic
 
@@ -1061,23 +1122,31 @@ function cpr_abm(
     "punish" => pt,
     "punish2" => pt2,
     "comp" => elh,
-    "loc_caught" => lc,
+    #"loc_caught" => lc,
     "leakage" => lt,
     "payoffR" => pr,
-    "fine1"=>fi1,
-    "fine2"=>fi2,
+    #"fine1"=>fi1,
+    #"fine2"=>fi2,
     "payoff_leakage" => lpt1,
     "payoff_no_leakage" => lpt0,
-    "leakage_rate" => lr,
+    #"leakage_rate" => lr,
     "limit" => lmr,
-    "age_max" => am,
-    "age_mean" => ma,
+    #"age_max" => am,
+    #"age_mean" => ma,
     "seized" => gs,
     "seized2" => gs2,
     "forsize" => fm,
-    "reddyear" => ry,
-    "group_size" => grs,
-    "ages" => ages
+    #"reddyear" => ry,
+    #"group_size" => grs,
+    "ages" => ages,
+    "cel" => cel,
+    "clp2" => clp2,
+    "cep2" => cep2,
+    "ve" => ve,
+    "vp2" => vp2,
+    "vl" => vl
+
+
     )
 
     return(output)

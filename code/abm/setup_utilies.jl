@@ -70,6 +70,15 @@ function reportMedian(x, gid, ngroups)
 end
 
 
+function reportVar(x, gid, ngroups)
+  cnt = zeros(ngroups)
+  for i = 1:ngroups
+    cnt[i] = var(x[gid .== i])
+      end
+  return(cnt)
+end
+
+
 
 function isnumber(val)
   if typeof(val)<:Number
@@ -169,3 +178,27 @@ end
 # S=zeros(3000)
 # S = mean(temp, dims =2)
 # end
+
+function findallmax(arr)
+    max_positions = Vector{Int}()
+    min_val = typemin(eltype(arr))
+    for i in eachindex(arr)
+        if arr[i] > min_val
+            min_val = arr[i]
+            empty!(max_positions)
+            push!(max_positions, i)
+        elseif arr[i] == min_val
+            push!(max_positions, i)
+        end
+    end
+    max_positions
+end
+
+
+function reportCor(x, y, gid, ngroups)
+  cnt = zeros(ngroups)
+  for i = 1:ngroups
+    cnt[i] = cor(x[gid .== i], y[gid .==i])
+      end
+  return(cnt)
+end

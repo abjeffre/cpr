@@ -16,11 +16,11 @@ include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\abm_cont.jl")
 # @JLD2.save("C:\\Users\\jeffr\\Documents\\Work\\cpr\\data\\abm\\diversitydat.jld2", s7, m7)
 
 @JLD2.load("C:\\Users\\jeffr\\Documents\\Work\\cpr\\data\\abm\\diversitydat.jld2")
-
-for sim in 1:20
-     temp[:,sim] = mean(r1i1["limit"][1:3000,:,sim], dims =2)
+temp = zeros(200, 20)
+for sim in 1:10
+     temp[:,sim] = mean(r1i1["limit"][1:200,:,sim], dims =2)
  end
-LB1=zeros(3000)
+LB1=zeros(200)
 LB1 = mean(temp, dims =2)
 
 
@@ -39,7 +39,7 @@ L2=zeros(3000)
 L2 = mean(temp, dims =2)
 
 
-animtime(200, 30, 2, [C1 C2 C3], [0, .2], "Sustainable Harvest Limit", LB1, L1, L2)
+animtime(200, 30, 1, [C1 C2 C3], [0, .2], "Sustainable Harvest Limit", LB1, L1, L2)
 
 
 

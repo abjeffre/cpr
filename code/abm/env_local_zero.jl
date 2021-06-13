@@ -4,6 +4,7 @@
 using(Distributed)
 
 Threads.nthreads()
+addprocs(15)
 
 @everywhere using(Distributions)
 @everywhere using(DataFrames)
@@ -12,23 +13,19 @@ Threads.nthreads()
 @everywhere using(Dates)
 
 #Load code
-@everywhere include("setup_utilies.jl")
-print("loaded setup")
+@everywhere cd("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm")
+@everywhere include("C:\\Users\\jeffr\\Documents\\work\\functions\\load.jl")
 @everywhere include("abm_zero.jl")
 
 
 tech_data1 = Float64[]
  for i in 0.0005:.0005:1 push!(tech_data1, cdf(Beta(1, 1), i)) end
-tech_data1 =tech_data1*2
+tech_data1 = tech_data1*20
 
-
-wage_data1 = Float64[]
- for i in 0.0005:.0005:1 push!(wage_data1, cdf(Beta(1, 1), i)) end
-wage_data1 =wage_data1*.2
 
 tech_data2 = Float64[]
- for i in 0.00001:.00001:1 push!(tech_data2, cdf(Beta(10, 10), i)) end
-tech_data2 =tech_data2*1.5
+ for i in  0.0005: 0.0005:1 push!(tech_data2, cdf(Beta(50, 50), i)) end
+tech_data2 =tech_data2*4
 
 
 print("loaded tech")
@@ -36,7 +33,7 @@ S =expand_grid( [3000],             #Population Size
                 [20],               #ngroups
                 [[4, 5]],           #lattice, will be replaced below
                 [.01, 0.05],        #Regrowth
-                [1, 20000],        #Variance
+                [1, 2000],        #Variance
                 [[1, 1],[5, 2]],    #Degradability
                 [.5, 1],            #Defensibility
                 [0],                #Experiment_leak
@@ -49,8 +46,8 @@ S =expand_grid( [3000],             #Population Size
                 [200000],          #max forest
                 [false],      #Polution
                 [false],      #ecosystem serivices
-                [0, .15],            #volatitlity
-                [tech_data1],
+                [0, .02],            #volatitlity
+                [tech_data1, tech_data2],
                 [nothing]             #volatility beta
                 )
 
@@ -58,7 +55,7 @@ D =expand_grid( [3000],             #Population Size
                 [20],               #ngroups
                 [[4, 5]],           #lattice, will be replaced below
                 [.01, 0.05],        #Regrowth
-                [1, 500000],        #Variance
+                [1, 5000],        #Variance
                 [[1, 1],[5, 2]],    #Degradability
                 [.5, 1],            #Defensibility
                 [0],                #Experiment_leak
@@ -68,10 +65,10 @@ D =expand_grid( [3000],             #Population Size
                 [true],             #social learning
                 [true],             #leakage
                 [true],             #self policing
-                [2000000],          #max forest
+                [200000],          #max forest
                 [false, true],      #Polution
                 [false, true],      #ecosystem serivices
-                [.15],              #volatitlity
+                [.02],              #volatitlity
                 [tech_data1, tech_data2],
                 [[1, 1], [10, 10]]
                 )
@@ -86,10 +83,11 @@ print("loaded grids")
 @everywhere function g(n, ng, l, rg, v, dg, df, el, ep, eg, c, sl, lk, sp, mf, po, ec, vol, te, vb)
     cpr_abm(n = n,
             nrounds = 2000,
-            nsim = 10,
+            nsim = 1,
             harvest_limit = .1,
+            wages =.2,
             fine_start = nothing,
-            wage_data = wage_data1,
+            travel_cost = .001,
             ngroups = ng,
             lattice = l,
             regrow = rg,
@@ -128,7 +126,7 @@ if check == true
 end
 
 
-
+S=S[collect(1:32),:]
 abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
  S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12], S[:,13], S[:,14], S[:,15], S[:, 16], S[:, 17],
   S[:,18], S[:,19], S[:,20])
