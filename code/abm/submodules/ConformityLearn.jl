@@ -1,5 +1,6 @@
-function GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
+function ConformityLearn(agents, trait, ngroups, gmean, nmodels, out, glearn_strat, conformity_type, conformity)
       n = size(agents)[1]
+      x = copy(trait)
       models = zeros(n)
       model_groups = sample(1:ngroups,gmean, n)
       for i = 1:n
@@ -14,12 +15,11 @@ function GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_stra
               sample(temp2, nmodels, replace = false))
           end
 
-        if learn_type == "wealth"
-          model_temp = model_list[findmax(agents.payoff[model_list])[2]]
-          models[i] = ifelse(agents.payoff[model_temp] > agents.payoff[i], model_temp, i) end
-        if learn_type == "income"
-            model_temp = model_list[findmax(agents.payoff_round[model_list])[2]]
-            models[i] = ifelse(agents.payoff_round[model_temp] > agents.payoff_round[i], model_temp, i) end
-      end # End finding models
-      models=convert.(Int64, models)
+        temp= copy(x[model_list])
+        if conformity_type == "mean" w = abs.(temp.-mean(temp)) end
+        if conformity_type == "median" w = abs.(temp.-median(temp)) end
+        w=AnalyticWeights((findmax(w)[1].-w).^conformity)
+        x[i]=sample(temp, w, 1)[1]
+      end
+      return(x)
 end

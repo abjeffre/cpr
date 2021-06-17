@@ -19,19 +19,19 @@ S =expand_grid( [300],           #Population Size
                 [2],             #ngroups
                 [[1, 2]],        #lattice, will be replaced below
                 [0],             #travel cost
-                [1],             #tech
-                collect(0.01:.1:1),     #labor
+                collect(1:.5:4),             #tech
+                [.1, .5, .9],     #labor
                 [0.1],           #limit seed values
                 [.0015],         #Punish Cost
-                [15000],          #max forest
+                [7500],          #max forest
                 [0.001,.9],      #experiment leakage
-                [0.5],           #experiment punish
+                [0],           #experiment punish
                 [1],             #experiment_group
                 [1],             #groups_sampled
                 [1],             #Defensibility
                 [1],           #var forest
                 10 .^(collect(range(-2, stop = 1, length = 20))),          #price
-                [.025],        #regrowth
+                [.01],        #regrowth
                 [[1, 1]], #degrade
                 10 .^(collect(range(-4, stop = 0, length = 20)))       #wages
                 )
@@ -78,7 +78,7 @@ abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
  S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12] , S[:,13],  S[:,14], S[:,15],
  S[:,16], S[:,17], S[:,18], S[:,19])
 
-@JLD2.save("abm_dat_effort_hm_none.jld2", abm_dat, S)
+@JLD2.save("abm_dat_effort_hm_none_crash.jld2", abm_dat, S)
 
 
 #

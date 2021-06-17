@@ -16,7 +16,7 @@ low = abm_dat[l]
 high =abm_dat[h]
 m = zeros(20,20)
 for i = 1:length(high)
-    m[i]  = mean(mean(high[i]["effort"][:,2,:], dims =2) - mean(low[i]["effort"][:,2,:], dims = 2))
+    m[i]  = mean(mean(high[i][:effort][:,2,:], dims =2) - mean(low[i][:effort][:,2,:], dims = 2))
     end
 
 #Price is on the y axis and wage is on the x
@@ -49,7 +49,7 @@ low = abm_dat[l]
 high =abm_dat[h]
 m = zeros(20,20)
 for i = 1:length(high)
-    m[i]  = mean(mean(high[i]["effort"][:,2,:], dims =2) - mean(low[i]["effort"][:,2,:], dims = 2))
+    m[i]  = mean(mean(high[i][:effort][:,2,:], dims =2) - mean(low[i][:effort][:,2,:], dims = 2))
     end
 
 #Price is on the y axis and wage is on the x
@@ -82,7 +82,7 @@ low = abm_dat[l]
 high =abm_dat[h]
 m = zeros(20,20)
 for i = 1:length(high)
-    m[i]  = mean(mean(high[i]["effort"][:,2,:], dims =2) - mean(low[i]["effort"][:,2,:], dims = 2))
+    m[i]  = mean(mean(high[i][:effort][:,2,:], dims =2) - mean(low[i][:effort][:,2,:], dims = 2))
     end
 
 

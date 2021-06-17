@@ -1,3 +1,4 @@
+
 ######################################################
 ############# SETUP FUNCTIONS FOR ABM ################
 #functions
@@ -6,14 +7,19 @@ function logit(p)
  end
 
 #meams without nans
-function nanmean(x)
-  mean(filter(!isnan, x))
+function nanmean(x, dims = 1)
+  mean(filter(!isnan, x), dims = dims)
 end
 
 
 function nanmedian(x)
   median(filter(!isnan, x))
 end
+
+function nanvar(x)
+  median(filter(!isnan, x))
+end
+
 
 function benchmark(x)
   rn1 = Dates.Time(Dates.now())
@@ -64,8 +70,8 @@ end
 function reportMedian(x, gid, ngroups)
   cnt = zeros(ngroups)
   for i = 1:ngroups
-    cnt[i] = median(x[gid .== i])
-      end
+      cnt[i] = median(x[gid .== i])
+    end
   return(cnt)
 end
 
@@ -73,10 +79,33 @@ end
 function reportVar(x, gid, ngroups)
   cnt = zeros(ngroups)
   for i = 1:ngroups
-    cnt[i] = var(x[gid .== i])
-      end
+      cnt[i] = var(x[gid .== i])
+  end
   return(cnt)
 end
+
+
+
+
+function reportSkew(x, gid, ngroups)
+  cnt = zeros(ngroups)
+  for i = 1:ngroups
+      cnt[i] = skewness(x[gid .== i])
+  end
+  return(cnt)
+end
+
+
+
+
+function reportCor(x, y, gid, ngroups)
+  cnt = zeros(ngroups)
+    for i = 1:ngroups
+      cnt[i] = cor(x[gid .== i], y[gid .==i])
+  end
+  return(cnt)
+end
+
 
 
 
@@ -95,7 +124,7 @@ end
 # we also use \in
 # vectorized versions include .\in .\notin
 
-function standardize(x)
+function standardize2(x)
    (x.-mean(x))/std(x)
 end
 
@@ -179,6 +208,7 @@ end
 # S = mean(temp, dims =2)
 # end
 
+
 function findallmax(arr)
     max_positions = Vector{Int}()
     min_val = typemin(eltype(arr))
@@ -195,10 +225,12 @@ function findallmax(arr)
 end
 
 
-function reportCor(x, y, gid, ngroups)
-  cnt = zeros(ngroups)
-  for i = 1:ngroups
-    cnt[i] = cor(x[gid .== i], y[gid .==i])
-      end
-  return(cnt)
+function GetFST(trait, gid, ngroups, experiment_group, experiment)
+  experiment == false ? egroup = -99 : egroup = copy(experiment_group)
+   round(var(report(trait[gid .∉ Ref(egroup)],
+  gid[gid .∉ Ref(egroup)], ngroups)[collect(1:ngroups) .∉ Ref(egroup)])/
+  var(trait[gid .∉ Ref(egroup)]),  digits=4)
 end
+
+
+allequal_1(x) = all(y->y==x[1],x)

@@ -1,5 +1,5 @@
   # Harvest
-      function GetGroupHarvest(effort, loc, K, kmax, tech, labor, degrade)
+      function GetGroupHarvest(effort, loc, K, kmax, tech, labor, degrade, ngroups)
        b = zeros(ngroups)
        X =zeros(ngroups)
        for i in 1:ngroups

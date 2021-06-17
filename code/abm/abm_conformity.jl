@@ -1,34 +1,36 @@
+
 using DataFrames
 using Statistics
 using Distributions
 using Random
 using Distributions
 using StatsBase
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\SplitGroups.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\SocialTransmission.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\ResourceDynamics.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\MutateAgents.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\MakeBabies.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\KillAgents.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetSeizedPay.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetPollution.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetPolicy.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetPatch.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetModels.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetInspection.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetIndvHarvest.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetGroupHarvest.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetGroupSeized.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetFinesPay.jl")
-include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetEcoSysServ.jl")
+include("submodules/SplitGroups.jl")
+include("submodules/SocialTransmission.jl")
+include("submodules/ResourceDynamics.jl")
+include("submodules/MutateAgents.jl")
+include("submodules/MakeBabies.jl")
+include("submodules/KillAgents.jl")
+include("submodules/GetSeizedPay.jl")
+include("submodules/GetPollution.jl")
+include("submodules/GetPolicy.jl")
+include("submodules/GetPatch.jl")
+include("submodules/GetModels.jl")
+include("submodules/GetInspection.jl")
+include("submodules/GetIndvHarvest.jl")
+include("submodules/GetGroupHarvest.jl")
+include("submodules/GetGroupSeized.jl")
+include("submodules/GetFinesPay.jl")
+include("submodules/GetEcoSysServ.jl")
+include("submodules/ConformityLearn.jl")
 
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
-  nrounds = 2000,               # Number of rounds per generation
-  n = 3000,                     # Size of the population
-  ngroups = 20,                 # Number of Groups in the population
-  lattice = (4, 5),             # This controls the dimensions of the lattice that the world exists on
+  nrounds = 500,               # Number of rounds per generation
+  n = 300,                     # Size of the population
+  ngroups = 2,                 # Number of Groups in the population
+  lattice = (1, 2),             # This controls the dimensions of the lattice that the world exists on
   mortality_rate = 0.03,      # The number of deaths per 100 people
   mutation = 0.01,            # Rate of mutation on traits
   wages = .1,                   # Wage rate in other sectors - opportunity costs
@@ -36,7 +38,7 @@ function cpr_abm(
   wgrowth_rate =.0001,          # this is a fun parameter, we know that the average growth rate for preindustiral societies is 0.2% per year why not let wages grow and see what happens
   labor_market = false,         # This controls labor market competition
   market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
-  max_forest = 16500,               # Average max stock
+  max_forest = 15000,               # Average max stock
   var_forest = 1,                   # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
@@ -70,7 +72,7 @@ function cpr_abm(
   fine_var = .02,                #Determines the group offset for fines at the begining
   distance_adj =0.9,            # This affects the proboabilty of sampling a more close group.
   travel_cost = .00,            # This basically controls the travel time for individuals who travel to neightboring communities to steal from Note that higher values mean less leakage
-  groups_sampled = 3,           # When leakers sample candidate wards to visit they draw this number of groups to compare forest sizes
+  groups_sampled = 1,           # When leakers sample candidate wards to visit they draw this number of groups to compare forest sizes
   social_learning = true,       # Toggels whether Presitge Biased Tranmission is on
   nmodels = 3,                  # The number of models sampled to copy from in social learning
   fidelity = 0.02,              # This is the fidelity of social transmission
@@ -96,8 +98,9 @@ function cpr_abm(
   cmls = false,                          #determines whether cmls will operate
   zero = false,
   power = false,
-  glearn_strat = false,
-  back_leak= false              # options: "wealth", "Income"
+  glearn_strat = false,              # options: "wealth", "Income"
+  split_method = "random",            #POLITICAL DOES NOT WORK.
+  back_leak = false
 )
 
 
@@ -122,7 +125,7 @@ function cpr_abm(
      :age_max => zeros(nrounds, ngroups, nsim),
      :seized => zeros(nrounds, ngroups, nsim),
      :seized2 => zeros(nrounds, ngroups, nsim),
-     :forsize =>  zeros(nrounds, ngroups, nsim),
+     :forsize =>  zeros(ngroups, nsim),
      :cel =>  zeros(nrounds, ngroups, nsim),
      :clp2 => zeros(nrounds, ngroups, nsim),
      :cep2 => zeros(nrounds, ngroups, nsim),
@@ -255,7 +258,8 @@ function cpr_abm(
       id = collect(1:n),
       gid = repeat(1:ngroups, gs_init),
       payoff = zeros(n),
-      payoff_round = zeros(n)
+      payoff_round = zeros(n),
+      age = sample(18:20, n, replace=true) #notice a small variation in age is necessary for our motrality risk measure
       )
     #All trait minus effort
     traits = DataFrame(
@@ -264,17 +268,24 @@ function cpr_abm(
       punish_type2 = zeros(n),
       fines1 = zeros(n),
       fines2 = zeros(n),
-      harv_limit = zeros(n),
-      og_type = zeros(n))
+      og_type = zeros(n),
+      harv_limit = zeros(n)
+      )
 
-    traitTypes = ["binary" "prob" "prob" "positivecont" "positivecont" "positivecont" "prob"]
+    traitTypes = ["binary" "prob" "prob" "positivecont" "positivecont" "prob" "positivecont"]
 
     #Effort as seperate DF
     temp = ones(ngoods)
-    temp[1] = 100-ngoods
-    effort = rand(Dirichlet(temp), n)'
-    effort=DataFrame(Matrix(effort), :auto)
-    # Setup leakage
+    if zero == true
+          temp[1] = 100-ngoods
+          effort = rand(Dirichlet(temp), n)'
+          effort=DataFrame(Matrix(effort), :auto)
+    else
+          temp=temp*2
+          effort = rand(Dirichlet(temp), n)'
+          effort=DataFrame(Matrix(effort), :auto)
+      end
+      # Setup leakage
     leak_temp =zeros(gs_init)
     leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
     for i = 1:ngroups
@@ -317,9 +328,7 @@ function cpr_abm(
       else
         traits.og_type  = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
     end
-    #Age
-    Random.seed!(seed)
-    agents.age = sample(18:19, n, replace=true) #notice a small variation in age is necessary for our motrality risk measure
+
     #Define Groups
     groups = DataFrame(gid = collect(1:ngroups),
                         fine1 = zeros(ngroups),
@@ -375,7 +384,8 @@ function cpr_abm(
           traits.harv_limit[agents.gid .==experiment_group[i]] .=experiment_limit
         end
         if experiment_effort != 0
-          traits.effort[agents.gid.==experiment_group[i]] .= experiment_effort
+          effort[agents.gid.==experiment_group[i], 2] .= experiment_effort
+          effort[agents.gid.==experiment_group[i], 1] .= (1-experiment_effort)
         end
       end
       if verbose== true print(string("Experiment: COMPLETED"))
@@ -392,7 +402,7 @@ function cpr_abm(
       TC=travel_cost.*traits.leakage_type
 
       # Harvesting
-      GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade)
+      GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
       HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
 
       #Monitoring, Seizure and Fines
@@ -409,15 +419,16 @@ function cpr_abm(
       MC2 = punish_cost*traits.punish_type2
 
       #EcoSystem Public Goods
-      ECO =  GetEcoSysServ(ngroups, eco_slope, eco_C, K, kmax)
-      POL =  GetPollution(effort[:,2], loc, ngroups, pol_slope, pol_C, K, kmax)
+      ecosys ? ECO =  GetEcoSysServ(ngroups, eco_slope, eco_C, K, kmax) :  ECO = zeros(n)
+      pollution ? POL =  GetPollution(effort[:,2], loc, ngroups, pol_slope, pol_C, K, kmax) : POL = zeros(n)
+
 
       #Wage Labor Market
       WL = wages*effort[:,1]
 
       #Calculate agents.payoffs
-      agents.payoff_round = HG .*(1 .- caught_sum).*price
-       + WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
+      agents.payoff_round = HG .*(1 .- caught_sum).*price +
+       WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
       MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid]
 
       agents.payoff += agents.payoff_round .+ baseline
@@ -425,62 +436,62 @@ function cpr_abm(
       agents.payoff[isnan.(agents.payoff)] .=0
 
       if verbose == true
-        #println("harvest, ", sum(isnan.(hg.*(1 .- caught3))))
-        #println("sg_og, ", sum(isnan.(punish_type)))
-        #println("sg_ig, ", sum(isnan.(sg_ig[gid].*(punish_type2./p2_tot[gid]))))
-        #println("fp_ig, ", sum(isnan.(fp_ig[gid].*(punish_type2./p2_tot[gid]))))
-        #println("fp_og, ", sum(isnan.(punish_type)))
-        #println("travel_cost:", sum(isnan.(travel_cost.*leakage_type)))
-        #println("wl, ", sum(isnan.(wl)))
-        #println("mc1,", sum(isnan.(mc1)))
-        #println("mc2,", sum(isnan.(mc2)))
-        #println("pol,", sum(isnan.(pol[gid])))
-        #println("eco,", sum(isnan.(eco[gid])))
+        println("harvest, ", sum(isnan.(HG.*(1 .- caught_sum))))
+        println("sg_og, ", sum(isnan.(SP1)))
+        println("sg_ig, ", sum(isnan.(SP2)))
+        println("fp_ig, ", sum(isnan.(FP1)))
+        println("fp_og, ", sum(isnan.(FP1)))
+        println("travel_cost:", sum(isnan.(TC)))
+        println("wl, ", sum(isnan.(WL)))
+        println("mc1,", sum(isnan.(MC1)))
+        println("mc2,", sum(isnan.(MC2)))
+        println("pol,", sum(isnan.(POL)))
+        println("eco,", sum(isnan.(ECO)))
       end
 
 
 
       ################################################
       ########### ECOSYSTEM DYNAMICS #################
-      
-      K=ResourceDynamics(GH, K, k_max, regrow, volatility, ngroups)
+
+      K=ResourceDynamics(GH, K, kmax, regrow, volatility, ngroups)
 
 
       #################################################
       ############# RECORD HISTORY ####################
-        history[:stock][year,:,sim] .=round.(K./kmax, digits=3)      
-        history[:effort][year,:,sim] .=round.(report(effort[:,2], agents.gid, ngroups), digits=2)
-        history[:limit][year,:,sim] .= round.(reportMedian(traits.harv_limit, gid, ngroups), digits=2)
-        history[:leakage][year,:,sim] .= round.(report(traits.leakage_type, gid, ngroups), digits=2)
-        history[:og][year,:,sim] .= round.(report(traits.og_type, gid, ngroups), digits=2)
-        history[:harvest][year,:,sim] .= round.(report(HG, gid, ngroups), digits=2)
-        history[:punish][year,:,sim]  .= round.(report(traits.punish_type, gid, ngroups), digits=2)
-        history[:punish2][year,:,sim]  .= round.(report(traits.punish_type2, gid, ngroups), digits=2)
-        history[:fine1][year,:,sim] .= round.(reportMedian(traits.fine1, gid, ngroups), digits=2)
-        history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fine2, gid, ngroups), digits=2)
-        history[:effortLeak][year,:,sim] .= round.(report(effort[agents.leakage_type.==1, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
-        history[:effortNoLeak][year,:,sim] .= round.(report(effort[agents.leakage_type.==0, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
-        history[:harvestLeak][year,:,sim] .= round.(report(HG[agents.leakage_type.==1, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
-        history[:harvestNoLeak][year,:,sim] .= round.(report(HG[agents.leakage_type.==0, 2], agents.gid[agents.leakage_type.==1], ngroups), digits=2)
-        history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round, gid, ngroups), digits=2)
-        history[:age_max][year,:,sim] => round.(report(agents.age, gid, ngroups), digits=2)
+        history[:stock][year,:,sim] .=round.(K./kmax, digits=3)
+        history[:effort][year,:,sim] .=round.(report(effort[:,2], agents.gid, ngroups), digits=3)
+        history[:limit][year,:,sim] .= round.(reportMedian(traits.harv_limit, agents.gid, ngroups), digits=3)
+        history[:leakage][year,:,sim] .= round.(report(traits.leakage_type,agents.gid, ngroups), digits=3)
+        history[:og][year,:,sim] .= round.(report(traits.og_type,agents.gid, ngroups), digits=3)
+        history[:harvest][year,:,sim] .= round.(report(HG,agents.gid, ngroups), digits=3)
+        history[:punish][year,:,sim]  .= round.(report(traits.punish_type,agents.gid, ngroups), digits=3)
+        history[:punish2][year,:,sim]  .= round.(report(traits.punish_type2,agents.gid, ngroups), digits=3)
+        history[:fine1][year,:,sim] .= round.(reportMedian(traits.fines1, agents.gid, ngroups), digits=3)
+        history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fines2, agents.gid, ngroups), digits=3)
+        #history[:effortLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==1, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+        #history[:effortNoLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==0, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+        #history[:harvestLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==1], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+        #history[:harvestNoLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==0], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+        history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round,agents.gid, ngroups), digits=3)
+        history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
         history[:seized][year,:,sim] .=  round.(tab(SP1, ngroups), digits =2)
         history[:seized2][year,:,sim] .= round.(tab(SP2, ngroups), digits =2)
-        history[:forsize][sim] .= kmax
-        history[:cel][year,:,sim] =>  round.(reportCor(effort, harv_limit, gid, ngroups), digits=3)
-        history[:clp2][year,:,sim] => round.(reportCor(effort, punish_type2, gid, ngroups), digits=3)
-        history[:cep2][year,:,sim] => round.(reportCor(harv_limit, punish_type2, gid, ngroups), digits=3)
-        history[:ve][year,:,sim] => round.(reportVar(punish_type2, gid, ngroups), digits=3)
-        history[:vp2][year,:,sim] => round.(reportVar(harv_limit, gid, ngroups), digits=3)
-        history[:vl][year,:,sim] => round.(reportVar(effort, gid, ngroups), digits=3)
-        history[:fstEffort][year,sim] .= round.(reportVar(effort[:,2], agents.gid, ngroups), digits=2)./var(effort[:,2])
-        history[:fstLimit][year,sim]  .= round.(reportVar(traits.harv_limit, agents.gid, ngroups), digits=2)./var(traits.harv_limit)
-        history[:fstLeakage][year,sim]  .= round.(reportVar(traits.leakge_type, agents.gid, ngroups), digits=2)./var(traits.leakge_type)
-        history[:fstPunish][year,sim]  .= round.(reportVar(traits.punish_type, agents.gid, ngroups), digits=2)./var(traits.punish_type)
-        history[:fstPunish2][year,sim] .= round.(reportVar(traits.punish_type2, agents.gid, ngroups), digits=2)./var(traits.punish_type2)
-        history[:fstFine1][year,sim] .= round.(reportVar(traits.fines1, agents.gid, ngroups), digits=2)./var(traits.fines1)
-        history[:fstFine2][year,sim] .= round.(reportVar(traits.fines2, agents.gid, ngroups), digits=2)./var(traits.fines2)
-        history[:fstOg][year,sim] .= round.(reportVar(traits.og_type, agents.gid, ngroups), digits=2)./var(traits.og_type_type)
+        history[:forsize][:,sim] .= kmax
+        history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)
+        history[:clp2][year,:,sim] .= round.(reportCor(effort[:,2], traits.punish_type2,agents.gid, ngroups), digits=3)
+        history[:cep2][year,:,sim] .= round.(reportCor(traits.harv_limit, traits.punish_type2,agents.gid, ngroups), digits=3)
+        history[:ve][year,:,sim] .= round.(reportVar(traits.punish_type2,agents.gid, ngroups), digits=3)
+        history[:vp2][year,:,sim] .= round.(reportVar(traits.harv_limit,agents.gid, ngroups), digits=3)
+        history[:vl][year,:,sim] .= round.(reportVar(effort[:,2],agents.gid, ngroups), digits=3)
+        history[:fstEffort][year,sim] = GetFST(effort[:,2], agents.gid, ngroups, experiment_group, experiment)
+        history[:fstLimit][year,sim]  = GetFST(traits.harv_limit, agents.gid, ngroups, experiment_group, experiment)
+        history[:fstLeakage][year,sim]   = GetFST(traits.leakage_type, agents.gid, ngroups, experiment_group, experiment)
+        history[:fstPunish][year,sim]   = GetFST(traits.punish_type, agents.gid, ngroups, experiment_group, experiment)
+        history[:fstPunish2][year,sim]  = GetFST(traits.punish_type2, agents.gid, ngroups, experiment_group, experiment)
+        history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
+        history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
+        history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
 
       #################################################
       ########### SOCIAL LEARNING #####################
@@ -489,15 +500,16 @@ function cpr_abm(
     if social_learning == true
 
       #Set Up group rankings
-      if glearn_strat == "income" gmean=AnalyticWeights(report(payoff_round, gid, ngroups)) end
-      if glearn_strat == "wealth" gmean=AnalyticWeights(report(payoff, gid, ngroups)) end
+      if glearn_strat == "income" gmean=AnalyticWeights(report(agents.payoff_round, agents.gid, ngroups)) end
+      if glearn_strat == "wealth" gmean=AnalyticWeights(report(agents.payoff, agents.gid, ngroups)) end
       if glearn_strat == "env" gmean=AnalyticWeights(K./kmax) end
       if glearn_strat == "random" gmean=AnalyticWeights(ones(ngroups))end
       if glearn_strat == false gmean=AnalyticWeights(ones(ngroups))end
-      if length(experiment_group)==1 gmean[experiment_group]=0 end  #this ensures all learning happens not from the experimental group.
-      if length(experiment_group)>1 gmean[experiment_group].=0 end
-      temp = findall(x->x==0, groups.group_status) #remove dead groups
-      gmean[temp] .=0
+      if experiment== true
+        if length(experiment_group)==1 gmean[experiment_group]=0 end  #this ensures all learning happens not from the experimental group.
+        if length(experiment_group)>1 gmean[experiment_group].=0 end
+      end
+
 
 
       out = zeros(n)
@@ -509,72 +521,67 @@ function cpr_abm(
           out[i] = rbinom(1,1, traits.og_type[i])[1]
         end
       end
-
-      models=GetModels(agents, ngroups, gmean, nmodels, out)
-      traits=SocialTransmission(traits, models, fidelity, traitTypes)
+      models=GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
+      traits[:,1:6]=SocialTransmission(traits[:,1:6], models, fidelity, traitTypes[1:6])
       effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
+      traits.harv_limit=ConformityLearn(agents, traits.harv_limit, ngroups, gmean, nmodels, out, glearn_strat,"mean", 1)
+      traits.harv_limit=MutateAgents(traits.harv_limit, fidelity, "positivecont")
     end
 
 
       #########################################
       ############# GENERAL UPDATING ##########
       agents.age .+= 1
-      
+
       ####################################
       ###### Evolutionary dynamics #######
-      
+      #println(agents.payoff)
       agents.payoff_round[agents.payoff_round.<=0] .=0
       agents.payoff[agents.payoff.<=0] .=0
       sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
-
       if experiment==true
         pop = agents.id[agents.gid .∈  [experiment_group]]
+        #println(agents.age[pop])
         died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(pop, agents.id, sample_payoff, died)
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        payoff[died] .= 0
-        age[died]  .= 0
+        agents.payoff[died] .= 0
+        agents.age[died]  .= 0
         #Non-experimental Group
+        sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
         pop = agents.id[agents.gid .∉  [experiment_group]]
         died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(pop, agents.id, sample_payoff, died)
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        payoff[died] .= 0
-        age[died]  .= 0
+        agents.payoff[died] .= 0
+        agents.age[died]  .= 0
         if cmls == true  agents.gid[died] = agents.gid[babies] end
       else
         died =  KillAgents(agents.id, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(agents.id, agents.id, sample_payoff, died)
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        payoff[died] .= 0
-        age[died]  .= 0  
+        agents.payoff[died] .= 0
+        agents.age[died]  .= 0
         if cmls == true  agents.gid[died] = agents.gid[babies] end
-      end
+       end
 
 
       #############################################
       ############ GROUP DEATH AND SPLITTING ######
-      #When one group gets so small that they will be absorbed entirely by other groups, 
+      #When one group gets so small that they will be absorbed entirely by other groups,
       #Then the remaining individuals are distributed evenly amongst other groups and the largest group will fission.
       #The fissioning can have diffrent rules by which this happens, a. Random, b. split according to policy beleifs. just get the median and split down the middle.
-      agents.gid=SplitGroups(agents.gid, groups, nmodels, id, traits, split_method)
-
-      year += 1  
+      if cmls == true
+        println(tab(agents.gid, ngroups))
+        println(any(tab(agents.gid, ngroups).<(nmodels+1)))
+      agents.gid=SplitGroups(agents.gid, groups, nmodels, agents.id, traits, split_method, ngroups)
+          println(tab(agents.gid, ngroups))
+      end
+      year += 1
     end #End the year
-    ry[sim] = REDD_year
   end #End Sims
   return(history)
 end#End Function
-
-
-
-
-
-
-
-
-
-

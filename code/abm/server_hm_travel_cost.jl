@@ -14,15 +14,15 @@ using(Distributed)
 
 
 
-S =expand_grid( [450],           #Population Size
-                [3],             #ngroups
-                [[1, 3]],        #lattice, will be replaced below
+S =expand_grid( [300],           #Population Size
+                [2],             #ngroups
+                [[1, 2]],        #lattice, will be replaced below
                  10 .^(collect(range(-5, stop =-1, length = 10))),             #travel cost
                 [1],             #tech
                 [.1, .5, .9],           #labor
                 [0.1],           #limit seed values
                 [.0015],         #Punish Cost
-                [15000*1.5],          #max forest
+                [15000],          #max forest
                 [0.001,.9],      #experiment leakage
                 [0.5],           #experiment punish
                 [1],             #experiment_group
@@ -46,6 +46,7 @@ S =expand_grid( [450],           #Population Size
             leak = true,
             pun1_on = false,
             pun2_on = false,
+            back_leak = true,
             experiment_effort = 1,
             n = n,
             ngroups = ng,

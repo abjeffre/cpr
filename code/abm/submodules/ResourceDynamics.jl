@@ -1,4 +1,4 @@
-function ResourceDynamics(harvest, stock, max_stock, regrowth, volatility, ngroups)
+function ResourceDynamics(harvest, stock, max_stock, regrow, volatility, ngroups)
       #remove stock
       stock -= harvest
       #regrow stock

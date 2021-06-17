@@ -15,24 +15,24 @@ addprocs(25)
 
 
 
-S =expand_grid( [300],           #Population Size
-                [2],             #ngroups
-                [[1, 2]],        #lattice, will be replaced below
-                [0],             #travel cost
+S =expand_grid( [150*12],        #Population Size
+                [12],            #ngroups
+                [[3, 4]],        #lattice, will be replaced below
+                [0.00001],       #travel cost
                 [1],             #tech
-                collect(0.01:.1:1),     #labor
+                [0.5],           #labor
                 [0.1],           #limit seed values
-                [.0015],         #Punish Cost
-                [15000],          #max forest
+                10 .^(collect(range(-5, stop =-1, length = 10))),         #Punish Cost
+                [7500*6],       #max forest
                 [0.001,.9],      #experiment leakage
                 [0.5],           #experiment punish
                 [1],             #experiment_group
                 [1],             #groups_sampled
                 [1],             #Defensibility
-                [1],           #var forest
+                [1],             #var forest
                 10 .^(collect(range(-2, stop = 1, length = 20))),          #price
-                [.025],        #regrowth
-                [[1, 1]], #degrade
+                [.01],         #regrowth
+                [[1, 1]],       #degrade
                 10 .^(collect(range(-4, stop = 0, length = 20)))       #wages
                 )
 
@@ -45,9 +45,9 @@ S =expand_grid( [300],           #Population Size
     cpr_abm(nrounds = 500,
             nsim = 5,
             fine_start = nothing,
-            leak = false,
-            pun1_on = false,
-            pun2_on = false,
+            leak = true,
+            pun1_on = true,
+            pun2_on = true,
             experiment_effort = 1,
             n = n,
             ngroups = ng,
@@ -78,7 +78,7 @@ abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
  S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12] , S[:,13],  S[:,14], S[:,15],
  S[:,16], S[:,17], S[:,18], S[:,19])
 
-@JLD2.save("abm_dat_effort_hm_none.jld2", abm_dat, S)
+@JLD2.save("abm_dat_effort_hm_full9_crash.jld2", abm_dat, S)
 
 
 #

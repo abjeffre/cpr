@@ -1,6 +1,17 @@
 
 @JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_none.jld2")
 
+ for i = 1:2400
+   i = 118
+       println(i)
+       abm_dat = g(S[i,1], S[i,2], S[i,3], S[i,4], S[i,5], S[i,6], S[i,7], S[i,8],
+        S[i,9], S[i,10], S[i,11], S[i,12], S[i,13], S[i,14], S[i,15], S[i,16],
+         S[i,17], S[i,18], S[i,19])
+   end
+
+
+mortality_rate =.1
+
 ###High LABOR ####
 nmodels = 3
 using Statistics
@@ -916,3 +927,265 @@ legend=:none, xticks=:none, yticks=(1:10:101,
 string.(0:0.1:1)), title ="\\Delta Cor[E, R]", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
 
 plot(eff, size = (1000, 400))
+
+
+
+
+l=findall(x->x==0.001, S[:,10])
+h=findall(x->x==0.9, S[:,10])
+#Choose Labor Elasticity
+q=findall(x->x==.1, S[:,6])
+l=l[l.∈ Ref(q)]
+h=h[h.∈ Ref(q)]
+
+
+
+low = abm_dat[l]
+high =abm_dat[h]
+m = zeros(10,10)
+for i = 1:length(high)
+    m[i]  = mean(mean(high[i][:effort][:,2,:], dims =2))
+    end
+
+#Price is on the y axis and wage is on the x
+
+using Plots
+gr()
+
+ p1=heatmap(m,
+    c=:thermal, clim= (0, 1), xlab = "Wages", ylab = "Price",
+    yguidefontsize=9,  xguidefontsize=9, legend = false,
+    yticks = ([2,19],["Low","High"]),
+    xticks = ([2,19],["Low","High"]),
+    )
+title!("Labor = 0.1", titlefontsize = 9)
+
+
+ for i = 1:2400
+   i = 118
+       println(i)
+       abm_dat = g(S[i,1], S[i,2], S[i,3], S[i,4], S[i,5], S[i,6], S[i,7], S[i,8],
+        S[i,9], S[i,10], S[i,11], S[i,12], S[i,13], S[i,14], S[i,15], S[i,16],
+         S[i,17], S[i,18], S[i,19])
+   end
+   plot(abm_dat[:effort][:,2,:], dims =2)
+
+
+test1=cpr_abm(n = 150*10, max_forest = 7500*10, ngroups = 10, lattice = [2,5], tech = 1, wages = .15,
+ fines1_on = false, fines2_on = false, pun1_on = false, pun2_on = false )
+
+test2=cpr_abm(n = 150*10, max_forest = 7500*10, ngroups = 10, lattice = [2,5], tech = 1, wages = .15,
+ fines1_on = false, fines2_on = false, pun1_on = false, pun2_on = false,  experiment_leak = 1, experiment_effort = 1)
+
+plot(test1[:fstEffort][:,:,1])
+plot!(test2[:fstEffort][:,:,1], legend = false)
+
+plot(test1[:stock][:,:,1], legend = false)
+plot(test2[:stock][:,:,1], legend = false)
+
+plot(test1[:effort][:,:,1], legend = false)
+plot(test2[:effort][:,:,1], legend = false)
+
+
+
+mean(test2[:harvest][:,2:10,1]./test2[:effort][:,2:10,1])
+mean(test1[:harvest][:,2:10,1]./test2[:effort][:,2:10,1])
+
+mean(test1[:payoffR][:,2:10,1])
+mean(test2[:payoffR][:,2:10,1])
+
+
+
+l=findall(x->x==0.001, S[:,10])
+h=findall(x->x==0.9, S[:,10])
+#Choose Labor Elasticity
+q=findall(x->x==.5, S[:,6])
+l=l[l.∈ Ref(q)]
+h=h[h.∈ Ref(q)]
+
+
+
+low = abm_dat[l]
+high =abm_dat[h]
+m = zeros(10,10)
+for i = 1:length(high)
+    m[i]  = mean(mean(high[i][:effort][:,2,:], dims =2) - mean(low[i][:effort][:,2,:], dims = 2))
+    end
+
+#Price is on the y axis and wage is on the x
+
+using Plots
+gr()
+
+ p1=heatmap(m,
+    c=:thermal, clim= (-1, 1), xlab = "Wages", ylab = "Price",
+    yguidefontsize=9,  xguidefontsize=9, legend = false,
+    yticks = ([2,19],["Low","High"]),
+    xticks = ([2,19],["Low","High"]),
+    )
+title!("Labor = 0.1", titlefontsize = 9)
+
+
+
+
+S =expand_grid( [300],           #Population Size
+                [2],             #ngroups
+                [[1, 2]],        #lattice, will be replaced below
+                [0],             #travel cost
+                [1],             #tech
+                [.5],     #labor
+                [0.1],           #limit seed values
+                [.0015],         #Punish Cost
+                [15000],          #max forest
+                [0.001,.9],      #experiment leakage
+                [0.5],           #experiment punish
+                [1],             #experiment_group
+                [1],             #groups_sampled
+                [1],             #Defensibility
+                [1],           #var forest
+                10 .^(collect(range(-2, stop = 1, length = 10))),          #price
+                [.025],        #regrowth
+                [[1, 1]], #degrade
+                10 .^(collect(range(-4, stop = 0, length = 10)))       #wages
+                )
+
+
+
+#set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(n, ng, l, tc, te, la, ls, pc, mf, el, ep, eg, gs, df, vf, pr, rg, dg, wg)
+    cpr_abm(nrounds = 500,
+            nsim = 1,
+            fine_start = nothing,
+            leak = false,
+            pun1_on = false,
+            pun2_on = false,
+            necessity  = .05,
+            experiment_effort = 1,
+            n = n,
+            ngroups = ng,
+            lattice = l,
+            travel_cost = tc,
+            tech = te,
+            labor = la,
+            harvest_limit = ls,
+            punish_cost = pc,
+            max_forest = mf,
+            experiment_leak = el,
+            experiment_punish1 = ep,
+            experiment_punish2 = ep,
+            experiment_group = eg,
+            groups_sampled =gs,
+            defensibility = df,
+            var_forest = vf,
+            price = pr,
+            regrow = rg,
+            degrade=dg,
+            wages = wg
+
+            )
+end
+
+
+abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
+ S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12] , S[:,13],  S[:,14], S[:,15],
+ S[:,16], S[:,17], S[:,18], S[:,19])
+
+
+test = cpr_abm(n = 150*3, ngroups = 15, lattice = [1,15], var_forest=0, travel_cost = .0000001, max_forest = 7500*3, tech = 4, nrounds = 2000,
+ leak = true, pun1_on = true, pun2_on = true, og_on = false, regrow = .01,
+  glearn_strat = "income", zero = true, outgroup =.01, cmls = false, back_leak = true)
+
+
+
+test2 = cpr_abm(n = 150*12, ngroups = 12, lattice = [1,12], var_forest=0, travel_cost = .0000001, max_forest = 7500*12, tech = 4,
+experiment_effort = 1, experiment_leak = 1, nrounds = 1000, leak = true, pun1_on = true, pun2_on = true, og_on = true, regrow = .01, glearn_strat = "income", zero = true)
+
+
+test = cpr_abm(nsim = 5, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0, travel_cost = .0000001,
+ max_forest = 7500, tech = 1, nrounds = 500,
+ leak = false, pun1_on = false, pun2_on = false, og_on = false,
+  regrow = .01, glearn_strat = "income", wages = .1, back_leak = false, fidelity = .02, nmodels = 10)
+
+test2 = cpr_abm(nsim = 5, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0, travel_cost = .0000001,
+ max_forest = 7500, tech = 1,
+experiment_effort = .75, experiment_leak = .9, nrounds = 500, leak = false, pun1_on = false, pun2_on = false,
+og_on = false, regrow = .01, glearn_strat = "income", wages = .1,
+ back_leak = false, experiment_punish1 = 0, fidelity = .02, nmodels = 10, outgroup = 0 )
+
+
+test3 = cpr_abm(nsim = 1, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0,
+travel_cost = .0000001, max_forest = 800, tech = 1,
+experiment_effort = 1, experiment_leak = 1, nrounds = 1000, leak = true, pun1_on = false, pun2_on = false,
+og_on = false, regrow = .01, glearn_strat = "income", wages = .1, experiment_punish1 = .5,
+back_leak = true)
+
+
+using(Plots)
+plot(test[:effort][:,2,:], legend = true, ylim = (0,1), color = "goldenrod")
+plot!(test2[:effort][:,2,:], legend = true, ylim = (0,1), color = "blue")
+
+plot(test2[:vl][:,2,:], legend = true)
+
+
+plot(test[:stock][:,2,:], legend = false, ylim = (0,1))
+plot(test2[:stock][:,2,:], legend = false, ylim = (0,1))
+
+plot(test[:payoffR][:,2,:], legend = false, ylim = (0,1))
+plot(test2[:payoffR][:,2,:], legend = false, ylim = (0,1))
+
+
+
+
+mean(test[:effort][1:500,2,:])
+mean(test2[:effort][1:500,2,:])
+mean(test3[:effort][1:500,2,:])
+
+
+plot(test[:stock][:,:,:1], legend = false, ylim = (0,1))
+plot(test[:effort][:,:,1], legend = false, ylim = (0,1))
+plot(test2[:stock][:,:,1], legend = false, ylim = (0,1))
+plot(test2[:effort][:,:,1], legend = false, ylim = (0,1))
+plot(test2[:punish2][:,:,1], legend = false, ylim = (0,1))
+plot(test[:punish2][:,:,1], legend = false, ylim = (0,1))
+plot(test[:limit][:,:,1], legend = false, ylim = (0,1))
+plot(test2[:limit][:,:,1], legend = false, ylim = (0,1))
+
+
+plot(test[:leakage][:,2,:], legend = false, ylim = (0,1))
+plot(test2[:leakage][:,2,:], legend = false, ylim = (0,1))
+
+plot(test[:payoffR][:,:,1], legend = false, ylim = (0,1))
+plot(test2[:payoffR][:,:,1], legend = false, ylim = (0,1))
+
+
+Hi all, I have a conceptual question.  Suppose we have the following sampling problem
+where we want to sample some random variable such that increase (beyond normal frequencies)
+the probabily of sampling from a high probability density region.   How  would one go about this?
+
+For example suppose we have:
+x=rand(Normal(), 100000)
+w = abs.(x.-mean(x))
+w=AnalyticWeights((findmax(w)[1].-w).^10)
+y=sample(x, w, 1000)
+
+var(y)
+var(x)
+
+
+
+l = @layout [
+             [grid(3,3)
+             b{0.2h}  ]
+]
+
+l = @layout [grid(3,3)
+             b{0.2h}  ]
+
+l = @layout [[a{0.41h};b;c;d{0.41h}] grid(3,3)]
+Plots.GridLayout(1, 2)
+
+plot(
+           rand(10, 13),
+           layout = l, legend = false, seriestype = [:bar :scatter :path],
+           title = ["($i)" for j in 1:1, i in 1:13], titleloc = :right, titlefont = font(8)
+           )

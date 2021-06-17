@@ -7,7 +7,7 @@ function killagents(pop, id, age, mortality_rate, sample_payoff)
     if  length(unique(age[pop])) == 1
         age[pop] .=age[pop].+rand(0:1, length(age[pop]))
     end
-    mortality_risk = softmax(standardize(age[pop].^5.5) .- standardize(sample_payoff[pop].^.25))
+    mortality_risk = softmax(standardize2(age[pop].^5.5) .- standardize2(sample_payoff[pop].^.25))
     to_die = asInt(round(mortality_rate*length(pop), digits =0))
     died = rand(1:300, to_die)
     died=wsample(pop, sample_payoff[pop], to_die, replace = false)
@@ -306,7 +306,7 @@ function cpr_abm(
         fines1[gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
       end
 
-      Random.seed!(seed+21)sada
+      Random.seed!(seed+21)
       temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
       for i in 1:ngroups
         Random.seed!(seed+i+21)
@@ -729,7 +729,9 @@ function cpr_abm(
 
 
 
-        pay
+      payoff += payoff_round .+ baseline
+      payoff_round[isnan.(payoff_round)] .=0
+      payoff[isnan.(payoff)] .=0
 
 
     else

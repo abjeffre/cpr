@@ -10,4 +10,5 @@
         end
         harv = ifelse.(isnan.(effort./totaleffort[loc]), 0,
            ((effort./totaleffort[loc]) .* harvest[loc] .- necessity))
+        return(harv)
        end

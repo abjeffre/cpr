@@ -1,9 +1,12 @@
-function SplitGroups(gid, groups, nmodels, id, traits, split_method, ngroups)
+function SplitGroupsTest(gid, groups, nmodels, id, traits, split_method, ngroups)
+    print(any(tab(gid, ngroups).<(nmodels+1)))
     if any(tab(gid, ngroups).<(nmodels+1))
       failed = findall((tab(gid, ngroups) .< (nmodels+1)))
+      println(failed)
       for i in 1:length(failed)
         gid[gid .∈ Ref(failed[i])] = sample(gid[gid .∉ Ref(failed)], sum(gid .∈ Ref(failed[i])), replace = false)
         if split_method == "random"
+            print("got here")
             for i in 1:length(failed)
                 tosplit=findmax(tab(gid, ngroups))[2]
                 groupsize=asInt(findmax(tab(gid, ngroups))[1])
@@ -16,15 +19,10 @@ function SplitGroups(gid, groups, nmodels, id, traits, split_method, ngroups)
             for i in 1:length(failed)
                 tosplit=findmax(tab(gid, ngroups))[2]
                 groupsize=asInt(findmax(tab(gid, ngroups))[1])
-                splitpoint=median(traits.harv_limit[gid.== tosplit])
+                splitpoint=median(traits.harv_limit[gid.== failed[i]])
                 temp=findall(x->x .> splitpoint, traits.harv_limit[gid.== tosplit])
-                println(traits.harv_limit[gid.== tosplit])
-                println(splitpoint)
-                println(temp)
                 temp2=id[gid.==tosplit]
                 newmembers=temp2[temp]
-                println(temp2)
-                println(length(temp2))
                 gid[newmembers].=failed[i]
             end
         end
