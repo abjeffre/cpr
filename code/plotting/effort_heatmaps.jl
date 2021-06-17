@@ -6,7 +6,7 @@
 l=findall(x->x==0.001, S[:,10])
 h=findall(x->x==0.9, S[:,10])
 #Choose Labor Elasticity
-q=findall(x->x==.9, S[:,6])
+q=findall(x->x==.5, S[:,6])
 l=l[l.∈ Ref(q)]
 h=h[h.∈ Ref(q)]
 
@@ -14,9 +14,9 @@ h=h[h.∈ Ref(q)]
 
 low = abm_dat[l]
 high =abm_dat[h]
-m = zeros(20,20)
+m = zeros(10,10)
 for i = 1:length(high)
-    m[i]  = mean(mean(high[i]["effort"][:,2,:], dims =2) - mean(low[i]["effort"][:,2,:], dims = 2))
+    m[i]  = mean(mean(high[i][:effort][:,2,:], dims =2) - mean(low[i][:effort][:,2,:], dims = 2))
     end
 
 using Plots
