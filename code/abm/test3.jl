@@ -331,3 +331,230 @@ plot!(test2[:leakage][:,2,:], color = "blue")
 plot(test2[:effort][:,1,:], color = "goldenrod")
 plot!(test2[:stock][:,1,:], color = "blue")
 plot!(test2[:leakage][:,1,:], color = "blue")
+
+
+####################################
+############ WEALTH ################
+
+test=cpr_abm()
+
+using(Plots)
+
+histogram(test[:wealth][:,1:1])
+
+anim = @animate for i = 1:500
+
+       h= histogram(test[:wealth][:,i,1],
+            nbins =300,
+            ylim = (0, 50),
+            xlim =(0, 20),
+            label = "Wealth",
+            xlabel = "Wealth",
+            xticks = ([1000], ""),
+            #title = "year: $i",
+             top_margin = 20px)
+
+            age=histogram(test[:age][:,i,1],
+             xlim = (0,100),
+             ylim = (0,100),
+             nbins = 10,
+             #orientation = :horizontal,
+             label = "age", 
+             xlabel = "age",
+             xguidefontsize=9,
+             bottom_margin = 20px, 
+             xticks = collect(0:10:100),
+             yticks = collect(0:10:100),
+              size = (400, 400))
+
+            timer=bar([i], xlim = (0,500)
+            , orientation = :horizontal,
+             label = false, 
+             xlabel = "Time",
+            xguidefontsize=9,
+             bottom_margin = 20px, 
+             xticks = collect(0:50:500),
+              yticks = ([10], ("")),
+              size = (1000, 100))
+              
+            # stock=plot(test[:stock][:,:,i],
+            #  xlim = (0,500),
+            #  label = false, 
+            #  xlabel = "Time",
+            #  ylabel = "Stock",
+            # xguidefontsize=9,
+            #  bottom_margin = 20px,
+            #  left_margin = 20px, 
+            #  xticks = collect(0:50:500),
+            #   yticks = ([10], ("")),
+            #   size = (1000, 200))
+
+
+
+              set1 = plot(h, age, layout = (1,2), size = (1000, 400))
+
+            l = @layout[a;b{.05h}]
+            Plots.GridLayout(2, 1)
+            plot(set1, timer, 
+                size = (1000, 700), 
+                left_margin = 20px,
+                bottom_margin = 20px, 
+                right_margin = 10px,
+                layout = l)   
+    
+ 
+
+end
+
+fps = 50
+gif(anim, string("test.gif")
+, fps = fps)
+
+#############################################
+#############################################
+
+histogram(test[:wealth][:,1:1])
+
+test=cpr_abm(inher = true, wages = .05)
+
+using(Plots)
+
+histogram(test[:wealth][:,100,1])
+
+anim = @animate for i = 1:500
+
+       h= histogram(test[:wealth][:,i,1],
+            nbins =300,
+            ylim = (0, 60),
+            xlim =(0, 150),
+            label = "Wealth",
+            xlabel = "Wealth",
+            xticks = ([1000], ""),
+            #title = "year: $i",
+             top_margin = 20px)
+
+            age=histogram(test[:age][:,i,1],
+             xlim = (0,100),
+             ylim = (0,100),
+             nbins = 10,
+             #orientation = :horizontal,
+             label = "age", 
+             xlabel = "age",
+             xguidefontsize=9,
+             bottom_margin = 20px, 
+             xticks = collect(0:10:100),
+             yticks = collect(0:10:100),
+              size = (400, 400))
+
+            timer=bar([i], xlim = (0,500)
+            , orientation = :horizontal,
+             label = false, 
+             xlabel = "Time",
+            xguidefontsize=9,
+             bottom_margin = 20px, 
+             xticks = collect(0:50:500),
+              yticks = ([10], ("")),
+              size = (1000, 100))
+              
+             stock=plot(test[:stock][1:i,:,1],
+             xlim = (0,500),
+             ylim = (0,1),
+             label = false, 
+             xlabel = "Time",
+             ylabel = "Stock",
+            xguidefontsize=9,
+             bottom_margin = 20px,
+             left_margin = 20px, 
+             xticks = collect(0:50:500),
+              yticks = ([10], ("")),
+              size = (1000, 200))
+
+            group=quantile(test[:wealth][:,1,1], collect(0.1:.1:1))
+            wealth = test[:wealth][:,1,1]
+            avAge = zeros(10)
+            avAge[1] =mean(test[:age][:,1,1][agents.payoff.>= group[1]])
+            length(test[:age][(wealth.<= group[1]),1,1])
+            for i in 2:10
+                avAge[i] = mean(test[:age][:,1,1][(wealth .>= group[i-1]) .& 
+                (wealth.<= group[i])])
+                println(length(test[:age][:,1,1][(wealth.>= group[i-1]) .& 
+                (wealth.<= group[i])]))
+            end
+
+            wealth_age=bar(avAge, xticks = collect(1:10), 
+            ylab = "Mean age",
+            ylim = (0, 70),
+            xlab = "Wealth Quantile")
+
+
+              set1 = plot(h, wealth_age, layout = (1,2), size = (1000, 400))
+
+            l = @layout[a;b{.2h};c{.05h}]
+            Plots.GridLayout(3, 1)
+            plot(set1, stock, timer,
+                size = (1000, 700), 
+                left_margin = 20px,
+                bottom_margin = 20px, 
+                right_margin = 10px,
+                layout = l)   
+    
+ 
+
+end
+
+fps = 50
+gif(anim, string("test.gif")
+, fps = fps)
+
+plot(test[:effort][:,:,1])
+
+
+cpr_abm()
+
+
+
+group=quantile(test[:wealth][:,1,1], collect(0.1:.1:1))
+wealth = test[:wealth][:,1,1]
+avAge = zeros(10)
+avAge[1] =mean(test[:age][:,1,1][agents.payoff.>= group[1]])
+length(test[:age][(wealth.<= group[1]),1,1])
+for i in 2:10
+    avAge[i] = mean(test[:age][:,1,1][(wealth .>= group[i-1]) .& 
+    (wealth.<= group[i])])
+    println(length(test[:age][:,1,1][(wealth.>= group[i-1]) .& 
+    (wealth.<= group[i])]))
+end
+
+
+
+
+
+
+
+using FileIO
+using LinearAlgebra
+using JuliaDB
+using JLD2
+using Plots
+using StatsPlots
+using DataFrames
+using IndexedTables 
+
+using RDatasets
+using Query
+
+import RDatasets
+singers=DataFrame(rand(100))
+singers = RDatasets.dataset("lattice", "singer")
+@df singers violin(string.(:VoicePart), :Height, linewidth=0)
+@df singers boxplot!(string.(:VoicePart), :Height, fillalpha=0.75, linewidth=2)
+@df singers dotplot!(string.(:VoicePart), :Height, marker=(:black, stroke(0)))
+
+load
+
+
+y = rand(100, 4) # Four series of 100 points each
+violin(["Series 1" "Series 2" "Series 3" "Series 4"], y, leg = false)
+
+
+FileIO.load

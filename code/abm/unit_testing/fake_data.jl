@@ -1,8 +1,20 @@
+versioninfo()
+    
     #All trait minus effort
     n = 300
+    nrounds = 500
+    nsim = 2
+    sim =3
     ngroups = 2
     gs_init = convert(Int64, n/ngroups)
     ngoods = 2
+    K = ones(ngroups).*7500
+    kmax = K.+1000
+    year =1
+    mortality_rate = .05
+    fidelity = .02
+    
+
 
     temp = ones(ngoods)
     temp[1] = 100-ngoods
@@ -31,3 +43,5 @@
     gmean = AnalyticWeights(rand(ngroups))
     out = rand(n)
     glearn_strat = false
+
+    k = ones(ngroups)*7500
