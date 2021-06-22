@@ -5,3 +5,4 @@ function MakeBabies(pop, id, sample_payoff, died)
     babies=wsample(id, sample_payoff, length(died), replace = true)
     return(babies)
 end
+
