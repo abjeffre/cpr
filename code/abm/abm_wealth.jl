@@ -551,14 +551,18 @@ function cpr_abm(
       sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
       if experiment==true
         pop = agents.id[agents.gid .∈  [experiment_group]]
-        #println(agents.age[pop])
         died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(pop, agents.id, sample_payoff, died)
-        #add function record generation to link children to parents for the sake of inhretence
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        if inher == false  agents.payoff[died] .= 0 end
+        if inher == true
+          GetChildList(babies, died, children)
+          agents.payoff = DistributWealth(died, agents.payoff, children)
+          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+        end
         agents.age[died]  .= 0
+        agents.payoff[died] .= 0
+        
         #Non-experimental Group
         sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
         pop = agents.id[agents.gid .∉  [experiment_group]]
@@ -566,10 +570,17 @@ function cpr_abm(
         babies = MakeBabies(pop, agents.id, sample_payoff, died)
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        if inher == false  agents.payoff[died] .= 0 end
+        if inher == true
+          GetChildList(babies, died, children)
+          agents.payoff = DistributWealth(died, agents.payoff, children)
+          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+        end
         agents.age[died]  .= 0
+        agents.payoff[died] .= 0
+        
         if cmls == true  agents.gid[died] = agents.gid[babies] end
       else
+        #When No Experiment is in the model
         died =  KillAgents(agents.id, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(agents.id, agents.id, sample_payoff, died)
        

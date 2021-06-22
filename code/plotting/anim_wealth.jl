@@ -258,7 +258,7 @@ gif(anim, string("test.gif")
 tech_data = collect(0.001:.002:1)
 tech_data = [tech_data; ones(500)]
 
-test=cpr_abm(inher = true, wages = .05, nrounds = 1000, zero = true)
+test=cpr_abm(inher = true, wages = .05, nrounds = 1000, zero = true, experiment_leak = .001, experiment_effort =1)
 plot(test[:effort][:,:,1])
 plot(test[:limit][:,:,1])
 plot(test[:punish][:,:,1])
@@ -267,11 +267,13 @@ plot(test[:stock][:,:,1])
 
 test2=cpr_abm(inher = true, wages = .05, nrounds = 1000, zero = true, experiment_leak = .9, experiment_effort =1)
 
+test = copy(test2)
+
 test[:wealthgroups][:,i,1]
 tempG=test[:wealthgroups][:,i,1] .==2
 n = 1000
 
-test = copy(test2)
+histogram(test[:wealth][tempG,i,1])
 
 anim = @animate for i = 1:n
     h= histogram(test[:wealth][tempG,i,1],
