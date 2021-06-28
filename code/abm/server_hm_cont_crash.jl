@@ -10,7 +10,7 @@ using(Distributed)
 @everywhere using(Statistics)
 
 @everywhere include("setup_utilies.jl")
-@everywhere include("abm_rewrite.jl")
+@everywhere include("abm_rewrite2.jl")
 
 
 
@@ -46,7 +46,7 @@ S =expand_grid( [300],           #Population Size
             leak = true,
             pun1_on = false,
             pun2_on = false,
-            experiment_effort = .5,
+            experiment_effort = .2,
             back_leak = true,
             n = n,
             ngroups = ng,

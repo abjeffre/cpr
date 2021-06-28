@@ -143,6 +143,35 @@ function wsample2(data, weights, size)
   end
 
 
-bar(a,b,x...) = (a,b,x)
 
-bar(1,2, [3 4], [5 6])
+  function GetFST(trait, gid, ngroups, experiment_group, experiment)
+    experiment == false ? egroup = -99 : egroup = copy(experiment_group)
+     round(var(report(trait[gid .∉ Ref(egroup)],
+    gid[gid .∉ Ref(egroup)], ngroups)[collect(1:ngroups) .∉ Ref(egroup)])/
+    var(trait[gid .∉ Ref(egroup)]),  digits=4)
+  end
+  
+  
+  allequal_1(x) = all(y->y==x[1],x)
+  
+  
+  function QuantCut(x, p)
+    @assert issorted(p)
+    q = quantile(x, p; sorted = true)
+    searchsortedfirst.(Ref(q), x)
+  end
+  
+  function Theil(x)
+    sum(x./mean(x).*log.(x./mean(x)))/length(x)
+  end
+  
+
+  
+function reportSum(x, gid, ngroups)
+  cnt = zeros(ngroups)
+  for i = 1:ngroups
+    cnt[i] = sum(x[gid .== i])
+      end
+  return(cnt)
+end
+

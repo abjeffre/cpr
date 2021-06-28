@@ -50,17 +50,17 @@ for r in 1:length(pars)
         end
 end
 
-for  r in 1:length(pars)
-        for j in 1:length(labor)
-                fps = 3
-                anim = @animate for i = 1:10
-                #Define line settings
-                plot(p_arr[i, j, r])
-                end
-                gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_pc2_", pars[r], "l", labor[j], ".gif")
-                , fps = fps)
-        end
-end
+# for  r in 1:length(pars)
+#         for j in 1:length(labor)
+#                 fps = 3
+#                 anim = @animate for i = 1:10
+#                 #Define line settings
+#                 plot(p_arr[i, j, r])
+#                 end
+#                 gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_pc2_", pars[r], "l", labor[j], ".gif")
+#                 , fps = fps)
+#         end
+# end
 
 
 
@@ -91,7 +91,7 @@ l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color
 Plots.GridLayout(1, 3)
 set3 = plot(ps3..., heatmap((0:0.01:1).*ones(101,1),
 legend=:none, xticks=:none, c=cols[3], yticks=(1:10:101,
-string.(-1:0.2:1)), title ="\\Delta P", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
+string.(-1:0.2:1)), title ="\\Delta B", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
 plot(set1, set2, size = (1000, 550), left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px,
  layout = (2,1))
 

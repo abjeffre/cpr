@@ -22,7 +22,7 @@ for r in 1:length(pars)
                         h=h[h.∈ Ref(q)]
                         low = abm_dat[l]
                         high =abm_dat[h]
-                        m = zeros(10,10)
+                        m = zeros(20,20)
                         for i = 1:length(high)
                             m[i]  = mean(mean(high[i][pars[r]][:,2,:], dims =2)-mean(low[i][pars[r]][:,2,:], dims =2))# - mean(low[i]["effort"][:,2,:], dims = 2))
                             end
@@ -45,10 +45,19 @@ for r in 1:length(pars)
                 end
         end
 
-                fps = 3
+                fps = 1.5
                 anim = @animate for i = 1:10
                 #Define line settings
-                plot(p_arr[i, 1])
+                  
+                    test=bar([i], xlim = (0,10), orientation = :horizontal, label = false, 
+                        xlabel = "Labor Elasticity",
+                        xguidefontsize=9, bottom_margin = 20px, xticks = ([0, 10], ("Low", "High")), 
+                        yticks = ([10], ("")),  size = (1000, 100))
+                    
+                    l = @layout[a;b{.05h}]
+                    Plots.GridLayout(2, 1)
+                    plot(p_arr[i, 1], test, size = (400, 400), left_margin = 20px, bottom_margin = 20px,
+                     right_margin = 20px, layout = l)
                 end
                 gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\test2.gif")
                 , fps = fps)

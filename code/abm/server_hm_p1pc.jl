@@ -10,7 +10,7 @@ using(Distributed)
 @everywhere using(Statistics)
 
 @everywhere include("setup_utilies.jl")
-@everywhere include("abm_rewrite.jl")
+@everywhere include("abm_gradiated.jl")
 
 
 
@@ -41,7 +41,7 @@ S =expand_grid( [300],           #Population Size
 #set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(n, ng, l, tc, te, la, ls, pc, mf, el, ep, eg, gs, df, vf, pr, rg, dg, wg)
     cpr_abm(nrounds = 500,
-            nsim = 5,
+            nsim = 2,
             fine_start = nothing,
             leak = false,
             pun1_on = true,
@@ -76,4 +76,4 @@ abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
  S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12] , S[:,13],  S[:,14], S[:,15],
  S[:,16], S[:,17], S[:,18], S[:,19])
 
-@JLD2.save("abm_dat_effort_hm_p1cont.jld2", abm_dat, S)
+@JLD2.save("abm_dat_effort_hm_p1contG.jld2", abm_dat, S)

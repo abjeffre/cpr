@@ -3,7 +3,7 @@ using Statistics
 using JLD2
 using Plots
 
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_leakcont3.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_leakage_var2.jld2")
 
 travelcost = unique(S[:,4])
 sort!(travelcost)

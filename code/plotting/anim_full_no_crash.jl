@@ -2,7 +2,8 @@ using Plots.PlotMeasures
 using Statistics
 using JLD2
 using Plots
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full1_crash.jld2")
+abm_dat = nothing
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full1G.jld2")
 
 punishcost = unique(S[:,8])
 labor = .1
@@ -51,11 +52,11 @@ for r in 1:length(pars)
 end
 
 
-@JLD2.save("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr.jld2", p_arr)
+@JLD2.save("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr_nc.jld2", p_arr)
 #######################################################################################
 
-abm_dat <- nothing
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full5_crash.jld2")
+abm_dat = nothing
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full5G.jld2")
 
 punishcost = unique(S[:,8])
 sort!(punishcost)
@@ -63,7 +64,7 @@ pars = [:effort, :leakage, :punish, :punish2, :limit]
 cols = [:RdBu_9, cgrad(:roma, rev = true),  :lighttemperaturemap, cgrad(:PuOr_9, rev = false), :PiYG_9]
 
 
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr_nc.jld2")
 
 labor = .5
 
@@ -102,12 +103,12 @@ for r in 1:length(pars)
         end
 end
 
-@JLD2.save("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr.jld2", p_arr)
+@JLD2.save("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr_nc.jld2", p_arr)
 
 ######################################################################
 
 abm_dat = nothing
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full9_crash2.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full9G.jld2")
 
 punishcost = unique(S[:,8])
 sort!(punishcost)
@@ -115,7 +116,7 @@ pars = [:effort, :leakage, :punish, :punish2, :limit]
 cols = [:RdBu_9, cgrad(:roma, rev = true),  :lighttemperaturemap, cgrad(:PuOr_9, rev = false), :PiYG_9]
 
 
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr_nc.jld2")
 
 labor = .9
 
@@ -154,10 +155,10 @@ for r in 1:length(pars)
         end
 end
 
-@JLD2.save("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr.jld2", p_arr)
+@JLD2.save("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr_nc.jld2", p_arr)
 
 
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\p_arr_nc.jld2")
 
 fps = 2
 anim = @animate for i = 1:10
@@ -208,7 +209,7 @@ Plots.GridLayout(6, 1)
 plot(set1, set2, set3, set4, set5, test, size = (1000, 1500), left_margin = 42px, bottom_margin = 20px, right_margin = 10px,
  layout = l)
 end
-gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_full.gif")
+gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_full_nc.gif")
 , fps = fps)
 
 
@@ -218,7 +219,7 @@ gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_full.gif"
 
 
 abm_dat = nothing
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full1_crash.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full1G.jld2")
 
 
 punishcost = unique(S[:,8])
@@ -272,7 +273,7 @@ end
 #######################################################################################
 
 abm_dat = nothing
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full5_crash.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full5G.jld2")
 
 punishcost = unique(S[:,8])
 sort!(punishcost)
@@ -324,7 +325,7 @@ end
 ######################################################################
 
 abm_dat = nothing
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full9_crash2.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_full9G.jld2")
 
 punishcost = unique(S[:,8])
 sort!(punishcost)
@@ -412,7 +413,7 @@ Plots.GridLayout(6, 1)
 plot(set1, set2, set3, test, size = (1000, 1500), left_margin = 42px, bottom_margin = 20px, right_margin = 10px,
  layout = l)
 end
-gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_full_cov.gif")
+gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_full_covG.gif")
 , fps = fps)
 
 

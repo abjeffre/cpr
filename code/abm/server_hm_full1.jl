@@ -2,7 +2,6 @@
 ############## Heatmaps #############################
 
 using(Distributed)
-addprocs(25)
 @everywhere using(Distributions)
 @everywhere using(DataFrames)
 @everywhere using(JLD2)

@@ -234,3 +234,25 @@ end
 
 
 allequal_1(x) = all(y->y==x[1],x)
+
+
+function QuantCut(x, p)
+  @assert issorted(p)
+  q = quantile(x, p; sorted = true)
+  searchsortedfirst.(Ref(q), x)
+end
+
+function Theil(x)
+  sum(x./mean(x).*log.(x./mean(x)))/length(x)
+end
+
+
+
+function reportSum(x, gid, ngroups)
+cnt = zeros(ngroups)
+for i = 1:ngroups
+  cnt[i] = sum(x[gid .== i])
+    end
+return(cnt)
+end
+

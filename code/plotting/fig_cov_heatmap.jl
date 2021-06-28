@@ -5,7 +5,7 @@ using Plots.PlotMeasures
 using Statistics
 using JLD2
 using Plots
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_p2cont2.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_p2cont3.jld2")
 
 punishcost = unique(S[:,8])
 labor = unique(S[:,6])
@@ -94,7 +94,7 @@ l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color
 Plots.GridLayout(1, 3)
 set3 = plot(ps3..., heatmap((0:0.01:1).*ones(101,1),
 legend=:none, xticks=:none, c=cols[3], yticks=(1:10:101,
-string.(-1:0.2:1)), title ="B", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
+string.(-1:0.2:1)), title ="Cov(R, B)", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
 plot(set1, set2, size = (1000, 550), left_margin = 30px, bottom_margin = 10px, top_margin = 20px, right_margin = 10px,
  layout = (2,1))
 
@@ -104,8 +104,8 @@ vline!([10], label = false)
 
 
 l = @layout[a;b{.05h}]
-Plots.GridLayout(4, 1)
-plot(set3, test, size = (1000, 350), left_margin = 30px, bottom_margin = 20px, right_margin = 10px, top_margin = 20px,
+Plots.GridLayout(2, 1)
+plot(set3, test, size = (1000, 330), left_margin = 30px, bottom_margin = 20px, right_margin = 10px, top_margin = 20px,
  layout = l)
 end
 gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\cov_baseline.gif")
@@ -115,7 +115,7 @@ gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\cov_baseline.g
 
 
 ########################################################
-############# COV LOW BASELINE #########################
+############# COV High BASELINE #########################
 
 using Plots.PlotMeasures
 using Statistics
@@ -349,7 +349,7 @@ gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\cov_base_low.g
 
 
 #############################################################################
-##################### BASE  LOW ##################################################
+##################### BASE  High ##################################################
 
 
 

@@ -98,6 +98,7 @@ function cpr_abm(
   power = false,
   glearn_strat = false,              # options: "wealth", "Income"
   split_method = "random",
+  kmax_data = nothing,
   back_leak = false
 )
 
@@ -230,22 +231,17 @@ function cpr_abm(
     distances = distance(world)
 
     #make the forests and DIVIDE them amongst the groups
-    if var_forest == "binary"
-      half = convert(Int64, ceil(ngroups/2))
-      kmax = ones(ngroups)*(max_forest/ngroups)
-      kmax[1:convert(Int64, ceil(ngroups/2))] = fill(ceil(max_forest/ngroups/2), half)
-      Random.seed!(seeded)
-      if experiment == FALSE
-        kmax = sample(kmax, length(kmax) )
-      else
-        reverse(kmax)
-      end
+    if kmax_data !== nothing
+      kmax = kmax_data
+      K = copy(kmax)
+
     else
     #  Random.seed(seed)
       kmax = rand(Normal(max_forest, var_forest), ngroups)/ngroups
+      kmax[kmax .< 0] .=max_forest/ngroups
+      K = copy(kmax)
     end
-    kmax[kmax .< 0] .=max_forest/ngroups
-    K = copy(kmax)
+
 
     ################################
     ### Give birth to humanity #####

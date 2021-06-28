@@ -21,7 +21,7 @@ include("submodules/GetGroupHarvest.jl")
 include("submodules/GetGroupSeized.jl")
 include("submodules/GetFinesPay.jl")
 include("submodules/GetEcoSysServ.jl")
-
+include("submodules/TransferWealth.jl")
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
@@ -64,6 +64,7 @@ function cpr_abm(
   pun2_on = true,
   pun1_on = true,
   seized_on = true,
+  fines_evolve = false,
   fines1_on = false,
   fines2_on = false,
   fine_start = .1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
@@ -98,7 +99,12 @@ function cpr_abm(
   power = false,
   glearn_strat = false,              # options: "wealth", "Income"
   split_method = "random",
-  back_leak = false
+  kmax_data = nothing,
+  back_leak = false,
+  fines_on = false,
+  inspect_timing = nothing,
+  inher = false,
+  tech_data = nothing
 )
 
 
@@ -139,6 +145,9 @@ function cpr_abm(
      :fstFine1 => zeros(nrounds, nsim),
      :fstFine2 => zeros(nrounds, nsim),
      :fstOg => zeros(nrounds, nsim)
+     #:wealth => zeros(n, nrounds, nsim),
+     #:wealthgroups => zeros(n, nrounds, nsim),
+     #:age => zeros(n, nrounds, nsim)
      )
 
 
@@ -230,22 +239,17 @@ function cpr_abm(
     distances = distance(world)
 
     #make the forests and DIVIDE them amongst the groups
-    if var_forest == "binary"
-      half = convert(Int64, ceil(ngroups/2))
-      kmax = ones(ngroups)*(max_forest/ngroups)
-      kmax[1:convert(Int64, ceil(ngroups/2))] = fill(ceil(max_forest/ngroups/2), half)
-      Random.seed!(seeded)
-      if experiment == FALSE
-        kmax = sample(kmax, length(kmax) )
-      else
-        reverse(kmax)
-      end
+    if kmax_data !== nothing
+      kmax = kmax_data
+      K = copy(kmax)
+
     else
     #  Random.seed(seed)
       kmax = rand(Normal(max_forest, var_forest), ngroups)/ngroups
+      kmax[kmax .< 0] .=max_forest/ngroups
+      K = copy(kmax)
     end
-    kmax[kmax .< 0] .=max_forest/ngroups
-    K = copy(kmax)
+
 
     ################################
     ### Give birth to humanity #####
@@ -257,7 +261,7 @@ function cpr_abm(
       gid = repeat(1:ngroups, gs_init),
       payoff = zeros(n),
       payoff_round = zeros(n),
-      age = sample(18:20, n, replace=true) #notice a small variation in age is necessary for our motrality risk measure
+      age = sample(1:2, n, replace=true) #notice a small variation in age is necessary for our motrality risk measure
       )
     #All trait minus effort
     traits = DataFrame(
@@ -271,6 +275,9 @@ function cpr_abm(
 
     traitTypes = ["binary" "prob" "prob" "positivecont" "positivecont" "positivecont" "prob"]
 
+    # Set up Array To contain Family history
+    children = Vector{Int}[]
+    for i in 1:n push!(children, Vector{Int}[]) end
     #Effort as seperate DF
     temp = ones(ngoods)
     if zero == true
@@ -363,7 +370,7 @@ function cpr_abm(
       if fines1_on == false traits.fines1 = zeros(n)end
       if fines2_on == false traits.fines2 = zeros(n)end
       if og_on == false traits.og_type = zeros(n)end
-
+      if tech_data  !== nothing tech = tech_data[year] end
 
       ############################
       ### RUN EXPERIMENT #########
@@ -387,26 +394,53 @@ function cpr_abm(
       end
       if verbose== true print(string("Experiment: COMPLETED"))
       end
+     
 
       #Politics
       groups.limit=GetPolicy(traits.harv_limit, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
-      groups.fine1=GetPolicy(traits.fines1, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
-      groups.fine2=GetPolicy(traits.fines2, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
-
+      if fines_evolve == true
+        groups.fine1=GetPolicy(traits.fines1, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
+        groups.fine2=GetPolicy(traits.fines2, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
+      else
+        groups.fine1 = ones(ngroups).*fine 
+        groups.fine2 = ones(ngroups).*fine 
+      end
+     
       #Patch Selection
       loc=GetPatch(ngroups, agents.gid, groups.group_status, distances, distance_adj,
                 traits.leakage_type, K, groups_sampled, experiment, experiment_group, back_leak)
       TC=travel_cost.*traits.leakage_type
-
-      # Harvesting
-      GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
-      HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
-
+      #randomize each round
+      if inspect_timing == nothing
+        catch_before = sample([true, false])
+      else
+       if inspect_timing == "before" catch_before = true end
+       if inspect_timing == "after" catch_before = false end
+       end
+      
+      
+      #Harvesting
+      if catch_before == true
+        temp_hg = zeros(n)
+        caught1=GetInspection(temp_hg, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal")
+        temp_effort = effort[:,2] .* (1 .-caught1)
+        GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
+        HG=GetIndvHarvest(GH, temp_effort, loc, necessity, ngroups)
+      else
+        GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
+        HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
+      end
       #Monitoring, Seizure and Fines
-      caught1=GetInspection(HG, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal")
+      if catch_before == false  
+        caught1=GetInspection(HG, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal") 
+      end
       caught2=GetInspection(HG, traits.punish_type2, loc, agents.gid, groups.limit, monitor_tech, groups.def, "local")
       caught_sum = caught1 + caught2
-      seized1=GetGroupSeized(HG, caught1, loc, ngroups)
+      if catch_before == true  
+        seized1=GetGroupSeized(caught1, caught1, loc, ngroups) 
+      else
+        seized1=GetGroupSeized(HG, caught1, loc, ngroups) #REVERT
+      end
       seized2=GetGroupSeized(HG, caught2, loc, ngroups)
       SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
       SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
@@ -414,6 +448,9 @@ function cpr_abm(
       FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
       MC1 = punish_cost*traits.punish_type
       MC2 = punish_cost*traits.punish_type2
+      if seized_on == false SP2 = SP1 = zeros(n) end
+      if fines_on == false FP2 = FP1 = zeros(n) end
+      if catch_before == true SP1 .=0 end
 
       #EcoSystem Public Goods
       ecosys ? ECO =  GetEcoSysServ(ngroups, eco_slope, eco_C, K, kmax) :  ECO = zeros(n)
@@ -426,7 +463,9 @@ function cpr_abm(
       #Calculate agents.payoffs
       agents.payoff_round = HG .*(1 .- caught_sum).*price +
        WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
-      MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid]
+      MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
+      ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) -
+       HG .*(caught2).*groups.fine2[agents.gid]
 
       agents.payoff += agents.payoff_round .+ baseline
       agents.payoff_round[isnan.(agents.payoff_round)] .=0
@@ -450,7 +489,6 @@ function cpr_abm(
 
       ################################################
       ########### ECOSYSTEM DYNAMICS #################
-
       K=ResourceDynamics(GH, K, kmax, regrow, volatility, ngroups)
 
 
@@ -472,8 +510,8 @@ function cpr_abm(
         #history[:harvestNoLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==0], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
         history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round,agents.gid, ngroups), digits=3)
         history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
-        history[:seized][year,:,sim] .=  round.(tab(SP1, ngroups), digits =2)
-        history[:seized2][year,:,sim] .= round.(tab(SP2, ngroups), digits =2)
+        history[:seized][year,:,sim] .=  round.(reportSum(SP1, agents.gid, ngroups), digits =2)
+        history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
         history[:forsize][:,sim] .= kmax
         history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)
         history[:clp2][year,:,sim] .= round.(reportCor(effort[:,2], traits.punish_type2,agents.gid, ngroups), digits=3)
@@ -489,7 +527,9 @@ function cpr_abm(
         history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
         history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
         history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
-
+       #history[:wealth][:,year,sim]  = agents.payoff
+       #history[:wealthgroups][:,year,sim]  = agents.gid
+       #history[:age][:,year,sim]  = agents.age 
       #################################################
       ########### SOCIAL LEARNING #####################
 
@@ -536,11 +576,15 @@ function cpr_abm(
       sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
       if experiment==true
         pop = agents.id[agents.gid .∈  [experiment_group]]
-        #println(agents.age[pop])
         died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(pop, agents.id, sample_payoff, died)
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
+        if inher == true
+          GetChildList(babies, died, children)
+          agents.payoff = DistributWealth(died, agents.payoff, children)
+          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+        end
         agents.payoff[died] .= 0
         agents.age[died]  .= 0
         #Non-experimental Group
@@ -550,12 +594,22 @@ function cpr_abm(
         babies = MakeBabies(pop, agents.id, sample_payoff, died)
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
+        if inher == true
+          GetChildList(babies, died, children)
+          agents.payoff = DistributWealth(died, agents.payoff, children)
+          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+        end
         agents.payoff[died] .= 0
         agents.age[died]  .= 0
         if cmls == true  agents.gid[died] = agents.gid[babies] end
       else
         died =  KillAgents(agents.id, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(agents.id, agents.id, sample_payoff, died)
+        if inher == true
+          GetChildList(babies, died, children)
+          agents.payoff = DistributWealth(died, agents.payoff, children)
+          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+        end
         traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
         effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
         agents.payoff[died] .= 0

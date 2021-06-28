@@ -1106,29 +1106,36 @@ test = cpr_abm(nsim = 5, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0, 
  leak = false, pun1_on = false, pun2_on = false, og_on = false,
   regrow = .01, glearn_strat = "income", wages = .1, back_leak = false, fidelity = .02, nmodels = 10)
 
-test2 = cpr_abm(nsim = 5, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0, travel_cost = .0000001,
- max_forest = 7500, tech = 1,
-experiment_effort = .75, experiment_leak = .9, nrounds = 500, leak = false, pun1_on = false, pun2_on = false,
-og_on = false, regrow = .01, glearn_strat = "income", wages = .1,
- back_leak = false, experiment_punish1 = 0, fidelity = .02, nmodels = 10, outgroup = 0 )
+
+  
+test2 = cpr_abm(nsim = 1, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0,
+travel_cost = .0000001, max_forest = 5000, tech = 1,
+experiment_effort = 1, experiment_leak = .0001, nrounds = 500, leak = true, pun1_on = false, 
+pun2_on = false,
+og_on = false, regrow = .01, glearn_strat = "income", wages = .01, experiment_punish1 = 0,
+back_leak = true, kmax_data = [10000, 5000], labor =.1)
+
 
 
 test3 = cpr_abm(nsim = 1, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0,
-travel_cost = .0000001, max_forest = 800, tech = 1,
-experiment_effort = 1, experiment_leak = 1, nrounds = 1000, leak = true, pun1_on = false, pun2_on = false,
-og_on = false, regrow = .01, glearn_strat = "income", wages = .1, experiment_punish1 = .5,
-back_leak = true)
+travel_cost = .0000001, max_forest = 5000, tech = 1,
+experiment_effort = 1, experiment_leak = .9, nrounds = 500, leak = true, pun1_on = false,
+ pun2_on = false,
+og_on = false, regrow = .01, glearn_strat = "income", wages = .01, experiment_punish1 = 0,
+back_leak = true, kmax_data = [10000, 5000], labor =.9)
 
 
 using(Plots)
-plot(test[:effort][:,2,:], legend = true, ylim = (0,1), color = "goldenrod")
-plot!(test2[:effort][:,2,:], legend = true, ylim = (0,1), color = "blue")
+plot(test2[:effort][:,2,:], legend = true, ylim = (0,1), color = "goldenrod")
+plot!(test3[:effort][:,2,:], legend = true, ylim = (0,1), color = "blue")
 
 plot(test2[:vl][:,2,:], legend = true)
 
+plot(test2[:leakage][:,2,:], legend = false, ylim = (0,1))
+plot!(test3[:leakage][:,2,:], legend = false, ylim = (0,1))
 
-plot(test[:stock][:,2,:], legend = false, ylim = (0,1))
 plot(test2[:stock][:,2,:], legend = false, ylim = (0,1))
+plot!(test3[:stock][:,2,:], legend = false, ylim = (0,1))
 
 plot(test[:payoffR][:,2,:], legend = false, ylim = (0,1))
 plot(test2[:payoffR][:,2,:], legend = false, ylim = (0,1))
@@ -1189,3 +1196,192 @@ plot(
            layout = l, legend = false, seriestype = [:bar :scatter :path],
            title = ["($i)" for j in 1:1, i in 1:13], titleloc = :right, titlefont = font(8)
            )
+
+
+
+
+
+           
+S =expand_grid( [300],           #Population Size
+[2],             #ngroups
+[[1, 2]],        #lattice, will be replaced below
+[.0001],           #travel cost
+[1],             #tech
+[.1, .5, .9],           #labor
+[0.1],           #limit seed values
+10 .^(collect(range(-5, stop =-1, length = 10))),     #Punish Cost
+[15000],          #max forest
+[0.001,.9],      #experiment leakage
+[0.5],           #experiment punish
+[1],             #experiment_group
+[1],             #groups_sampled
+[1],             #Defensibility
+[1],           #var forest
+10 .^(collect(range(-2, stop = 1, length = 20))),          #price
+[.025],        #regrowth
+[[1, 1]], #degrade
+10 .^(collect(range(-4, stop = 0, length = 20)))       #wages
+)
+
+
+
+
+#set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(n, ng, l, tc, te, la, ls, pc, mf, el, ep, eg, gs, df, vf, pr, rg, dg, wg)
+cpr_abm(nrounds = 500,
+nsim = 5,
+fine_start = nothing,
+leak = false,
+pun1_on = true,
+pun2_on = false,
+experiment_effort = 1,
+n = n,
+ngroups = ng,
+lattice = l,
+travel_cost = tc,
+tech = te,
+labor = la,
+harvest_limit = ls,
+punish_cost = pc,
+max_forest = mf,
+experiment_leak = el,
+experiment_punish1 = ep,
+experiment_punish2 = ep,
+experiment_group = eg,
+groups_sampled =gs,
+defensibility = df,
+var_forest = vf,
+price = pr,
+regrow = rg,
+degrade=dg,
+wages = wg
+
+)
+end
+
+test1=cpr_abm(labor = .9, travel_cost = .0001, punish_cost =.000001, wages = 0.001, price = .01,
+experiment_effort = 1, experiment_leak =.0001,
+leak = true, back_leak = true, pun2_on =false, pun1_on = false, max_forest = 5000, regrow = .01,
+fines1_on = true, nrounds = 500,  inspect_timing = "after")
+
+test2=cpr_abm(labor = .9, travel_cost = .0001, punish_cost =.000001, wages = 0.001, price = .01,
+experiment_effort = 1, experiment_leak =.9,
+leak = true, pun2_on =false, back_leak = true, pun1_on = false, max_forest = 5000, regrow = .01, fines1_on = true, nrounds = 500, 
+fine =10, fines_on = true, inspect_timing = "before")
+
+using(Plots)
+plot(test1[:effort][:,2,:], legend = true, ylim = (0,1), color = "goldenrod")
+plot!(test2[:effort][:,2,:], legend = true, ylim = (0,1), color = "blue")
+
+plot(test1[:stock][:,2,:], legend = true, ylim = (0,1), color = "goldenrod")
+plot!(test2[:stock][:,2,:], legend = true, ylim = (0,1), color = "blue")
+
+plot(test1[:punish][:,2,:], legend = true, ylim = (0,1), color = "goldenrod")
+plot!(test2[:punish][:,2,:], legend = true, ylim = (0,1), color = "blue")
+
+plot(test1[:seized][:,2,:], legend = true, ylim = (0,1), color = "goldenrod")
+plot!(test2[:seized][:,2,:], legend = true, ylim = (0,1), color = "blue")
+
+
+
+
+using Plots.PlotMeasures
+using Statistics
+using JLD2
+using Plots
+using ColorSchemes
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_p1contG.jld2")
+
+punishcost = unique(S[:,8])
+labor = unique(S[:,6])
+sort!(punishcost)
+pars = [:effort, :punish]
+p_arr = Plots.Plot{Plots.GRBackend}[]
+resize!(p_arr, length(punishcost)*length(labor)*length(pars))
+p_arr=reshape(p_arr, length(punishcost), length(labor), length(pars))
+cols = [:RdBu_9, :lighttemperaturemap]
+
+
+for r in 1:length(pars)
+        for k in 1:length(labor)
+                for j in 1:length(punishcost)
+                        l=findall(x->x==0.001, S[:,10])
+                        h=findall(x->x==0.9, S[:,10])
+                        q=findall(x->x==labor[k], S[:,6])
+                        v=findall(x->x==punishcost[j], S[:,8])
+                        l=l[l.∈ Ref(v)]
+                        l=l[l.∈ Ref(q)]
+                        h=h[h.∈ Ref(v)]
+                        h=h[h.∈ Ref(q)]
+                        low = abm_dat[l]
+                        high =abm_dat[h]
+                        m = zeros(20,20)
+                        for i = 1:length(high)
+                            m[i]  = mean(mean(high[i][pars[r]][:,2,:], dims =2)-mean(low[i][pars[r]][:,2,:], dims =2))# - mean(low[i]["effort"][:,2,:], dims = 2))
+                            end
+                        using Plots
+                        gr()
+                         p_arr[j,k,r]=p1=heatmap(m,
+                             c=cols[r],
+                             clim= ifelse(r==3, (-.1,.1), (-1,1)),
+                             xlab = ifelse(r==2, "Wages", " "),
+                             ylab = ifelse(k==1, "Price", " "),
+                             yguidefontsize=9,
+                             xguidefontsize=9,
+                             legend = false,
+                             xticks = ([2,19], ifelse(r == 2, ("Low", "High"), (" ", " "))),
+                             yticks = ([2,19], ifelse(k == 1, ("Low", "High"), (" ", " "))),
+                             title = ifelse(r==1, string("Labor: ", labor[k]), " "),
+                             titlefontsize = 9)
+                end
+        end
+end
+#
+# for  r in 1:length(pars)
+#         for j in 1:length(labor)
+#                 fps = 3
+#                 anim = @animate for i = 1:10
+#                 #Define line settings
+#                 plot(p_arr[i, j, r])
+#                 end
+#                 gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_pc1_", pars[r], "l", labor[j], ".gif")
+#                 , fps = fps)
+#         end
+# end
+
+
+
+
+fps = 2
+anim = @animate for i = 1:10
+#Define line settings
+ps1 = [p_arr[i, 1, 1] p_arr[i, 2, 1] p_arr[i, 3, 1]]
+ps2 = [p_arr[i, 1, 2] p_arr[i, 2, 2] p_arr[i, 3, 2]]
+
+l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color bar
+Plots.GridLayout(1, 3)
+set1 = plot(ps1..., heatmap((0:0.01:1).*ones(101,1),
+legend=:none, xticks=:none, c=cols[1], yticks=(1:10:101,
+string.(-1:0.2:1)), title ="\\Delta E", titlefont = 8), layout=l, left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px) # Plot them set y values of color bar accordingly
+
+
+l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color bar
+Plots.GridLayout(1, 3)
+set2 = plot(ps2..., heatmap((0:0.01:1).*ones(101,1),
+legend=:none, xticks=:none, c=cols[2], yticks=(1:10:101,
+string.(-1:0.2:1)), title ="\\Delta X", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
+plot(set1, set2, size = (1000, 550), left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px,
+ layout = (2,1))
+
+
+test=bar([i], xlim = (0,10), orientation = :horizontal, label = false, xlabel = "Insitutional Costs",     xguidefontsize=9, bottom_margin = 20px, xticks = ([0, 10], ("Low", "High")), yticks = ([10], ("")),  size = (1000, 100))
+vline!([10], label = false)
+
+
+l = @layout[a;b;c{.05h}]
+Plots.GridLayout(3, 1)
+plot(set1, set2, test, size = (1000, 700), left_margin = 20px, bottom_margin = 20px, right_margin = 10px,
+ layout = l)
+end
+gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\test.gif")
+, fps = fps)

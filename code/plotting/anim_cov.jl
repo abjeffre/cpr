@@ -56,7 +56,7 @@ for  r in 1:length(pars)
                 #Define line settings
                 plot(p_arr[i, j, r])
                 end
-                gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_cov_", pars[r], "l", labor[j], ".gif")
+                gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_cov_cel_", pars[r], "l", labor[j], ".gif")
                 , fps = fps)
         end
 end
