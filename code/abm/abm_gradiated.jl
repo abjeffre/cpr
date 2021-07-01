@@ -104,10 +104,9 @@ function cpr_abm(
   fines_on = false,
   inspect_timing = nothing,
   inher = false,
-  tech_data = nothing
+  tech_data = nothing,
+  harvest_type = "collective"
 )
-
-
   ################################################
   ##### The multiverse will be recorded  #########
    history=Dict(
@@ -424,12 +423,24 @@ function cpr_abm(
         temp_hg = zeros(n)
         caught1=GetInspection(temp_hg, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal")
         temp_effort = effort[:,2] .* (1 .-caught1)
-        GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
-        HG=GetIndvHarvest(GH, temp_effort, loc, necessity, ngroups)
+        if harvest_type == "collective"
+          GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
+          HG=GetIndvHarvest(GH, temp_effort, loc, necessity, ngroups)
+        else
+          HG=GetHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups)
+          GH=reportSum(HG, agents.gid, ngroups)
+        end
       else
-        GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
-        HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
+        if harvest_type == "collective"
+          GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
+          HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
+        else
+          HG=GetHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, necessity, ngroups)
+          GH=reportSum(HG, agents.gid, ngroups)
+        end
       end
+
+
       #Monitoring, Seizure and Fines
       if catch_before == false  
         caught1=GetInspection(HG, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal") 
@@ -547,8 +558,6 @@ function cpr_abm(
       #  if length(experiment_group)>1 gmean[experiment_group].=0 end
       end
 
-
-
       out = zeros(n)
       #Determine if individuals learn from outgroup or ingroup.
       if og_on == false
@@ -558,6 +567,7 @@ function cpr_abm(
           out[i] = rbinom(1,1, traits.og_type[i])[1]
         end
       end
+
       models=GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
       traits=SocialTransmission(traits, models, fidelity, traitTypes)
       effort=SocialTransmission(effort, models, fidelity, "Dirichlet")

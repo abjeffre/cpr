@@ -11,35 +11,36 @@ using(Distributed)
 @everywhere using(StatsFuns)
 
 @everywhere include("setup_utilies.jl")
-@everywhere include("abm_politics.jl")
+@everywhere include("abm_gradiated.jl")
 
 
 
 S =expand_grid(
-                [false, true],                          #seized                   #leak
-                [false, true],                           #og
+                [false, true],                            #seized                   #leak
+                [false, true],                            #og
                 ["wealth", "poor", "income", false],      #power
-                [false, true],                           #fine2
-                ["wealth", "income", "env", false]       #glearn_strat
+                [false, true],                            #fine2
+                ["wealth", "income", "env", false]        #glearn_strat
                 )
 
 #set up a smaller call function that allows for only a sub-set of pars to be manipulated
-@everywhere function g(s, og, p, f2, gs)
+@everywhere function g(s, og, p, f2, grs)
     cpr_abm(
     ngroups = 15,
     n = 150*15,
-    tech = 4,
-    wages = .05,
+    tech = 1,
+    wages = .1,
     price = 1,
-    max_forest=7500*15,
-    nrounds = 3000,
-    nsim =20,
+    max_forest=10000*15,
+    nrounds = 1000,
+    nsim =5,
     regrow = .01,
     labor = .7,
     lattice =[5,3],
     var_forest = 0,
     pun1_on = true,
     pun2_on =true,
+    travel_cost = .00001
     outgroup = 0.01,
     harvest_var = .07,
     defensibility = 1,
@@ -48,16 +49,17 @@ S =expand_grid(
     zero = true,
     og_on = og,
     power = p,
+    fines_on = true,
     fines1_on = true,
+    fines_evolve = true,
     fines2_on = f2,
     verbose = false,
     fine_start = .1,
     fine_var = .2,
-    glearn_strat = gs,
+    glearn_strat = grs,
     monitor_tech = [1,1]
 )
 end
-
 
 abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5])
 

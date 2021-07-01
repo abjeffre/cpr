@@ -38,10 +38,12 @@ for r in 1:length(pars)
                              legend = true,
                              xticks = ([2,19], ("Low", "High")),
                              yticks = ([2,19], ("Low", "High")),
-                             title = string("Δ Effort \n \n Labor Elasticity = :", round(labor[k], digits = 5)),
+                             #title = string("Δ Effort \n \n Labor Elasticity = :", round(labor[k], digits = 5)),
+                             #legendtitle = "Δ E",
                              titlefontsize = 9,
-                             top_margin = 20px,
+                             top_margin = 30px,
                              right_margin = 20px)
+                             annotate!([23.5], [22.5], text("Δ E", :black, :right, 9))
                 end
         end
 
