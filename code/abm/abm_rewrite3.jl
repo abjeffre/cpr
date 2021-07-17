@@ -21,7 +21,7 @@ include("submodules/GetGroupHarvest.jl")
 include("submodules/GetGroupSeized.jl")
 include("submodules/GetFinesPay.jl")
 include("submodules/GetEcoSysServ.jl")
-
+include("submodules/GetHarvest.jl")
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call

@@ -23,3 +23,5 @@ function ConformityLearn(agents, trait, ngroups, gmean, nmodels, out, glearn_str
       end
       return(x)
 end
+
+

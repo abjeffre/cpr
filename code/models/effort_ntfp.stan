@@ -237,8 +237,8 @@ for(i in 1:2){
          (bW[1]*sigma_W[1] + bW_mu[1])*W[i];
   }
     
-     // 
-     // p[i] =  a[2]  + inter2[i] + bS[2][S[i]]*sigma_S[1] + 
+  
+     p[i] =  a[2]  + inter2[i] + bS[2][S[i]]*sigma_S[1] + 
      //      bTC[2][TH[i], C[i]] +
      //     (bB[2,1]*sigma_B[2,1] + bB_mu[2,1]) *sum(delta_jb[2,1][1:BL[i]]) +
      //     (bB[2,2]*sigma_B[2,2] + bB_mu[2,2]) *sum(delta_jb[2,2][1:BN[i]]) +

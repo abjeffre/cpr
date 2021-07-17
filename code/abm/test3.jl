@@ -691,3 +691,234 @@ for r in 1:length(pars)
                     gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\test2.gif")
                     , fps = fps)
     
+
+
+                    @everywhere function g()
+                        cpr_abm(
+                        ngroups = 2,
+                        n = 150*2,
+                        tech = 1,
+                        wages = .1,
+                        price = 1,
+                        max_forest=10000*2,
+                        nrounds = 1000,
+                        nsim =1,
+                        regrow = .01,
+                        labor = .7,
+                        lattice =[2,1],
+                        var_forest = 0,
+                        pun1_on = true,
+                        pun2_on =true,
+                        travel_cost = .00001,
+                        outgroup = 0.01,
+                        harvest_var = .07,
+                        defensibility = 1,
+                        seized_on = true,
+                        leak = true,
+                        zero = true,
+                        og_on = true,
+                        power = "wealth",
+                        fines_on = true,
+                        fines1_on = true,
+                        fines_evolve = true,
+                        fines2_on = true,
+                        verbose = false,
+                        fine_start = .1,
+                        fine_var = .2,
+                        glearn_strat = "wealth",
+                        monitor_tech = [1,1],
+                        harvest_type = "individual",
+                        policy_weight = "min"
+                    )
+                    end
+                    
+using LatinHypercubeSampling
+
+
+
+                    S =expand_grid(
+                        [false, true],                          # Seized 
+                        [false, true],                          # Og
+                        [false, true],                          # Fine2
+                        ["wealth", "income", "env", false],     # Glearn_strat
+                        ["equal", "min", "max"],                # Policy weight
+                        ["income", "wealth"]                    # Learn Strategy
+                        )
+        
+
+
+                    #set up a smaller call function that allows for only a sub-set of pars to be manipulated
+function getBaseline()
+    cpr_abm(
+    ngroups = 2,
+    n = 150*2,
+    tech = .01,
+    wages = .1,
+    price = 1,
+    max_forest=10000*2,
+    nrounds = 10000,
+    nsim =1,
+    regrow = .01,
+    labor = .7,
+    lattice =[1,2],
+    var_forest = 0,
+    travel_cost = .00001,
+    outgroup = 0.01,
+    harvest_var = .07,
+    defensibility = 1,
+    harvest_limit = .1,
+    seized_on = false,
+    fines_on = false,
+    fines1_on = false,
+    fines_evolve = false,
+    fines2_on = false,
+    verbose = false,
+    pun1_on = false,
+    pun2_on =false,
+    leak = false,
+    zero = true,
+    og_on = false,
+    fine_start = .1,
+    fine_var = .2,
+    glearn_strat = "income",
+    monitor_tech = [1,1],
+    harvest_type = "individual",
+    policy_weight = "equal",
+    learn_type = "income"
+)
+end
+
+tech_data = [collect(.001:.001:1); ones(1000) ; collect(1.001:.001:2); ones(1000)*2; collect(2.001:.001:3); ones(1000)*3]
+tech_data = collect(.0005:.0005:3)
+
+test=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 6000, leak = true, pun2_on = true,
+ harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true, tech_data = tech_data, zero = true)
+using Plots
+
+
+
+plot(test[:stock][:,:,1])
+plot(test[:effort][:,:,1])
+plot(test[:punish][:,:,1])
+plot(test[:punish2][:,:,1])
+plot(test[:leakage][:,:,1])
+plot(test[:payoffR][:,:,1])
+
+test=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 3000, leak = true, pun2_on = true,
+ harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
+  tech_data = tech_data, zero = true, rec_history = true)
+using Plots
+
+v = Matrix{Float64}[]
+x = rand(3, 5)
+push!(v, x)
+for i in 1:2999 push!(v,x) end
+
+
+
+anim = @animate for i = 1:30:3000
+    for g in 1:15
+        x[g] = test[:stock][i,g,1]
+    end
+    heatmap(x, clim = (0,1))
+end
+fps = 30
+gif(anim, 
+string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\test.gif")
+                , fps = fps)
+
+png("cpr/output/test.png")
+plot(test[:stock][:,:,1], legend = false)
+
+png("cpr/output/saviour_effort.png")
+plot(test[:effort][:,:,1])
+histogram(test[:wealth][:,3000,1], bins = 40)
+plot(test[:punish2][:,:,1])
+plot(test[:limit][:,:,1])
+plot(mean(test[:leakage][:,:,1], dims = 3), alpha = .1)
+plot(test[:payoffR][:,:,1], alpha = .1)
+plot(tech_data[1:3000])
+
+
+
+tech_data = [ones(1000) *.5; collect(.501:.001:1.5); ones(1000)*1.5]
+
+test=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 3000, leak = true, pun2_on = true,
+ harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
+  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+
+plot(test[:stock][:,:,1])
+
+
+#see baseline
+test1=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = false,
+ harvest_limit = .1, fines_on = false, fines2_on = true, fines_evolve = true,
+  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+
+plot(test1[:stock][:,:,1])
+plot(test1[:punish2][:,:,1])
+plot(test1[:limit][:,:,1] , legend = false)
+plot(test1[:payoffR][:,:,1] , legend = false)
+plot(test1[:effort][:,:,1] , legend = false)
+
+
+
+
+#see add self regulation
+test2=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = true,
+ harvest_limit = .1, fines_on = false, fines2_on = true, fines_evolve = true,
+  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+
+plot(test2[:stock][:,:,1])
+plot(test2[:punish2][:,:,1])
+plot(test2[:limit][:,:,1] , legend = false)
+plot(test2[:payoffR][:,:,1] , legend = false)
+plot(test2[:effort][:,:,1] , legend = false)
+
+
+# add fine
+test3=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = true,
+ harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
+  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+
+plot(test3[:stock][:,:,1])
+plot(test3[:punish2][:,:,1])
+plot(test3[:limit][:,:,1] , legend = false)
+plot(test3[:payoffR][:,:,1] , legend = false)
+plot(test3[:effort][:,:,1] , legend = false)
+plot(test3[:fine2][:,:,1] , legend = false)
+
+
+# add glearn strat
+test4=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = true,
+ harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
+  tech_data = tech_data, zero = true, rec_history = true, inher = true, glearn_strat = "income")
+
+plot(test4[:stock][:,:,1], legend = false)
+plot(test4[:punish2][:,:,1])
+plot(test4[:limit][:,:,1] , legend = false)
+plot(test4[:payoffR][:,:,1] , legend = false)
+plot(test4[:effort][:,:,1] , legend = false)
+plot(test4[:fine2][:,:,1] , legend = false)
+
+# turn leak on
+test5=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
+ n = 150*15, tech = .5, nrounds = 3000, leak = true, pun2_on = true,
+ harvest_limit = .05, fines_on = true, fines2_on = true, fines_evolve = true,
+ tech_data = tech_data, zero = true, rec_history = true, inher = true, glearn_strat = "income")
+
+plot(test5[:stock][:,:,1], legend = false)
+plot(test5[:punish2][:,:,1])
+plot(test5[:limit][:,:,1] , legend = false)
+plot(test5[:payoffR][:,:,1] , legend = false)
+plot(test5[:effort][:,:,1] , legend = false)
+plot(test5[:fine2][:,:,1] , legend = false)
+plot(test5[:harvest][:,:,1] , legend = false)
+plot(test5[:fstLimit][:,:,1] , legend = false)

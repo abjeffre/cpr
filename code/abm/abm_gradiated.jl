@@ -17,6 +17,7 @@ include("submodules/GetPatch.jl")
 include("submodules/GetModels.jl")
 include("submodules/GetInspection.jl")
 include("submodules/GetIndvHarvest.jl")
+include("submodules/GetHarvest.jl")
 include("submodules/GetGroupHarvest.jl")
 include("submodules/GetGroupSeized.jl")
 include("submodules/GetFinesPay.jl")
@@ -32,12 +33,11 @@ function cpr_abm(
   mortality_rate = 0.03,      # The number of deaths per 100 people
   mutation = 0.01,            # Rate of mutation on traits
   wages = .1,                   # Wage rate in other sectors - opportunity costs
-  wage_growth = false,          # Do wages grow?
-  wgrowth_rate =.0001,          # this is a fun parameter, we know that the average growth rate for preindustiral societies is 0.2% per year why not let wages grow and see what happens
+  wage_data = nothing,
   labor_market = false,         # This controls labor market competition
   market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
   max_forest = 15000,               # Average max stock
-  var_forest = 1,                   # Controls athe heterogeneity in forest size across diffrent groups
+  var_forest = 0,                   # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
   volatility = 0,                 #the volatility of the resource each round - set as variance on a normal
@@ -64,9 +64,9 @@ function cpr_abm(
   pun2_on = true,
   pun1_on = true,
   seized_on = true,
-  fines_evolve = false,
-  fines1_on = false,
-  fines2_on = false,
+  fines_evolve = true,
+  fines1_on = true,
+  fines2_on = true,
   fine_start = .1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
   fine_var = .02,                #Determines the group offset for fines at the begining
   distance_adj =0.9,            # This affects the proboabilty of sampling a more close group.
@@ -87,7 +87,7 @@ function cpr_abm(
   leak = true,                  # This controls whether individuals are able to move into neightboring territory to harvest
   verbose = false,              # verbose reporting for debugging
   seed = 1984,
-  og_on = true,                  # THe evolution of listening to outgroup members.
+  og_on = false,                  # THe evolution of listening to outgroup members.
   experiment_leak = false,              #THIS SETS THE VALUE OF THE OTHER GROUP LEAKAGE and Punish
   experiment_punish1 = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS PUNISHMENT
   experiment_punish2 = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS PUNISHMENT
@@ -96,8 +96,7 @@ function cpr_abm(
   experiment_group = 1,                 #determines the set of groups which the experiment will be run on
   cmls = false,                          #determines whether cmls will operate
   zero = false,
-  power = false,
-  glearn_strat = false,              # options: "wealth", "Income"
+  glearn_strat = false,              # options: "wealth", "income", "env"
   split_method = "random",
   kmax_data = nothing,
   back_leak = false,
@@ -105,7 +104,9 @@ function cpr_abm(
   inspect_timing = nothing,
   inher = false,
   tech_data = nothing,
-  harvest_type = "collective"
+  harvest_type = "individual",
+  policy_weight = "equal",       #typically takes wealth as a weight, but can take any-data that can be used to rank people.
+  rec_history =  false            # You can record the history of wealth but it is costly. 
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -143,11 +144,16 @@ function cpr_abm(
      :fstPunish2 => zeros(nrounds, nsim),
      :fstFine1 => zeros(nrounds, nsim),
      :fstFine2 => zeros(nrounds, nsim),
-     :fstOg => zeros(nrounds, nsim)
-     #:wealth => zeros(n, nrounds, nsim),
-     #:wealthgroups => zeros(n, nrounds, nsim),
-     #:age => zeros(n, nrounds, nsim)
+     :fstOg => zeros(nrounds, nsim),
+     :wealth => Float64[],
+     :wealthgroups => Float64[]
      )
+
+     if rec_history == true
+      history[:wealth] = zeros(n, nrounds, nsim)
+      history[:wealthgroups] = zeros(n, nrounds, nsim)
+      history[:age] = zeros(n, nrounds, nsim)
+    end
 
 
 #Store Parameters for Sweep Verification
@@ -207,7 +213,6 @@ function cpr_abm(
     :experiment_limit => experiment_limit,
     :cmls => cmls,
     :zero => zero,
-    :power => power,
     :glearn_strat => glearn_strat,
   )
 
@@ -219,13 +224,13 @@ function cpr_abm(
 
     #############################
     #### EXPERIMENT SETUP #######
-    if experiment_leak==0  experiment_leak = false end
-    if experiment_punish1==0  experiment_punish1 = false end
-    if experiment_limit==0  experiment_limit = false end
-    if experiment_effort==0   experiment_effort = false end
-    if experiment_punish2==0   experiment_punish2 = false end
-    if (((experiment_limit == 0 && experiment_leak == 0) &&
-        experiment_punish1== false) && experiment_effort ==false) && experiment_punish2==0
+    # if experiment_leak==0  experiment_leak = false end
+    # if experiment_punish1==0  experiment_punish1 = false end
+    # if experiment_limit==0  experiment_limit = false end
+    # if experiment_effort==0   experiment_effort = false end
+    # if experiment_punish2==0   experiment_punish2 = false end
+    if (((experiment_limit == false && experiment_leak == false) &&
+        experiment_punish1== false) && experiment_effort ==false) && experiment_punish2==false
         experiment = false
       else
         experiment = true
@@ -396,10 +401,10 @@ function cpr_abm(
      
 
       #Politics
-      groups.limit=GetPolicy(traits.harv_limit, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
+      groups.limit=GetPolicy(traits.harv_limit, policy_weight, agents.payoff, ngroups, agents.gid, groups.group_status, t)
       if fines_evolve == true
-        groups.fine1=GetPolicy(traits.fines1, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
-        groups.fine2=GetPolicy(traits.fines2, "equal", agents.payoff, ngroups, agents.gid, groups.group_status, t)
+        groups.fine1=GetPolicy(traits.fines1, policy_weight, agents.payoff, ngroups, agents.gid, groups.group_status, t)
+        groups.fine2=GetPolicy(traits.fines2, policy_weight, agents.payoff, ngroups, agents.gid, groups.group_status, t)
       else
         groups.fine1 = ones(ngroups).*fine 
         groups.fine2 = ones(ngroups).*fine 
@@ -538,10 +543,13 @@ function cpr_abm(
         history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
         history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
         history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
-       #history[:wealth][:,year,sim]  = agents.payoff
-       #history[:wealthgroups][:,year,sim]  = agents.gid
-       #history[:age][:,year,sim]  = agents.age 
-      #################################################
+        if rec_history == true 
+              history[:wealth][:,year,sim]  = agents.payoff
+              history[:wealthgroups][:,year,sim]  = agents.gid
+              history[:age][:,year,sim]  = agents.age 
+        end
+
+        #################################################
       ########### SOCIAL LEARNING #####################
 
 
