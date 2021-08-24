@@ -558,7 +558,7 @@ function cpr_abm(
         history[:fstFine1][year,sim]  = convert.(Float16,GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment))
         history[:fstFine2][year,sim]  = convert.(Float16,GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment))
         history[:fstOg][year,sim]  = convert.(Float16,GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment))
-        history[:agHarvest][year,:,sim] .= convert.(Float16,report(WL,agents.gid, ngroups))
+        history[:agHarvest][year,:,sim] .= convert.(Float16,report(AG,agents.gid, ngroups))
         history[:agEffort][year,:,sim] .=convert.(Float16,report(effort[:,1], agents.gid, ngroups))
         if rec_history == true 
               history[:wealth][:,year,sim]  = convert.(Float16,agents.payoff)
