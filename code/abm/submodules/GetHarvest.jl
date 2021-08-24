@@ -2,6 +2,7 @@
   #Note that this harvest function does not pool labor before applying the elastisicty
   function GetHarvest(effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups)
     b = zeros(ngroups)
+    effort=effort.*100
     for i in 1:ngroups
       b[i]=cdf.(Beta(degrade[1], degrade[2]), K[i]/maximum(kmax))
     end
@@ -13,6 +14,7 @@
   #Note that this harvest function does not pool labor before applying the elastisicty
   function GetHarvestStone(effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups)
     b = zeros(ngroups)
+    effort=effort.*100
     for i in 1:ngroups
       b[i]=cdf.(Beta(degrade[1], degrade[2]), K[i]/maximum(kmax))
     end

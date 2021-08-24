@@ -21,7 +21,7 @@ function SocialTransmission(trait, models, fidelity, types)
                         end
                         if types[i] == "positivecont"
                                 n_error = rand(Normal(1, .02), n)
-                                x[:,i] =  ifelse.(trans_error[:,i], inv_logit.(logit.(x[models,i]) .* n_error), x[models,i])
+                                x[:,i] =  ifelse.(trans_error[:,i], x[models,i] .* n_error, x[models,i])
                         end
                 end
         end

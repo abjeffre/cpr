@@ -1,6 +1,6 @@
-function ResourceDynamics(harvest, stock, max_stock, regrow, volatility, ngroups)
+function ResourceDynamics(harvest, stock, max_stock, regrow, volatility, ngroups, harvest_zero = false)
       #remove stock
-      stock -= harvest
+     if harvest_zero == false stock -= harvest end
       #regrow stock
       stock += stock*regrow.*(1 .- stock./max_stock)
 

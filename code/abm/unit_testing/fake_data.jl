@@ -1,6 +1,9 @@
 versioninfo()
     #generate fake data for the testing of sub units - this should be expanded to have a set of trails and loops through them. 
-
+    using(Distributions)
+    using(Random)
+    using(StatsBase)
+    using(DataFrames)
     include("C:\\Users\\jeffr\\Documents\\work\\functions\\utility.jl")
     include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\SplitGroups.jl")
     include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\SocialTransmission.jl")
@@ -57,8 +60,8 @@ versioninfo()
     punish_cost = 0.001            # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
     fine = 0.0                    # This controls the size of the fine issued when caught  note that in a real world situation this could be recouped by the injured parties but it is not
     self_policing = true          # Toggles if Punishers also target members of their own ingroup for harvesting over limit
-    harvest_limit = 0.25          # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
-    harvest_var = .07 
+    harvest_limit = 5          # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
+    harvest_var = 1.5 
     pun2_on = true 
     pun1_on = true 
     seized_on = true 
@@ -105,6 +108,12 @@ versioninfo()
     tech_data = nothing 
     harvest_type = "individual" 
     policy_weight = "equal"
+    rec_history =  false            # You can record the history of wealth but it is costly. 
+    resource_zero = false
+    harvest_zero = false
+    wealth_degrade = nothing
+    ag_sector = false
+    ag_degrade = [1,1]
 
 
     world =  A = reshape(collect(1:ngroups),  lattice[1],  lattice[2])

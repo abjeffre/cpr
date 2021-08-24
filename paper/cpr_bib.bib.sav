@@ -1,0 +1,13 @@
+% Encoding: UTF-8
+
+@Article{bravo2008irrigation,
+  author    = {Bravo, Giangiacomo and Marelli, Beatrice},
+  journal   = {Journal of Alpine Research| Revue de g{\'e}ographie alpine},
+  title     = {Irrigation systems as common-pool resources. Examples from Northern Italy},
+  year      = {2008},
+  number    = {96-3},
+  pages     = {15--26},
+  publisher = {Association pour la diffusion de la recherche alpine et UGA {\'E}ditions.},
+}
+
+@Comment{jabref-meta: databaseType:bibtex;}
