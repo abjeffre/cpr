@@ -15,6 +15,7 @@ include("submodules/GetPollution.jl")
 include("submodules/GetPolicy.jl")
 include("submodules/GetPatch.jl")
 include("submodules/GetModels.jl")
+include("submodules/GetAgHarvest.jl")
 include("submodules/GetInspection.jl")
 include("submodules/GetIndvHarvest.jl")
 include("submodules/GetHarvest.jl")
@@ -33,10 +34,7 @@ function cpr_abm(
   mortality_rate = 0.03,      # The number of deaths per 100 people
   mutation = 0.01,            # Rate of mutation on traits
   wages = .1,                   # Wage rate in other sectors - opportunity costs
-  wage_data = nothing,
-  labor_market = false,         # This controls labor market competition
-  market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
-  max_forest = 15000,               # Average max stock
+  max_forest = 350000,               # Average max stock
   var_forest = 0,                   # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
@@ -50,7 +48,7 @@ function cpr_abm(
   tech = 1,                     # Used for scaling Cobb Douglas production function
   labor = .7,                   # The elasticity of labor on harvesting production
   price = 1,                    # This sets the price of the resource on the market
-  ngoods = 2,
+  nsectors = 3,
   necessity = 0,                # This sets the minimum amount of the good the household requires
   inst = true,                  # Toggles whether or not punishment is active
   monitor_tech = [1,1],             # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
@@ -106,8 +104,9 @@ function cpr_abm(
   resource_zero = false,
   harvest_zero = false,
   wealth_degrade = nothing,
-  ag_sector = false,
-  ag_degrade = [1,1]
+  agPrice = 1,                        # Price of agricultural goods. 
+  agDegrade = [1,1],                   # This controls how ag output scales with availible farm land. 
+  market_absorbtion = nothing         #THIS IS HOW WELL THE MARKET CAN ABSORB LABOR uses BETA CDF
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -146,6 +145,8 @@ function cpr_abm(
      :fstFine1 => convert.(Float16, zeros(nrounds, nsim)),
      :fstFine2 => convert.(Float16, zeros(nrounds, nsim)),
      :fstOg => convert.(Float16, zeros(nrounds, nsim)),
+     :agHarvest => convert.(Float16, zeros(nrounds, ngroups, nsim)),
+     :agEffort => convert.(Float16, zeros(nrounds, ngroups, nsim)),
      :wealth => Float16[],
      :wealthgroups => Float16[]
      )
@@ -156,9 +157,8 @@ function cpr_abm(
       history[:age] = convert.(Float16, zeros(n, nrounds, nsim))
     end
 
-    if ag_sector == true
-      history[:agHarvest] = convert.(Float16, zeros(nrounds, ngroups, nsim))
-    end
+
+
 
 # #Store Parameters for Sweep Verification
 #   para = Dict(
@@ -289,9 +289,9 @@ function cpr_abm(
     children = Vector{Int}[]
     for i in 1:n push!(children, Vector{Int}[]) end
     #Effort as seperate DF
-    temp = ones(ngoods)
+    temp = ones(nsectors)
     if zero == true
-          temp[1] = 100-ngoods
+          temp[1] = 100-nsectors
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
     else
@@ -480,15 +480,19 @@ function cpr_abm(
 
 
       #Wage Labor Market
-      if ag_sector == false
-        WL = wages*(effort[:,1].*100)*tech
-      else
-        WL = GetAgHarvest(effort[:,1], agents.gid, K, kmax, tech, labor, ag_degrade, necessity, ngroups).*wages
-      end
+      market_absorbtion !== nothing ? current_wages = (1-cdf.(Beta(market_absorbtion[1], market_absorbtion[2]), 
+                                                            sum(effort[:,3])/n))*wages : current_wages = copy(wages)
+      
+      WL = current_wages*(effort[:,3].*100)*tech
+    
+      #Agricultural Production
+      AG = GetAgHarvest(effort[:,1], agents.gid, K, kmax, tech, labor, agDegrade, necessity, ngroups).*agPrice
+      
+       
 
       #Calculate agents.payoffs
       agents.payoff_round = HG .*(1 .- caught_sum).*price +
-       WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
+      WL + AG + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
       MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
       ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) -
        HG .*(caught2).*groups.fine2[agents.gid]
@@ -554,15 +558,16 @@ function cpr_abm(
         history[:fstFine1][year,sim]  = convert.(Float16,GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment))
         history[:fstFine2][year,sim]  = convert.(Float16,GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment))
         history[:fstOg][year,sim]  = convert.(Float16,GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment))
+        history[:agHarvest][year,:,sim] .= convert.(Float16,report(WL,agents.gid, ngroups))
+        history[:agEffort][year,:,sim] .=convert.(Float16,report(effort[:,1], agents.gid, ngroups))
         if rec_history == true 
               history[:wealth][:,year,sim]  = convert.(Float16,agents.payoff)
               history[:wealthgroups][:,year,sim]  = convert.(Float16,agents.gid)
               history[:age][:,year,sim]  = convert.(Float16,agents.age) 
         end
-        if ag_sector == true
-          history[:agHarvest][year,:,sim] .= convert.(Float16,report(WL,agents.gid, ngroups))
-        end
-
+   
+         
+   
         #################################################
       ########### SOCIAL LEARNING #####################
 

@@ -1,5 +1,3 @@
-#####################################################
-############## Heatmaps #############################
 
 using(Distributed)
 @everywhere using(Distributions)
@@ -301,6 +299,8 @@ S =expand_grid( [300],           #Population Size
             pun1_on = false,
             pun2_on = true,
             back_leak = false,
+            harvest_limit =5,
+            harvest_var = 1,
             experiment_effort = 1,
             n = n,
             ngroups = ng,
@@ -379,6 +379,8 @@ S =expand_grid( [150*12],        #Population Size
             pun2_on = true,
             back_leak = true,
             experiment_effort = 1,
+            harvest_limit =5,
+            harvest_var = 1,
             n = n,
             ngroups = ng,
             lattice = l,
@@ -453,6 +455,8 @@ S =expand_grid( [150*12],        #Population Size
             pun2_on = true,
             back_leak = true,
             experiment_effort = 1,
+            harvest_limit =5,
+            harvest_var = 1,
             n = n,
             ngroups = ng,
             lattice = l,
@@ -526,6 +530,8 @@ S =expand_grid( [150*12],        #Population Size
             pun2_on = true,
             back_leak = true,
             experiment_effort = 1,
+            harvest_limit =5,
+            harvest_var = 1,
             n = n,
             ngroups = ng,
             lattice = l,
