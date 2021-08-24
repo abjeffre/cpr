@@ -15,6 +15,7 @@ include("submodules/GetPollution.jl")
 include("submodules/GetPolicy.jl")
 include("submodules/GetPatch.jl")
 include("submodules/GetModels.jl")
+include("submodules/GetAgHarvest.jl")
 include("submodules/GetInspection.jl")
 include("submodules/GetIndvHarvest.jl")
 include("submodules/GetHarvest.jl")
@@ -36,7 +37,7 @@ function cpr_abm(
   wage_data = nothing,
   labor_market = false,         # This controls labor market competition
   market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
-  max_forest = 15000,               # Average max stock
+  max_forest = 350000,               # Average max stock
   var_forest = 0,                   # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate

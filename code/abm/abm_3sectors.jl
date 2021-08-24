@@ -487,6 +487,8 @@ function cpr_abm(
     
       #Agricultural Production
       AG = GetAgHarvest(effort[:,1], agents.gid, K, kmax, tech, labor, agDegrade, necessity, ngroups).*agPrice
+      # If you want collective ag enable
+      #     GetAgHarvest2(effort[:,1], agents.gid, K, kmax, tech, labor, agDegrade, necessity, ngroups)
       
        
 
@@ -495,7 +497,7 @@ function cpr_abm(
       WL + AG + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
       MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
       ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) -
-       HG .*(caught2).*groups.fine2[agents.gid]
+       HG .*(caught2).*groups.fine2[agents.gid] 
 
       agents.payoff += agents.payoff_round .+ baseline
       agents.payoff_round[isnan.(agents.payoff_round)] .=0
