@@ -1,6 +1,7 @@
 /data/raw/
 /data/models/
 /data/abm/
+/data/
 /data/relational_tables/
 /data/dataframes/
 .rds
@@ -11,4 +12,5 @@
 *.docx
 *.png
 *.zip
+*.tgz
 /output/

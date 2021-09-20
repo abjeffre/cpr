@@ -3,12 +3,12 @@ using Statistics
 using JLD2
 using Plots
 using ColorSchemes
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_p1cont.jld2")
+@JLD2.load("cpr//data//leak_pun1.jld2")
 
 punishcost = unique(S[:,8])
 labor = unique(S[:,6])
 sort!(punishcost)
-pars = ["effort", "punish"]
+pars = [:effort, :punish]
 p_arr = Plots.Plot{Plots.GRBackend}[]
 resize!(p_arr, length(punishcost)*length(labor)*length(pars))
 p_arr=reshape(p_arr, length(punishcost), length(labor), length(pars))
@@ -22,10 +22,13 @@ for r in 1:length(pars)
                         h=findall(x->x==0.9, S[:,10])
                         q=findall(x->x==labor[k], S[:,6])
                         v=findall(x->x==punishcost[j], S[:,8])
+                        w = findall(x->x==false, S[:,20])
                         l=l[l.∈ Ref(v)]
                         l=l[l.∈ Ref(q)]
+                        l=l[l.∈ Ref(w)]
                         h=h[h.∈ Ref(v)]
                         h=h[h.∈ Ref(q)]
+                        h=h[h.∈ Ref(w)]
                         low = abm_dat[l]
                         high =abm_dat[h]
                         m = zeros(20,20)
@@ -83,9 +86,9 @@ Plots.GridLayout(1, 3)
 set2 = plot(ps2..., heatmap((0:0.01:1).*ones(101,1),
 legend=:none, xticks=:none, c=cols[2], yticks=(1:10:101,
 string.(-1:0.2:1)), title ="\\Delta X", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
+
 plot(set1, set2, size = (1000, 550), left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px,
  layout = (2,1))
-
 
 test=bar([i], xlim = (0,10), orientation = :horizontal, label = false, xlabel = "Insitutional Costs",     xguidefontsize=9, bottom_margin = 20px, xticks = ([0, 10], ("Low", "High")), yticks = ([10], ("")),  size = (1000, 100))
 vline!([10], label = false)
@@ -96,8 +99,7 @@ Plots.GridLayout(3, 1)
 plot(set1, set2, test, size = (1000, 700), left_margin = 20px, bottom_margin = 20px, right_margin = 10px,
  layout = l)
 end
-gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_pc1.gif")
-, fps = fps)
+gif(anim, string("cpr\\output\\pun1.gif"), fps = fps)
 
 ##################################################################################
 ##################CATCH AFTER###################################################
