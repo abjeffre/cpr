@@ -37,7 +37,7 @@ versioninfo()
     wage_data = nothing 
     labor_market = false          # This controls labor market competition
     market_size = 1               # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
-    max_forest = 15000                # Average max stock
+    max_forest = 350000               # Average max stock
     var_forest = 1                    # Controls athe heterogeneity in forest size across diffrent groups
     degrade = [1 1]                 # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly  if negative it decreases the rate of degredation)  degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
     regrow = .01                      # the regrowth rate
@@ -51,7 +51,7 @@ versioninfo()
     tech = 1                      # Used for scaling Cobb Douglas production function
     labor = .7                    # The elasticity of labor on harvesting production
     price = 1                     # This sets the price of the resource on the market
-    ngoods = 2 
+    nsector = 2 
     necessity = 0                 # This sets the minimum amount of the good the household requires
     inst = true                   # Toggles whether or not punishment is active
     monitor_tech = [1, 1]              # This controls the efficacy of monitnoring  higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i  1  x)  0  5)  where i is the proportion of monitors in a pop
@@ -113,8 +113,9 @@ versioninfo()
     harvest_zero = false
     wealth_degrade = nothing
     ag_sector = false
-    ag_degrade = [1,1]
-
+    agDegrade = [1,1]
+    agPrice =1
+  
 
     world =  A = reshape(collect(1:ngroups),  lattice[1],  lattice[2])
     distances = distance(world)

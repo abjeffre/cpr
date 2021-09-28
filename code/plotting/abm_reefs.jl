@@ -24,6 +24,7 @@ include("cpr/code/abm/submodules/GetGroupSeized.jl")
 include("cpr/code/abm/submodules/GetFinesPay.jl")
 include("cpr/code/abm/submodules/GetEcoSysServ.jl")
 include("cpr/code/abm/submodules/TransferWealth.jl")
+include("functions/utility.jl")
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call

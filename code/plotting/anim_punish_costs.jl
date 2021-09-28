@@ -22,7 +22,7 @@ for r in 1:length(pars)
                         h=findall(x->x==0.9, S[:,10])
                         q=findall(x->x==labor[k], S[:,6])
                         v=findall(x->x==punishcost[j], S[:,8])
-                        w = findall(x->x==false, S[:,20])
+                        w = findall(x->x==true, S[:,20])
                         l=l[l.∈ Ref(v)]
                         l=l[l.∈ Ref(q)]
                         l=l[l.∈ Ref(w)]
