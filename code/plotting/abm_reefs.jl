@@ -4,7 +4,6 @@ using Distributions
 using Random
 using Distributions
 using StatsBase
-
 include("cpr/code/abm/submodules/SplitGroupsTest.jl")
 include("cpr/code/abm/submodules/SocialTransmission.jl")
 include("cpr/code/abm/submodules/ResourceDynamics.jl")
@@ -35,9 +34,6 @@ function cpr_abm(
   mortality_rate = 0.03,      # The number of deaths per 100 people
   mutation = 0.01,            # Rate of mutation on traits
   wages = .1,                   # Wage rate in other sectors - opportunity costs
-  wage_data = nothing,
-  labor_market = false,         # This controls labor market competition
-  market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
   max_forest = 350000,               # Average max stock
   var_forest = 0,                   # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
@@ -52,7 +48,7 @@ function cpr_abm(
   tech = 1,                     # Used for scaling Cobb Douglas production function
   labor = .7,                   # The elasticity of labor on harvesting production
   price = 1,                    # This sets the price of the resource on the market
-  ngoods = 2,
+  nsectors = 4,
   necessity = 0,                # This sets the minimum amount of the good the household requires
   inst = true,                  # Toggles whether or not punishment is active
   monitor_tech = [1,1],             # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
@@ -108,13 +104,18 @@ function cpr_abm(
   resource_zero = false,
   harvest_zero = false,
   wealth_degrade = nothing,
-  ag_sector = false,
-  ag_degrade = [1,1]
+  agPrice = 1,                        # Price of agricultural goods. 
+  agDegrade = [1,1],                   # This controls how ag output scales with availible farm land. 
+  market_absorbtion = nothing,         #THIS IS HOW WELL THE MARKET CAN ABSORB LABOR uses BETA CDF
+  Rmax_data = nothing,
+  max_reefs = nothing,
+  var_reefs = nothing
 )
   ################################################
   ##### The multiverse will be recorded  #########
    history=Dict(
      :stock => convert.(Float16, zeros(nrounds, ngroups, nsim)),
+     :reef => convert.(Float16, zeros(nrounds, ngroups, nsim)),
      :effort => convert.(Float16, zeros(nrounds, ngroups, nsim)),
      :limit => convert.(Float16, zeros(nrounds, ngroups, nsim)),
      :leakage => convert.(Float16, zeros(nrounds, ngroups, nsim)),
@@ -148,6 +149,10 @@ function cpr_abm(
      :fstFine1 => convert.(Float16, zeros(nrounds, nsim)),
      :fstFine2 => convert.(Float16, zeros(nrounds, nsim)),
      :fstOg => convert.(Float16, zeros(nrounds, nsim)),
+     :agHarvest => convert.(Float16, zeros(nrounds, ngroups, nsim)),
+     :agEffort => convert.(Float16, zeros(nrounds, ngroups, nsim)),
+     :fEffort => convert.(Float16, zeros(nrounds, ngroups, nsim)),
+     :wEffort => convert.(Float16, zeros(nrounds, ngroups, nsim)),
      :wealth => Float16[],
      :wealthgroups => Float16[]
      )
@@ -158,9 +163,8 @@ function cpr_abm(
       history[:age] = convert.(Float16, zeros(n, nrounds, nsim))
     end
 
-    if ag_sector == true
-      history[:agHarvest] = convert.(Float16, zeros(nrounds, ngroups, nsim))
-    end
+
+
 
 # #Store Parameters for Sweep Verification
 #   para = Dict(
@@ -252,7 +256,6 @@ function cpr_abm(
     if kmax_data !== nothing
       kmax = kmax_data
       K = copy(kmax)
-
     else
     #  Random.seed(seed)
       kmax = rand(Normal(max_forest, var_forest), ngroups)/ngroups
@@ -260,7 +263,22 @@ function cpr_abm(
       K = copy(kmax)
     end
 
+    #make the reefs and DIVIDE them amongst the groups
+    max_reefs == nothing ? max_reefs = copy(max_forest) : nothing
+    var_reefs == nothing ? var_reefs = copy(var_forest) : nothing
+    if Rmax_data !== nothing
+      Rmax = Rmax_data
+      R = copy(Rmax)
+    else
+    #  Random.seed(seed)
+      Rmax = rand(Normal(max_reefs, var_reefs), ngroups)/ngroups
+      Rmax[Rmax .< 0] .=max_reefs/ngroups
+      R = copy(Rmax)
+    end
+
+
     resource_zero == true ?  K = rand(ngroups).+1 : nothing
+    resource_zero == true ?  R = rand(ngroups).+1 : nothing
     
 
     ################################
@@ -291,17 +309,17 @@ function cpr_abm(
     children = Vector{Int}[]
     for i in 1:n push!(children, Vector{Int}[]) end
     #Effort as seperate DF
-    temp = ones(ngoods)
+    temp = ones(nsectors)
     if zero == true
-          temp[1] = 100-ngoods
+          temp[1] = 100-nsectors
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
     else
           temp=temp*2
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
-    end
-    # Setup leakage
+      end
+      # Setup leakage
     leak_temp =zeros(gs_init)
     leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
     for i = 1:ngroups
@@ -401,7 +419,8 @@ function cpr_abm(
         end
         if experiment_effort != 0
           effort[agents.gid.==experiment_group[i], 2] .= experiment_effort
-          effort[agents.gid.==experiment_group[i], 1] .= (1-experiment_effort)
+          effort[agents.gid.==experiment_group[i], [1, 3, 4]] .= (1-experiment_effort)/(nsectors-1)
+          
         end
       end
       if verbose== true print(string("Experiment: COMPLETED"))
@@ -436,20 +455,29 @@ function cpr_abm(
         temp_hg = zeros(n)
         caught1=GetInspection(temp_hg, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal")
         temp_effort = effort[:,2] .* (1 .-caught1)
+        temp_effort2 = effort[:,4] .* (1 .-caught1)
         if harvest_type == "collective"
           GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
           HG=GetIndvHarvest(GH, temp_effort, loc, necessity, ngroups)
+          GH2=GetGroupHarvest(temp_effort2, loc, R, Rmax, tech, labor, degrade, ngroups)
+          HG2=GetIndvHarvest(GH2, temp_effort2, loc, necessity, ngroups)
         else
           HG=GetHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups)
           GH=reportSum(HG, loc, ngroups)
+          HG2=GetHarvest(temp_effort2, loc, R, Rmax, tech, labor, degrade, necessity, ngroups)
+          GH2=reportSum(HG2, loc, ngroups)
         end
       else
         if harvest_type == "collective"
           GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
           HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
+          GH2=GetGroupHarvest(effort[:,4], loc, R, Rmax, tech, labor, degrade, ngroups)
+          HG2=GetIndvHarvest(GH2, effort[:,4], loc, necessity, ngroups)
         else
           HG=GetHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, necessity, ngroups)
           GH=reportSum(HG, loc, ngroups)
+          HG2=GetHarvest(effort[:,4], loc, R, Rmax, tech, labor, degrade, necessity, ngroups)
+          GH2=reportSum(HG2, loc, ngroups)
         end
       end
 
@@ -482,18 +510,24 @@ function cpr_abm(
 
 
       #Wage Labor Market
-      if ag_sector == false
-        WL = wages*(effort[:,1].*100)*tech
-      else
-        WL = GetAgHarvest(effort[:,1], agents.gid, K, kmax, tech, labor, ag_degrade, necessity, ngroups).*wages
-      end
+      market_absorbtion !== nothing ? current_wages = (1-cdf.(Beta(market_absorbtion[1], market_absorbtion[2]), 
+                                                            sum(effort[:,3])/n))*wages : current_wages = copy(wages)
+      
+      WL = current_wages*(effort[:,3].*100)*tech
+    
+      #Agricultural Production
+      AG = GetAgHarvest(effort[:,1], agents.gid, K, kmax, tech, labor, agDegrade, necessity, ngroups).*agPrice
+      # If you want collective ag enable
+      #     GetAgHarvest2(effort[:,1], agents.gid, K, kmax, tech, labor, agDegrade, necessity, ngroups)
+      
+       
 
       #Calculate agents.payoffs
-      agents.payoff_round = HG .*(1 .- caught_sum).*price +
-       WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
+      agents.payoff_round = HG .*(1 .- caught_sum).*price + HG2 .*(1 .- caught_sum).*price +
+      WL + AG + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
       MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
       ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) -
-       HG .*(caught2).*groups.fine2[agents.gid]
+       HG .*(caught2).*groups.fine2[agents.gid] 
 
       agents.payoff += agents.payoff_round .+ baseline
       agents.payoff_round[isnan.(agents.payoff_round)] .=0
@@ -519,11 +553,13 @@ function cpr_abm(
       ########### ECOSYSTEM DYNAMICS #################
 
       K=ResourceDynamics(GH, K, kmax, regrow, volatility, ngroups, harvest_zero)
+      R=ResourceDynamics(GH2, R, Rmax, regrow, volatility, ngroups, harvest_zero)
 
 
       #################################################
       ############# RECORD HISTORY ####################
         history[:stock][year,:,sim] .= convert.(Float16, K./kmax)
+        history[:reef][year,:,sim] .= convert.(Float16, R./Rmax)
         history[:effort][year,:,sim] .=convert.(Float16,report(effort[:,2], agents.gid, ngroups))
         history[:limit][year,:,sim] .= convert.(Float16,reportMedian(traits.harv_limit, agents.gid, ngroups))
         history[:leakage][year,:,sim] .= convert.(Float16,report(traits.leakage_type,agents.gid, ngroups))
@@ -556,15 +592,18 @@ function cpr_abm(
         history[:fstFine1][year,sim]  = convert.(Float16,GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment))
         history[:fstFine2][year,sim]  = convert.(Float16,GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment))
         history[:fstOg][year,sim]  = convert.(Float16,GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment))
+        history[:agHarvest][year,:,sim] .= convert.(Float16,report(AG,agents.gid, ngroups))
+        history[:agEffort][year,:,sim] .=convert.(Float16,report(effort[:,1], agents.gid, ngroups))
+        history[:fEffort][year,:,sim] .=convert.(Float16,report(effort[:,4], agents.gid, ngroups))
+        history[:wEffort][year,:,sim] .=convert.(Float16,report(effort[:,3], agents.gid, ngroups))
         if rec_history == true 
               history[:wealth][:,year,sim]  = convert.(Float16,agents.payoff)
               history[:wealthgroups][:,year,sim]  = convert.(Float16,agents.gid)
               history[:age][:,year,sim]  = convert.(Float16,agents.age) 
         end
-        if ag_sector == true
-          history[:agHarvest][year,:,sim] .= convert.(Float16,report(WL,agents.gid, ngroups))
-        end
-
+   
+         
+   
         #################################################
       ########### SOCIAL LEARNING #####################
 

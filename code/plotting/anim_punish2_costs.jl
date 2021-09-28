@@ -2,7 +2,7 @@ using Plots.PlotMeasures
 using Statistics
 using JLD2
 using Plots
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_p2cont3.jld2")
+@JLD2.load("cpr\\data\\leak_pun2.jld2")
 
 punishcost = unique(S[:,8])
 labor = unique(S[:,6])
@@ -22,10 +22,13 @@ for r in 1:length(pars)
                         h=findall(x->x==0.9, S[:,10])
                         q=findall(x->x==labor[k], S[:,6])
                         v=findall(x->x==punishcost[j], S[:,8])
+                        w = findall(x->x==true, S[:,20])
                         l=l[l.∈ Ref(v)]
                         l=l[l.∈ Ref(q)]
+                        l=l[l.∈ Ref(w)]
                         h=h[h.∈ Ref(v)]
                         h=h[h.∈ Ref(q)]
+                        h=h[h.∈ Ref(w)]
                         low = abm_dat[l]
                         high =abm_dat[h]
                         m = zeros(20,20)
@@ -66,7 +69,7 @@ end
 
 
 
-fps = 2
+fps = 1
 anim = @animate for i = 1:10
 #Define line settings
 ps1 = [p_arr[i, 1, 1] p_arr[i, 2, 1] p_arr[i, 3, 1]]
@@ -104,7 +107,7 @@ Plots.GridLayout(4, 1)
 plot(set1, set2, set3, test, size = (1000, 900), left_margin = 20px, bottom_margin = 20px, right_margin = 10px,
  layout = l)
 end
-gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_pc22.gif")
+gif(anim, string("cpr\\output\\pred_pc2.gif")
 , fps = fps)
 
 
