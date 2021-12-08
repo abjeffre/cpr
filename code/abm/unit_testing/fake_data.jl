@@ -25,20 +25,22 @@ versioninfo()
     include("C:\\Users\\jeffr\\Documents\\work\\cpr\\code\\abm\\submodules\\GetEcoSysServ.jl")
     
 
+    sim =1
+    year =1
 
-    nsim = 4                     # Number of simulations per call
-    nrounds = 500                # Number of rounds per generation
-    n = 300                      # Size of the population
-    ngroups = 2                  # Number of Groups in the population
-    lattice = (1, 2)              # This controls the dimensions of the lattice that the world exists on
+    nsim = 1                     # Number of simulations per call
+    nrounds = 1000                # Number of rounds per generation
+    n = 3                     # Size of the population
+    ngroups = 3                  # Number of Groups in the population
+    lattice = (1, 3)              # This controls the dimensions of the lattice that the world exists on
     mortality_rate = 0.03       # The number of deaths per 100 people
     mutation = 0.01             # Rate of mutation on traits
     wages = .1                    # Wage rate in other sectors - opportunity costs
     wage_data = nothing 
     labor_market = false          # This controls labor market competition
     market_size = 1               # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
-    max_forest = 15000                # Average max stock
-    var_forest = 1                    # Controls athe heterogeneity in forest size across diffrent groups
+    max_forest = 1166*3                # Average max stock
+    var_forest = 0                    # Controls athe heterogeneity in forest size across diffrent groups
     degrade = [1 1]                 # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly  if negative it decreases the rate of degredation)  degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
     regrow = .01                      # the regrowth rate
     volatility = 0                  #the volatility of the resource each round - set as variance on a normal
@@ -62,8 +64,8 @@ versioninfo()
     self_policing = true          # Toggles if Punishers also target members of their own ingroup for harvesting over limit
     harvest_limit = 5          # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
     harvest_var = 1.5 
-    pun2_on = true 
-    pun1_on = true 
+    pun2_on = false 
+    pun1_on = false 
     seized_on = true 
     fines_evolve = false 
     fines1_on = false 
@@ -85,7 +87,7 @@ versioninfo()
     law = .1                      # This controls sustainable harvesting limit when REDD+ is introduced
     num_cofma = 1                 # This controls the number of Groups that will be converted to CoFMA
     cofma_gid = nothing           # This allows you to choose the group id - specificy a spatial identity for the ward that becomes protected.
-    leak = true                   # This controls whether individuals are able to move into neightboring territory to harvest
+    leak = false                   # This controls whether individuals are able to move into neightboring territory to harvest
     verbose = false               # verbose reporting for debugging
     seed = 1984 
     og_on = true                   # THe evolution of listening to outgroup members.

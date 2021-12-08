@@ -23,6 +23,8 @@ include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetGroupSeized.jl
 include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetFinesPay.jl")
 include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetEcoSysServ.jl")
 include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/TransferWealth.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetModelsn1.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/RWLearn.jl")
 include("C:/Users/jeffr/Documents/Work/functions/utility.jl")
 
 function cpr_abm(
@@ -107,7 +109,10 @@ function cpr_abm(
   harvest_zero = false,
   wealth_degrade = nothing,
   slearn_freq = 1, 
-  reset = 100000
+  reset = 100000,
+  socialLearnYear = nothing,
+  αlearn = 1, 
+  indvLearn = false
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -157,66 +162,6 @@ function cpr_abm(
       history[:age] = zeros(n, nrounds, nsim)
     end
 
-
-#Store Parameters for Sweep Verification
-  para = Dict(
-    :wages=>wages,
-    :max_forest => max_forest,
-    :var_forest => var_forest,
-    :degrade => degrade,
-    :regrow => regrow,
-    :pol_slope => pol_slope,
-    :pol_C => pol_C,
-    :volatility => volatility,
-    :eco_slope => eco_slope,
-    :eco_C => eco_C,
-    :tech => tech,
-    :labor => labor,
-    :price => price,
-    :necessity => necessity,
-    :monitor_tech => monitor_tech,
-    :defensibility => defensibility,
-    :punish_cost => punish_cost,
-    :fine =>  fine,
-    :mortality_rate => mortality_rate,
-    :mutation => mutation,
-    :harvest_limit => harvest_limit,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
-    :harvest_var => harvest_var,
-    :fine_var => fine_var,
-    :fine_var => fine_var,
-    :distance_adj => distance_adj,
-    :fidelity => fidelity,
-    :outgroup => outgroup,
-    :baseline => baseline
-    )
-    #Store Feature Configuration for Parameter Sweeps.
-  feat = Dict(
-    :labor_market => labor_market,
-    :pollution => pollution,
-    :ecosys => ecosys,
-    :inst => inst,
-    :def_perc => def_perc,
-    :self_policing => self_policing,
-    :pun2_on => pun2_on,
-    :pun1_on => pun1_on,
-    :seized_on => seized_on,
-    :fines1_on => fines1_on,
-    :fines2_on => fines2_on,
-    :social_learning => social_learning,
-    :learn_type => learn_type,
-    :invade => invade,
-    :REDD => REDD,
-    :leak => leak,
-    :og_on => og_on,
-    :experiment_leak => experiment_leak,
-    :experiment_punish1 => experiment_punish1,
-    :experiment_punish2 => experiment_punish2,
-    :experiment_limit => experiment_effort,
-    :experiment_limit => experiment_limit,
-    :cmls => cmls,
-    :zero => zero,
-    :glearn_strat => glearn_strat,
-  )
 
 
   ##############################
@@ -348,6 +293,10 @@ function cpr_abm(
                         limit = zeros(ngroups),
                         group_status = ones(ngroups),
                         def = zeros(ngroups))
+    #Define Memory 
+    mem = Dict(:id => collect(1:n),
+                 :effort => effort,
+                 :payoff_round => zeros(n))
 
     #set defensibility
       def = zeros(ngroups)
@@ -483,6 +432,20 @@ function cpr_abm(
 
       #Wage Labor Market
       WL = wages*effort[:,1]*tech
+      
+      if indvLearn == true
+        if year == 1
+            nothing
+        elseif year == 2
+            ne = inv_logit.(ifelse.(effort[:,2].==1, 4.6, logit.(effort[:,2])) + rand(Normal(0, .2), n)) 
+            effort[:,2] = ne
+            effort[:,1] = 1 .- ne
+        elseif year > 2
+          #return(agents, effort, mem, αlearn)
+          effort=RWLearn2(agents, effort, mem, αlearn)
+        end
+      end
+
       #Calculate agents.payoffs
       agents.payoff_round = HG .*(1 .- caught_sum).*price +
        WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
@@ -560,7 +523,11 @@ function cpr_abm(
               history[:age][:,year,sim]  = agents.age 
         end
 
-        #################################################
+      ###############################################
+      ##############UPDATE MEMORY ###################
+      mem[:effort] = effort
+      mem[:payoff_round] = agents.payoff_round
+      #################################################
       ########### SOCIAL LEARNING #####################
 
 
@@ -586,11 +553,39 @@ function cpr_abm(
           out[i] = rbinom(1,1, traits.og_type[i])[1]
         end
       end
+      sly =
+        if socialLearnYear == nothing
+            sly = true
+        else
+            if length(socialLearnYear) > 1
+                sly =ifelse(year ∈ socialLearnYear, true, false)
+            else
+                sly= ifelse(year < socialLearnYear, false, true)
+            end
+        end
 
-      models=GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
-      traits=SocialTransmission(traits, models, fidelity, traitTypes)
-      effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
-    end
+      if sly == true
+        if n == ngroups
+                    if year > 1
+                        #models=GetModelsn1(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
+                        models=GetModelsn1(agents, history, learn_type, year)
+                        #println("Before: ", sum(effort[:,2][models] .>= effort[:,2][agents.id]))
+                        traits=SocialTransmission(traits, models, fidelity, traitTypes)
+                        # effortT = copy(effort)
+                        effort2 = zeros(n,2)
+                        effort2[:,2] = history[:effort][year-1,:,1]
+                        effort2[:,1] = 1 .-effort2[:,2]
+                        effort=SocialTransmission2(effort, effort2, models, fidelity, "Dirichlet")
+                    #   println("Mutation: ", sum(effort[:,2] .> effortT[:,2][models])) 
+                     end
+                
+                else
+                models=GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
+                traits=SocialTransmission(traits, models, fidelity, traitTypes)
+                effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
+              end # End ngroup = n check
+            end#end social learning year
+    end # End Social Learning
 
     
       #########################################

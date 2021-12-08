@@ -10,4 +10,61 @@
   publisher = {Association pour la diffusion de la recherche alpine et UGA {\'E}ditions.},
 }
 
+@Article{xepapadeas2005regulation,
+  author    = {Xepapadeas, Anastasios},
+  journal   = {Scandinavian Journal of Economics},
+  title     = {Regulation and evolution of compliance in common pool resources},
+  year      = {2005},
+  number    = {3},
+  pages     = {583--599},
+  volume    = {107},
+  publisher = {Wiley Online Library},
+}
+
+@Article{agrawal2001group,
+  author    = {Agrawal, Arun and Goyal, Sanjeev},
+  journal   = {Comparative Political Studies},
+  title     = {Group size and collective action: Third-party monitoring in common-pool resources},
+  year      = {2001},
+  number    = {1},
+  pages     = {63--93},
+  volume    = {34},
+  publisher = {Sage Publications Thousand Oaks},
+}
+
+@Article{mccarthy2001common,
+  author    = {McCarthy, Nancy and Sadoulet, Elisabeth and de Janvry, Alain},
+  journal   = {Journal of Environmental Economics and management},
+  title     = {Common pool resource appropriation under costly cooperation},
+  year      = {2001},
+  number    = {3},
+  pages     = {297--309},
+  volume    = {42},
+  publisher = {Elsevier},
+}
+
+@Article{brooks2006testing,
+  author    = {Brooks, Jeremy S and Franzen, Margaret A and Holmes, Christopher M and Grote, Mark N and Mulder, Monique Borgerhoff},
+  journal   = {Conservation biology},
+  title     = {Testing hypotheses for the success of different conservation strategies},
+  year      = {2006},
+  number    = {5},
+  pages     = {1528--1538},
+  volume    = {20},
+  publisher = {Wiley Online Library},
+}
+@article{bravo2011agents,
+  title={Agents’ beliefs and the evolution of institutions for common-pool resource management},
+  author={Bravo, Giangiacomo},
+  journal={Rationality and Society},
+  volume={23},
+  number={1},
+  pages={117--152},
+  year={2011},
+  publisher={Sage Publications Sage UK: London, England}
+}
+
+@Article{,
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}

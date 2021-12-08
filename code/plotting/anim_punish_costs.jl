@@ -3,12 +3,12 @@ using Statistics
 using JLD2
 using Plots
 using ColorSchemes
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_p1cont.jld2")
+@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_p1cont_new.jld2")
 
 punishcost = unique(S[:,8])
 labor = unique(S[:,6])
 sort!(punishcost)
-pars = ["effort", "punish"]
+pars = [:effort, :punish]
 p_arr = Plots.Plot{Plots.GRBackend}[]
 resize!(p_arr, length(punishcost)*length(labor)*length(pars))
 p_arr=reshape(p_arr, length(punishcost), length(labor), length(pars))

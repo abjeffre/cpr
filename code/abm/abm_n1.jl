@@ -106,8 +106,7 @@ function cpr_abm(
   resource_zero = false,
   harvest_zero = false,
   wealth_degrade = nothing,
-  slearn_freq = 1, 
-  reset = 100000
+  slearn_freq = 1
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -130,7 +129,6 @@ function cpr_abm(
      :age_max => zeros(nrounds, ngroups, nsim),
      :seized => zeros(nrounds, ngroups, nsim),
      :seized2 => zeros(nrounds, ngroups, nsim),
-     :seized2in => zeros(nrounds, ngroups, nsim),
      :forsize =>  zeros(ngroups, nsim),
      :cel =>  zeros(nrounds, ngroups, nsim),
      :clp2 => zeros(nrounds, ngroups, nsim),
@@ -316,15 +314,15 @@ function cpr_abm(
     temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
     for i in 1:ngroups
       Random.seed!(seed+i+2)
-      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
+      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
     end
     # Fines
-    if fine_start != nothing
+    if fine_start !== nothing
       Random.seed!(seed+20)
       temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
       for i in 1:ngroups
         Random.seed!(seed+i+20)
-        traits.fines1[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
+        traits.fines1[agents.gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
       end
       Random.seed!(seed+21)
       temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
@@ -431,7 +429,6 @@ function cpr_abm(
       if catch_before == true
         temp_hg = zeros(n)
         caught1=GetInspection(temp_hg, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal")
-       # println(sum(caught1))
         temp_effort = effort[:,2] .* (1 .-caught1)
         if harvest_type == "collective"
           GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
@@ -457,7 +454,7 @@ function cpr_abm(
       end
       caught2=GetInspection(HG, traits.punish_type2, loc, agents.gid, groups.limit, monitor_tech, groups.def, "local")
       pun1_on ? nothing : caught1 .= 0
-      pun2_on ? nothing : caught2 .= 0
+      pun2_on ? nothing : caught2 .= 0      
       caught_sum = caught1 + caught2
       if catch_before == true  
         seized1=GetGroupSeized(caught1, caught1, loc, ngroups) 
@@ -475,7 +472,6 @@ function cpr_abm(
       if fines_on == false FP2 = FP1 = zeros(n) end
       if catch_before == true SP1 .=0 end
 
-
       #EcoSystem Public Goods
       ecosys ? ECO =  GetEcoSysServ(ngroups, eco_slope, eco_C, K, kmax) :  ECO = zeros(n)
       pollution ? POL =  GetPollution(effort[:,2], loc, ngroups, pol_slope, pol_C, K, kmax) : POL = zeros(n)
@@ -483,6 +479,7 @@ function cpr_abm(
 
       #Wage Labor Market
       WL = wages*effort[:,1]*tech
+
       #Calculate agents.payoffs
       agents.payoff_round = HG .*(1 .- caught_sum).*price +
        WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
@@ -515,6 +512,7 @@ function cpr_abm(
 
       K=ResourceDynamics(GH, K, kmax, regrow, volatility, ngroups, harvest_zero)
 
+
       if year ∈ reset 
          K = kmax 
       end
@@ -538,7 +536,6 @@ function cpr_abm(
         history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
         history[:seized][year,:,sim] .=  round.(reportSum(SP1, agents.gid, ngroups), digits =2)
         history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
-        history[:seized2in][year,:,sim] .= seized2 
         history[:forsize][:,sim] .= kmax
         history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)
         history[:clp2][year,:,sim] .= round.(reportCor(effort[:,2], traits.punish_type2,agents.gid, ngroups), digits=3)
@@ -563,36 +560,45 @@ function cpr_abm(
         #################################################
       ########### SOCIAL LEARNING #####################
 
+    ok=rand(Binomial(1, slearn_freq), 1)
+    if year > 1
+        if social_learning == true
 
-    if social_learning == true
-
-      #Set Up group rankings
-      if glearn_strat == "income" gmean=AnalyticWeights(report(agents.payoff_round, agents.gid, ngroups)) end
-      if glearn_strat == "wealth" gmean=AnalyticWeights(report(agents.payoff, agents.gid, ngroups)) end
-      if glearn_strat == "env" gmean=AnalyticWeights(K./kmax) end
-      if glearn_strat == "random" gmean=AnalyticWeights(ones(ngroups))end
-      if glearn_strat == false gmean=AnalyticWeights(ones(ngroups))end
-      if experiment== true
-      #  if length(experiment_group)==1 gmean[experiment_group]=0 end  #this ensures all learning happens not from the experimental group.
-      #  if length(experiment_group)>1 gmean[experiment_group].=0 end
-      end
-
-      out = zeros(n)
-      #Determine if individuals learn from outgroup or ingroup.
-      if og_on == false
-        out = rbinom(n, 1, outgroup)
-      else
-        for i in 1:n
-          out[i] = rbinom(1,1, traits.og_type[i])[1]
+        #Set Up group rankings
+        if glearn_strat == "income" gmean=AnalyticWeights(report(agents.payoff_round, agents.gid, ngroups)) end
+        if glearn_strat == "wealth" gmean=AnalyticWeights(report(agents.payoff, agents.gid, ngroups)) end
+        if glearn_strat == "env" gmean=AnalyticWeights(K./kmax) end
+        if glearn_strat == "random" gmean=AnalyticWeights(ones(ngroups))end
+        if glearn_strat == false gmean=AnalyticWeights(ones(ngroups))end
+        if experiment== true
+        #  if length(experiment_group)==1 gmean[experiment_group]=0 end  #this ensures all learning happens not from the experimental group.
+        #  if length(experiment_group)>1 gmean[experiment_group].=0 end
         end
-      end
 
-      models=GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
-      traits=SocialTransmission(traits, models, fidelity, traitTypes)
-      effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
+        out = zeros(n)
+        #Determine if individuals learn from outgroup or ingroup.
+        if og_on == false
+            out = rbinom(n, 1, outgroup)
+        else
+            for i in 1:n
+            out[i] = rbinom(1,1, traits.og_type[i])[1]
+            end
+        end
+
+        #models=GetModelsn1(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
+        models=GetModelsn2(agents, history, learn_type, year)
+        #println("Before: ", sum(effort[:,2][models] .>= effort[:,2][agents.id]))
+        traits=SocialTransmission(traits, models, fidelity, traitTypes)
+        # effortT = copy(effort)
+        effort2 = zeros(n,2)
+        effort2[:,2] = history[:effort][year-1,:,1]
+        effort2[:,1] = 1 .-effort2[:,2]
+        effort=SocialTransmission2(effort, effort2, models, fidelity, "Dirichlet")
+        #  println("Mutation: ", sum(effort[:,2] .> effortT[:,2][models])) 
+        end
     end
 
-    
+        
       #########################################
       ############# GENERAL UPDATING ##########
       agents.age .+= 1

@@ -27,3 +27,25 @@ function SocialTransmission(trait, models, fidelity, types)
         end
         return(x)
 end
+
+
+######################CONTINUE HERES
+function SocialTransmission2(trait, trait2, models, fidelity, types)
+        x=copy(trait)
+        x2 = copy(trait2)
+        n=size(x)[1]
+        k=size(x)[2]
+        trans_error = rand(n,k) .< fidelity
+        self = models .== collect(1:n)
+        #trans_error[self,:] .=0
+        if types == "Dirichlet"
+                temp=(Matrix(x).*5).+.01
+               # println(temp)
+                n_error  = zeros(n,k)
+                for i in 1:n
+                        n_error[i,:] = rand(Dirichlet(temp[i,:]), 1)'
+                end
+                x =  ifelse.(self, x, ifelse.(trans_error[:,1], n_error[models,:], x[models,:]))
+        end
+        return(x)
+end
