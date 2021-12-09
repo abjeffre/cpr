@@ -2,7 +2,7 @@ using Plots.PlotMeasures
 using Statistics
 using JLD2
 using Plots
-@JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_leakcont_crash.jld2")
+@JLD2.load("cpr\\data\\leak_travel.jld2")
 
 
 travelcost = unique(S[:,4])
@@ -27,10 +27,13 @@ for r in 1:length(pars)
                     h=findall(x->x==0.9, S[:,10])
                     q=findall(x->x==labor[k], S[:,6])
                     v=findall(x->x==travelcost[j], S[:,4])
+                    w = findall(x->x==false, S[:,20])
                     l=l[l.∈ Ref(v)]
                     l=l[l.∈ Ref(q)]
+                    l=l[l.∈ Ref(w)]
                     h=h[h.∈ Ref(v)]
                     h=h[h.∈ Ref(q)]
+                    h=h[h.∈ Ref(w)]
                     low = abm_dat[l]
                     high =abm_dat[h]
                     means = zeros(500, 400)
@@ -109,4 +112,4 @@ plot(set1, set2, test, size = (1000, 750), left_margin = 20px, bottom_margin = 2
 end
 
 
-gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\ts_test.gif"), fps = fps)
+gif(anim, string("cpr\\output\\ts_test.gif"), fps = fps)

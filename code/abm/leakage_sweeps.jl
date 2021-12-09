@@ -270,7 +270,7 @@ S =expand_grid( [300],           #Population Size
                 [10],            #travel cost
                 [1],             #tech
                 [.1, .5, .9],    #labor
-                [0.1],           #limit seed values
+                [5],           #limit seed values
                 10 .^(collect(range(-2, stop =2, length = 10))),         #Punish Cost
                 [350000],        #max forest
                 [0.001,.9],      #experiment leakage
@@ -299,7 +299,6 @@ S =expand_grid( [300],           #Population Size
             pun1_on = false,
             pun2_on = true,
             back_leak = false,
-            harvest_limit =5,
             harvest_var = 1,
             experiment_effort = 1,
             n = n,
@@ -349,7 +348,7 @@ S =expand_grid( [150*12],        #Population Size
                 [10],            #travel cost
                 [1],             #tech
                 [.1],            #labor
-                [0.1],           #limit seed values
+                [5],           #limit seed values
                 10 .^(collect(range(-2, stop =2, length = 10))),         #Punish Cost
                 [350000*6],        #max forest
                 [0.001,.9],      #experiment leakage
@@ -379,7 +378,6 @@ S =expand_grid( [150*12],        #Population Size
             pun2_on = true,
             back_leak = true,
             experiment_effort = 1,
-            harvest_limit =5,
             harvest_var = 1,
             n = n,
             ngroups = ng,
@@ -425,7 +423,7 @@ S =expand_grid( [150*12],        #Population Size
                 [10],            #travel cost
                 [1],             #tech
                 [.5],            #labor
-                [0.1],           #limit seed values
+                [5],           #limit seed values
                 10 .^(collect(range(-2, stop =2, length = 10))),         #Punish Cost
                 [350000*6],        #max forest
                 [0.001,.9],      #experiment leakage
@@ -455,7 +453,6 @@ S =expand_grid( [150*12],        #Population Size
             pun2_on = true,
             back_leak = true,
             experiment_effort = 1,
-            harvest_limit =5,
             harvest_var = 1,
             n = n,
             ngroups = ng,
@@ -500,7 +497,7 @@ S =expand_grid( [150*12],        #Population Size
                 [10],            #travel cost
                 [1],             #tech
                 [.9],            #labor
-                [0.1],           #limit seed values
+                [5],           #limit seed values
                 10 .^(collect(range(-2, stop =2, length = 10))),         #Punish Cost
                 [350000*6],        #max forest
                 [0.001,.9],      #experiment leakage
@@ -530,7 +527,6 @@ S =expand_grid( [150*12],        #Population Size
             pun2_on = true,
             back_leak = true,
             experiment_effort = 1,
-            harvest_limit =5,
             harvest_var = 1,
             n = n,
             ngroups = ng,
