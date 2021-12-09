@@ -67,8 +67,8 @@ function cpr_abm(
   pun1_on = true,
   seized_on = true,
   fines_evolve = true,
-  fines1_on = true,
-  fines2_on = true,
+  fines1_on = false,
+  fines2_on = false,
   fine_start = 1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
   fine_var = .2,                #Determines the group offset for fines at the begining
   distance_adj =0.9,            # This affects the proboabilty of sampling a more close group.
