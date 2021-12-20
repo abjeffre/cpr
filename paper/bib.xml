@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<file xmlns="http://bibtexml.sf.net/">
+    <entry id="bravo2008irrigation">
+        <article>
+            <author>Bravo, Giangiacomo and Marelli, Beatrice</author>
+            <title>Irrigation systems as common-pool resources. Examples from Northern Italy</title>
+            <journal>Journal of Alpine Research| Revue de g{\'e}ographie alpine</journal>
+            <year>2008</year>
+            <pages>15--26</pages>
+        </article>
+    </entry>
+    <entry id="xepapadeas2005regulation">
+        <article>
+            <author>Xepapadeas, Anastasios</author>
+            <title>Regulation and evolution of compliance in common pool resources</title>
+            <journal>Scandinavian Journal of Economics</journal>
+            <year>2005</year>
+            <volume>107</volume>
+            <number>3</number>
+            <pages>583--599</pages>
+        </article>
+    </entry>
+    <entry id="agrawal2001group">
+        <article>
+            <author>Agrawal, Arun and Goyal, Sanjeev</author>
+            <title>Group size and collective action: Third-party monitoring in common-pool resources</title>
+            <journal>Comparative Political Studies</journal>
+            <year>2001</year>
+            <volume>34</volume>
+            <number>1</number>
+            <pages>63--93</pages>
+        </article>
+    </entry>
+    <entry id="mccarthy2001common">
+        <article>
+            <author>McCarthy, Nancy and Sadoulet, Elisabeth and de Janvry, Alain</author>
+            <title>Common pool resource appropriation under costly cooperation</title>
+            <journal>Journal of Environmental Economics and management</journal>
+            <year>2001</year>
+            <volume>42</volume>
+            <number>3</number>
+            <pages>297--309</pages>
+        </article>
+    </entry>
+    <entry id="brooks2006testing">
+        <article>
+            <author>Brooks, Jeremy S and Franzen, Margaret A and Holmes, Christopher M and Grote, Mark N and Mulder, Monique Borgerhoff</author>
+            <title>Testing hypotheses for the success of different conservation strategies</title>
+            <journal>Conservation biology</journal>
+            <year>2006</year>
+            <volume>20</volume>
+            <number>5</number>
+            <pages>1528--1538</pages>
+        </article>
+    </entry>
+    <entry id="bravo2011agents">
+        <article>
+            <author>Bravo, Giangiacomo</author>
+            <title>Agents’ beliefs and the evolution of institutions for common-pool resource management</title>
+            <journal>Rationality and Society</journal>
+            <year>2011</year>
+            <volume>23</volume>
+            <number>1</number>
+            <pages>117--152</pages>
+        </article>
+    </entry>
+    <entry id="naegele2019does">
+        <article>
+            <author>Naegele, Helene and Zaklan, Aleksandar</author>
+            <title>Does the EU ETS cause carbon leakage in European manufacturing?</title>
+            <journal>Journal of Environmental Economics and Management</journal>
+            <year>2019</year>
+            <volume>93</volume>
+            <pages>125--147</pages>
+        </article>
+    </entry>
+    <entry/>
+</file>

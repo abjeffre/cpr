@@ -4,28 +4,28 @@ using Distributions
 using Random
 using Distributions
 using StatsBase
-include("cpr/code/abm/submodules/SplitGroupsTest.jl")
-include("cpr/code/abm/submodules/SocialTransmission.jl")
-include("cpr/code/abm/submodules/ResourceDynamics.jl")
-include("cpr/code/abm/submodules/MutateAgents.jl")
-include("cpr/code/abm/submodules/MakeBabies.jl")
-include("cpr/code/abm/submodules/KillAgents.jl")
-include("cpr/code/abm/submodules/GetSeizedPay.jl")
-include("cpr/code/abm/submodules/GetPollution.jl")
-include("cpr/code/abm/submodules/GetPolicy.jl")
-include("cpr/code/abm/submodules/GetPatch.jl")
-include("cpr/code/abm/submodules/GetModels.jl")
-include("cpr/code/abm/submodules/GetInspection.jl")
-include("cpr/code/abm/submodules/GetIndvHarvest.jl")
-include("cpr/code/abm/submodules/GetHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupSeized.jl")
-include("cpr/code/abm/submodules/GetFinesPay.jl")
-include("cpr/code/abm/submodules/GetEcoSysServ.jl")
-include("cpr/code/abm/submodules/TransferWealth.jl")
-include("cpr/code/abm/submodules/GetModelsn1.jl")
-include("cpr/code/abm/submodules/RWLearn.jl")
-include("functions/utility.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/SplitGroupsTest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/SocialTransmission.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/ResourceDynamics.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/MutateAgents.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/MakeBabies.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/KillAgents.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetSeizedPay.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPollution.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPolicy.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPatch.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetModels.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetInspection.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetIndvHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetGroupHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetGroupSeized.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetFinesPay.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetEcoSysServ.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/TransferWealth.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetModelsn1.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/RWLearn.jl")
+include("C:/Users/jeffr/Documents/Work/functions/utility.jl")
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
@@ -99,7 +99,7 @@ function cpr_abm(
   kmax_data = nothing,
   back_leak = false,
   fines_on = false,
-  inspect_timing = nothing,           # options: nothing, "before", "after", if nothing then it randomizes to half and half
+  inspect_timing = nothing,
   inher = false,
   tech_data = nothing,
   harvest_type = "individual",
@@ -422,8 +422,6 @@ function cpr_abm(
       seized2=GetGroupSeized(HG, caught2, loc, ngroups)
       SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
       SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
-      
-      
       FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
       FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
       MC1 = punish_cost*traits.punish_type
@@ -518,14 +516,14 @@ function cpr_abm(
           history[:ve][year,:,sim] .= round.(reportVar(effort[:,2],agents.gid, ngroups), digits=3)
           history[:vp2][year,:,sim] .= round.(reportVar(traits.punish_type2,agents.gid, ngroups), digits=3)
           history[:vl][year,:,sim] .= round.(reportVar(traits.harv_limit,agents.gid, ngroups), digits=3)
-        #  history[:fstEffort][year,sim] = GetFST(effort[:,2], agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstLimit][year,sim]  = GetFST(traits.harv_limit, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstLeakage][year,sim]   = GetFST(traits.leakage_type, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstPunish][year,sim]   = GetFST(traits.punish_type, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstPunish2][year,sim]  = GetFST(traits.punish_type2, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
+          history[:fstEffort][year,sim] = GetFST(effort[:,2], agents.gid, ngroups, experiment_group, experiment)
+          history[:fstLimit][year,sim]  = GetFST(traits.harv_limit, agents.gid, ngroups, experiment_group, experiment)
+          history[:fstLeakage][year,sim]   = GetFST(traits.leakage_type, agents.gid, ngroups, experiment_group, experiment)
+          history[:fstPunish][year,sim]   = GetFST(traits.punish_type, agents.gid, ngroups, experiment_group, experiment)
+          history[:fstPunish2][year,sim]  = GetFST(traits.punish_type2, agents.gid, ngroups, experiment_group, experiment)
+          history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
+          history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
+          history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
         end
         if rec_history == true 
               history[:wealth][:,year,sim]  = agents.payoff
