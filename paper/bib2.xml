@@ -1,596 +1,929 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <b:Sources xmlns:b="http://schemas.openxmlformats.org/officeDocument/2006/bibliography" xmlns="http://schemas.openxmlformats.org/officeDocument/2006/bibliography" SelectedStyle="">
     <b:Source>
-        <b:Year>2017</b:Year>
-        <b:Volume>141</b:Volume>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>How Long Do Treatment Effects Last?</b:ShortTitle>
+        <b:BIBTEX_Copyright>open</b:BIBTEX_Copyright>
+        <b:Year>2012</b:Year>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Deterring poaching of a common pool resource</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>de2017deterring</b:Tag>
+        <b:Title>How Long Do Treatment Effects Last? Persistence and Durability of a Descriptive Norms Intervention's Effect on Energy Conservation</b:Title>
+        <b:BIBTEX_Abstract>Behavioral decision research has profoundly changed our understanding of decision-making. Recent research has begun to explore how behavioral insights can influence behavior in the world, at scale. This work often involves field experiments studying outcomes over short time windows. We study a descriptive social norms intervention's impact on household energy usage continuously over 39 to 49 months. Our two field experiments (N=155,000 households) each have three conditions: untreated control, continued treatment, and treatment that is subsequently discontinued. We find that continued treatment reduces energy usage over the entire period (“durability”). Further, after treatment is discontinued, a sizable energy use reduction persists (“persistence”). Finally, continued treatment generates a greater impact over time than discontinued treatment, showing that continued treatment exerts incremental influence on behavior over and above persistence. We discuss implications, describe how long-term persistence can occur, and argue that future behavioral decision research should address long-term effects of interventions.</b:BIBTEX_Abstract>
+        <b:Publisher>John F. Kennedy School of Government, Harvard University</b:Publisher>
+        <b:Tag>Allcott2012</b:Tag>
+        <b:URL>https://dash.harvard.edu/handle/1/9804492</b:URL>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>De Geest</b:Last>
+                        <b:Last>Allcott</b:Last>
+                        <b:First>Hunt</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Rogers</b:Last>
+                        <b:Middle>T.</b:Middle>
+                        <b:First>Todd</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:JournalName>HKS Faculty Research Working Paper Series</b:JournalName>
+    </b:Source>
+    <b:Source>
+        <b:Year>1996</b:Year>
+        <b:Volume>22</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Social Learning, Social Influence, and New Models of Fertility</b:Title>
+        <b:Publisher>[Population Council, Wiley]</b:Publisher>
+        <b:Tag>Montgomery1996</b:Tag>
+        <b:URL>https://www.jstor.org/stable/2808010</b:URL>
+        <b:DOI>10.2307/2808010</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Montgomery</b:Last>
                         <b:Middle>R.</b:Middle>
-                        <b:First>Lawrence</b:First>
+                        <b:First>Mark</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Stranlund</b:Last>
-                        <b:Middle>K.</b:Middle>
-                        <b:First>John</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Spraggon</b:Last>
-                        <b:Middle>M.</b:Middle>
+                        <b:Last>Casterline</b:Last>
+                        <b:Middle>B.</b:Middle>
                         <b:First>John</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>254–276</b:Pages>
-        <b:JournalName>Journal of Economic Behavior &amp; Organization</b:JournalName>
+        <b:Pages>151–175</b:Pages>
+        <b:JournalName>Population and Development Review</b:JournalName>
+        <b:StandardNumber> ISSN: 0098-7921</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2001</b:Year>
-        <b:Volume>42</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Common pool resource appropriation under costly cooperation</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>mccarthy2001common</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>McCarthy</b:Last>
-                        <b:First>Nancy</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Sadoulet</b:Last>
-                        <b:First>Elisabeth</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>de Janvry</b:Last>
-                        <b:First>Alain</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>297–309</b:Pages>
-        <b:JournalName>Journal of Environmental Economics and management</b:JournalName>
-        <b:Number>3</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2001</b:Year>
-        <b:Volume>34</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Group size and collective action: Third-party monitoring in common-pool resources</b:Title>
-        <b:Publisher>Sage Publications Thousand Oaks</b:Publisher>
-        <b:Tag>agrawal2001group</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Agrawal</b:Last>
-                        <b:First>Arun</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Goyal</b:Last>
-                        <b:First>Sanjeev</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>63–93</b:Pages>
-        <b:JournalName>Comparative Political Studies</b:JournalName>
-        <b:Number>1</b:Number>
-    </b:Source>
-    <b:Source>
+        <b:LCID>1033</b:LCID>
         <b:Year>2020</b:Year>
-        <b:Volume>29</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Deforestation leakage undermines conservation value of tropical and subtropical forest protected areas</b:Title>
-        <b:Publisher>Wiley Online Library</b:Publisher>
-        <b:Tag>ford2020deforestation</b:Tag>
+        <b:Title>Evolving institutions for collective action by selective imitation and self-interested design</b:Title>
+        <b:BIBTEX_Abstract>Human behavior and collective actions are strongly affected by social institutions. A question of great theoretical and practical importance is how successful social institutions get established and spread across groups and societies. Here, using institutionalized punishment in small-scale societies as an example, we contrast two prominent mechanisms - selective imitation and self-interested design - with respect to their ability to converge to cooperative social institutions. While selective imitation has received a great deal of attention in studies of social and cultural evolution, the theoretical toolbox for studying self-interested design is limited. Recently Perry, Shrestha, Vose, and Gavrilets (2018) expanded this toolbox by introducing a novel approach, which they called foresight, generalizing standard myopic best response for the case of individuals with a bounded ability to anticipate actions of their group-mates and care about future payoffs. Here we apply this approach to two general types of collective action – “us vs. nature” and “us vs. them” games. We consider groups composed by a number of regular members producing collective good and a leader monitoring and punishing free-riders. Our results show that foresight increases leaders' willingness to punish free-riders. This, in turn, leads to increased production and the emergence of an effective institution for collective action. We also observed that largely similar outcomes can be achieved by selective imitation, as argued earlier. Selective imitation by leaders (i.e. cultural group selection) outperforms self-interested design if leaders strongly discount the future. Foresight and selective imitation can interact synergistically leading to a faster convergence to an equilibrium. Our approach is applicable to many other types of social institutions and collective action.</b:BIBTEX_Abstract>
+        <b:Tag>Gavrilets2020</b:Tag>
+        <b:BIBTEX_KeyWords>Punishment, Cooperation, Conflict, Cultural evolution, Design, Cultural group selection</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S1090513820300714</b:URL>
+        <b:DOI>10.1016/j.evolhumbehav.2020.05.007</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Ford</b:Last>
-                        <b:Middle>Alan</b:Middle>
-                        <b:First>Scott</b:First>
+                        <b:Last>Gavrilets</b:Last>
+                        <b:First>Sergey</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Jepsen</b:Last>
-                        <b:Middle>Rudbeck</b:Middle>
+                        <b:Last>Duwal Shrestha</b:Last>
+                        <b:First>Mahendra</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Month>6</b:Month>
+        <b:JournalName>Evolution and Human Behavior</b:JournalName>
+        <b:StandardNumber> ISSN: 1090-5138</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:BIBTEX_Copyright>© 2012 Blackwell Publishing Ltd/CNRS</b:BIBTEX_Copyright>
+        <b:Year>2012</b:Year>
+        <b:Volume>15</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>The cost of policy simplification in conservation incentive programs</b:Title>
+        <b:BIBTEX_Abstract>Ecology Letters (2012) 15: 406–414 Abstract Incentive payments to private landowners provide a common strategy to conserve biodiversity and enhance the supply of goods and services from ecosystems. To deliver cost-effective improvements in biodiversity, payment schemes must trade-off inefficiencies that result from over-simplified policies with the administrative burden of implementing more complex incentive designs. We examine the effectiveness of different payment schemes using field parameterized, ecological economic models of extensive grazing farms. We focus on profit maximising farm management plans and use bird species as a policy-relevant indicator of biodiversity. Common policy simplifications result in a 49–100% loss in biodiversity benefits depending on the conservation target chosen. Failure to differentiate prices for conservation improvements in space is particularly problematic. Additional implementation costs that accompany more complicated policies are worth bearing even when these constitute a substantial proportion (70% or more) of the payments that would otherwise have been given to farmers.</b:BIBTEX_Abstract>
+        <b:Tag>Armsworth2012</b:Tag>
+        <b:BIBTEX_KeyWords>Agriculture, agri-environment scheme, biodiversity, cost-effectiveness, ecological economics, grazing, incentive payment, Payments for Environmental Services, trade-off curve</b:BIBTEX_KeyWords>
+        <b:URL>https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1461-0248.2012.01747.x</b:URL>
+        <b:DOI>10.1111/j.1461-0248.2012.01747.x</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Armsworth</b:Last>
+                        <b:Middle>R.</b:Middle>
+                        <b:First>Paul</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Acs</b:Last>
+                        <b:First>Szvetlana</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Dallimer</b:Last>
                         <b:First>Martin</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Kingston</b:Last>
-                        <b:First>Naomi</b:First>
+                        <b:Last>Gaston</b:Last>
+                        <b:Middle>J.</b:Middle>
+                        <b:First>Kevin</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Lewis</b:Last>
-                        <b:First>Edward</b:First>
+                        <b:Last>Hanley</b:Last>
+                        <b:First>Nick</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Brooks</b:Last>
-                        <b:Middle>M.</b:Middle>
-                        <b:First>Thomas</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>MacSharry</b:Last>
-                        <b:First>Brian</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Mertz</b:Last>
-                        <b:First>Ole</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>2014–2024</b:Pages>
-        <b:JournalName>Global Ecology and Biogeography</b:JournalName>
-        <b:Number>11</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2017</b:Year>
-        <b:Volume>131</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>The coevolution of economic institutions and sustainable consumption via cultural group selection</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>waring2017coevolution</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Waring</b:Last>
-                        <b:Middle>M.</b:Middle>
-                        <b:First>Timothy</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Goff</b:Last>
-                        <b:Middle>H.</b:Middle>
-                        <b:First>Sandra</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Smaldino</b:Last>
-                        <b:Middle>E.</b:Middle>
+                        <b:Last>Wilson</b:Last>
                         <b:First>Paul</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>524–532</b:Pages>
-        <b:JournalName>Ecological economics</b:JournalName>
+        <b:Pages>406–414</b:Pages>
+        <b:JournalName>Ecology Letters</b:JournalName>
+        <b:Number>5</b:Number>
+        <b:StandardNumber> ISSN: 1461-0248</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2019</b:Year>
-        <b:Volume>14</b:Volume>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>How do community-based conservation programs in developing countries change human behaviour?</b:ShortTitle>
+        <b:Year>2016</b:Year>
+        <b:Volume>200</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Leakage and boosting effects in environmental governance: a framework for analysis</b:Title>
-        <b:Publisher>IOP Publishing</b:Publisher>
-        <b:Tag>lima2019leakage</b:Tag>
+        <b:Title>How do community-based conservation programs in developing countries change human behaviour? A realist synthesis</b:Title>
+        <b:BIBTEX_Abstract>Community-based conservation programs often target local communities with the aim of altering their behaviours to achieve conservation outcomes. However, these programs can underestimate the complexities of human behaviour, and hence jeopardize their effectiveness. We applied a realist synthesis to 17 community-based conservation programs in developing countries that quantitatively measured behavioural changes linked to conservation outcomes. A realist synthesis identifies the critical mechanisms operating within a program and the outcome(s) caused by these mechanisms, and also identifies how the context affects these mechanisms. Our synthesis identified three main mechanisms that best explain the reasoning of individuals to engage in conservation behaviours: i) conservation livelihood provides economic value; ii) conservation provides benefits that outweigh losses of curtailing previous behaviour, and iii) giving local authority over resources creates empowerment. The success of each mechanism was affected by various context factors, including the proportion of income generated for the family, capacity to engage in livelihood, cultural acceptability of livelihood and the livelihood being logistically achievable to partake in. Despite conservation education being a common strategy, there was very little evidence provided of the reasoning of individuals and subsequent behaviour changes from education programs. This is the first application of a realist synthesis to community-based conservation programs. The results advance our understanding of the decision-making processes of communities subject to such programs, and highlight how different contexts influence changes in conservation behaviour. Future reporting of behavioural outcomes and the associated reasoning of individuals and communities to engage, as well as the relevant contextual data, is required for more informed and effective design of community-based conservation programs.</b:BIBTEX_Abstract>
+        <b:Tag>Nilsson2016</b:Tag>
+        <b:BIBTEX_KeyWords>Decision-making, Evaluations, Interventions, Programs, Review, Wildlife, Biodiversity, Stakeholders</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S0006320716302014</b:URL>
+        <b:DOI>10.1016/j.biocon.2016.05.020</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Lima</b:Last>
-                        <b:Middle>G. Bastos</b:Middle>
-                        <b:First>Mairon</b:First>
+                        <b:Last>Nilsson</b:Last>
+                        <b:First>Danielle</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Persson</b:Last>
-                        <b:Middle>Martin</b:Middle>
-                        <b:First>U.</b:First>
+                        <b:Last>Baxter</b:Last>
+                        <b:First>Greg</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Meyfroidt</b:Last>
-                        <b:First>Patrick</b:First>
+                        <b:Last>Butler</b:Last>
+                        <b:Middle>R. A.</b:Middle>
+                        <b:First>James</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>McAlpine</b:Last>
+                        <b:Middle>A.</b:Middle>
+                        <b:First>Clive</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>105006</b:Pages>
-        <b:JournalName>Environmental Research Letters</b:JournalName>
-        <b:Number>10</b:Number>
+        <b:Pages>93–103</b:Pages>
+        <b:Month>8</b:Month>
+        <b:JournalName>Biological Conservation</b:JournalName>
+        <b:StandardNumber> ISSN: 0006-3207</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2003</b:Year>
-        <b:Volume>223</b:Volume>
+        <b:Year>1991</b:Year>
+        <b:Volume>16</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>The co-evolution of individual behaviors and social institutions</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>bowles2003co</b:Tag>
+        <b:Title>Managerial fads and fashions: The diffusion and rejection of innovations</b:Title>
+        <b:Tag>abrahamson1991managerial</b:Tag>
+        <b:Publisher>Academy of Management Briarcliff Manor, NY 10510</b:Publisher>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Bowles</b:Last>
-                        <b:First>Samuel</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Choi</b:Last>
-                        <b:First>Jung-Kyoo</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Hopfensitz</b:Last>
-                        <b:First>Astrid</b:First>
+                        <b:Last>Abrahamson</b:Last>
+                        <b:First>Eric</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>135–147</b:Pages>
-        <b:JournalName>Journal of theoretical biology</b:JournalName>
-        <b:Number>2</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2005</b:Year>
-        <b:Volume>107</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Regulation and evolution of compliance in common pool resources</b:Title>
-        <b:Publisher>Wiley Online Library</b:Publisher>
-        <b:Tag>xepapadeas2005regulation</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Xepapadeas</b:Last>
-                        <b:First>Anastasios</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>583–599</b:Pages>
-        <b:JournalName>Scandinavian Journal of Economics</b:JournalName>
+        <b:Pages>586–612</b:Pages>
+        <b:JournalName>Academy of management review</b:JournalName>
         <b:Number>3</b:Number>
     </b:Source>
     <b:Source>
-        <b:Year>2009</b:Year>
-        <b:Volume>260</b:Volume>
+        <b:Year>1989</b:Year>
+        <b:Volume>57</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>The evolution of social learning rules: payoff-biased and frequency-dependent biased transmission</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>kendal2009evolution</b:Tag>
+        <b:Title>Subjective Probability and Expected Utility without Additivity</b:Title>
+        <b:BIBTEX_Abstract>An act maps states of nature to outcomes; deterministic outcomes as well as random outcomes are included. Two acts f and g are comonotonic, by definition, if it never happens that f(s)&gt;f(t) and g(t)&gt;g(s) for some states of nature s and t. An axiom of comonotonic independence is introduced here. It weakens the von Neumann-Morgenstern axiom of independence as follows: If f&gt;g and if f, g, and h are comonotonic, then @af+(1-@a)h&gt;@ag+(1-@a)h. If a nondegenerate, cOntinuous, and monotonic (state independent) weak order over acts satisfies comonotonic independence, then it induces a unique non-(necessarily-)additive probability and a von Neumann-Morgenstern utility. Furthermore, one can compute the expected utility of an act with respect to the nonadditive probability, using the Choquet integral. This extension of the expected utility theory covers situations, as the Ellsbergparadox, which are inconsistent with additive expected utility. The concept of uncertainty aversion and interpretation of comonotonic independence in the context of social welfare functions are included.</b:BIBTEX_Abstract>
+        <b:Publisher>[Wiley, Econometric Society]</b:Publisher>
+        <b:Tag>Schmeidler1989</b:Tag>
+        <b:URL>https://www.jstor.org/stable/1911053</b:URL>
+        <b:DOI>10.2307/1911053</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Kendal</b:Last>
-                        <b:First>Jeremy</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Giraldeau</b:Last>
-                        <b:First>Luc-Alain</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Laland</b:Last>
-                        <b:First>Kevin</b:First>
+                        <b:Last>Schmeidler</b:Last>
+                        <b:First>David</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>210–219</b:Pages>
-        <b:JournalName>Journal of theoretical biology</b:JournalName>
+        <b:Pages>571–587</b:Pages>
+        <b:JournalName>Econometrica</b:JournalName>
+        <b:Number>3</b:Number>
+        <b:StandardNumber> ISSN: 0012-9682</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:Year>1959</b:Year>
+        <b:Volume>66</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Subjective probability and decision under uncertainty</b:Title>
+        <b:BIBTEX_Abstract>The concept of subjective probability is investigated in Levin's level of aspiration, Tolman's principles of performance, Rotter's fundamental equation in social learning theory, Edward's subjectively expressed utility (SEU) model in decision theory, and Atkinson's risk-taking model. Though from different areas in psychology, the similarity of these concepts is demonstrated. One discrepancy between the concepts, however, is open to experimental investigation: are valences, reinforcement values, and utilities independent of subjective probability or not? Experiments to test this are outlined. (36 ref.) (PsycINFO Database Record (c) 2016 APA, all rights reserved)</b:BIBTEX_Abstract>
+        <b:Publisher>American Psychological Association</b:Publisher>
+        <b:Tag>Feather1959</b:Tag>
+        <b:BIBTEX_KeyWords>Decision Making, Probability, Uncertainty, Decision Theory</b:BIBTEX_KeyWords>
+        <b:DOI>10.1037/h0045692</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Feather</b:Last>
+                        <b:Middle>T.</b:Middle>
+                        <b:First>N.</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>150–164</b:Pages>
+        <b:JournalName>Psychological Review</b:JournalName>
+        <b:Number>3</b:Number>
+        <b:StandardNumber> ISSN: 1939-1471(Electronic),0033-295X(Print)</b:StandardNumber>
+        <b:City>US</b:City>
+    </b:Source>
+    <b:Source>
+        <b:Year>1991</b:Year>
+        <b:Volume>3</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Evolution, learning, and economic behavior</b:Title>
+        <b:Tag>selten1991evolution</b:Tag>
+        <b:Publisher>Citeseer</b:Publisher>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Selten</b:Last>
+                        <b:First>Reinhard</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>3–24</b:Pages>
+        <b:JournalName>Games and Economic Behavior</b:JournalName>
+        <b:Number>1</b:Number>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2018</b:Year>
+        <b:BIBTEX_Series>Environmental change issues 2018</b:BIBTEX_Series>
+        <b:Volume>32</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>What is REDD+ achieving on the ground?</b:Title>
+        <b:BIBTEX_Abstract>The Paris Climate Agreement recognizes the importance of the mechanism to Reduce Emissions from Deforestation and forest Degradation, and enhance carbon stocks (REDD+). We reviewed 45 articles from the recent scientific literature to understand the outcomes of REDD+ interventions on the ground, in terms of local participation in REDD+, and its carbon and non-carbon (e.g. tenure, well-being, biodiversity) goals. Our review finds few studies that use a counterfactual scenario to measure REDD+ impacts, and relatively little attention to carbon (versus non-carbon) outcomes. The few studies focused on carbon/land use outcomes show moderately encouraging results, while the more numerous studies on non-carbon outcomes (especially well-being) highlight small or insignificant results. To enhance REDD+ performance, these studies recommend improved engagement with local communities, increased funding to bolster interventions on the ground, and more attention to both carbon and non-carbon outcomes in implementation and evaluation</b:BIBTEX_Abstract>
+        <b:Tag>Duchelle2018</b:Tag>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S1877343517301872</b:URL>
+        <b:DOI>10.1016/j.cosust.2018.07.001</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Duchelle</b:Last>
+                        <b:Middle>E.</b:Middle>
+                        <b:First>Amy</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Simonet</b:Last>
+                        <b:First>Gabriela</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Sunderlin</b:Last>
+                        <b:Middle>D.</b:Middle>
+                        <b:First>William</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Wunder</b:Last>
+                        <b:First>Sven</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>134–140</b:Pages>
+        <b:Month>6</b:Month>
+        <b:JournalName>Current Opinion in Environmental Sustainability</b:JournalName>
+        <b:StandardNumber> ISSN: 1877-3435</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:BIBTEX_Copyright>http://creativecommons.org/licenses/by/3.0/</b:BIBTEX_Copyright>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Role of Social Norms in Natural Resource Management: The Case of the Communal Land Distribution Program in Northern Ethiopia</b:Title>
+        <b:Publisher>Multidisciplinary Digital Publishing Institute</b:Publisher>
+        <b:BIBTEX_KeyWords>natural resource management, norms, collective action, hillside distribution</b:BIBTEX_KeyWords>
+        <b:URL>https://www.mdpi.com/2073-445X/9/2/35</b:URL>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>Role of Social Norms in Natural Resource Management</b:ShortTitle>
+        <b:Year>2020</b:Year>
+        <b:Volume>9</b:Volume>
+        <b:BIBTEX_Abstract>The increasing population pressure in the rural areas of Sub-Saharan Africa has caused land degradation as well as an increase in the number of landless farmers. To promote a conservation-oriented utilization of communal lands and increase the livelihood of poor farmers, the Ethiopian government introduced a program to distribute less-utilized communal lands to landless farmers. This study identified the social norms related to natural resource conservation that affect the participation in this program. Using data from 477 farmer households in northern Ethiopia, we estimated probit models with endogenous regressors for the determinants of social norms and their impacts on program participation. The results show that social norms related to conservation positively affect program participation. Regarding policy implication of the findings, an intervention to improve the social norms of local farmers leads to sustainable resource conservation without reducing intrinsic motivation of the local people. A conservation-oriented utilization of the communal lands would be more effective if the land distribution program was accompanied by other programs to improve the social norms in the villages.</b:BIBTEX_Abstract>
+        <b:Tag>Oniki2020</b:Tag>
+        <b:DOI>10.3390/land9020035</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Oniki</b:Last>
+                        <b:First>Shunji</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Berhe</b:Last>
+                        <b:First>Melaku</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Negash</b:Last>
+                        <b:First>Teklay</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>35</b:Pages>
+        <b:Month>2</b:Month>
+        <b:JournalName>Land</b:JournalName>
         <b:Number>2</b:Number>
     </b:Source>
     <b:Source>
-        <b:Year>2006</b:Year>
-        <b:Volume>20</b:Volume>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>Optimizing the influence of social norms interventions</b:ShortTitle>
+        <b:Year>2019</b:Year>
+        <b:Volume>62</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Testing hypotheses for the success of different conservation strategies</b:Title>
-        <b:Publisher>Wiley Online Library</b:Publisher>
-        <b:Tag>brooks2006testing</b:Tag>
+        <b:Title>Optimizing the influence of social norms interventions: Applying social identity insights to motivate residential water conservation</b:Title>
+        <b:BIBTEX_Abstract>Social norms-based interventions offer a promising avenue to encourage proenvironmental behavior change. From a social identity perspective, it is argued that social norms communications will be maximally effective when they are tied to salient group memberships and supportive ingroup norms are communicated. Across four studies conducted in a water scarce region in England we demonstrate that a water conservation ingroup norms appeal encourages a shift in behavioral intentions and behavior. We provide initial evidence of the efficacy of the appeal against an information-only message (Study 1) and the mediating role of perceived ingroup norms (Study 2). Across two randomized control field trials, we find the appeal is more effective than a general social norms appeal (Study 3) and that sign-ups to a water-savings program significantly increase when the appeal is integrated into existing promotional materials (Study 4). We conclude by discussing how these insights can offer new perspectives on proenvironmental behavior change.</b:BIBTEX_Abstract>
+        <b:Tag>Lede2019</b:Tag>
+        <b:BIBTEX_KeyWords>Social identity, Residential water conservation, Social norms, Ingroup norms, Group identification, Behavior change intervention</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S0272494419301318</b:URL>
+        <b:DOI>10.1016/j.jenvp.2019.02.011</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Brooks</b:Last>
-                        <b:Middle>S.</b:Middle>
-                        <b:First>Jeremy</b:First>
+                        <b:Last>Lede</b:Last>
+                        <b:First>Ellin</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Franzen</b:Last>
-                        <b:Middle>A.</b:Middle>
-                        <b:First>Margaret</b:First>
+                        <b:Last>Meleady</b:Last>
+                        <b:First>Rose</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Holmes</b:Last>
-                        <b:Middle>M.</b:Middle>
-                        <b:First>Christopher</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Grote</b:Last>
-                        <b:Middle>N.</b:Middle>
-                        <b:First>Mark</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Mulder</b:Last>
-                        <b:Middle>Borgerhoff</b:Middle>
-                        <b:First>Monique</b:First>
+                        <b:Last>Seger</b:Last>
+                        <b:Middle>R.</b:Middle>
+                        <b:First>Charles</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>1528–1538</b:Pages>
-        <b:JournalName>Conservation biology</b:JournalName>
-        <b:Number>5</b:Number>
+        <b:Pages>105–114</b:Pages>
+        <b:Month>4</b:Month>
+        <b:JournalName>Journal of Environmental Psychology</b:JournalName>
+        <b:StandardNumber> ISSN: 0272-4944</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2020</b:Year>
-        <b:Volume>115</b:Volume>
+        <b:BIBTEX_Copyright>© 2009 . Freely available online through the PNAS open access option.</b:BIBTEX_Copyright>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Carbon leakage in energy/forest sectors and climate policy implications using meta-analysis</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>pan2020carbon</b:Tag>
+        <b:Title>Linking social norms to efficient conservation investment in payments for ecosystem services</b:Title>
+        <b:ChapterNumber>Biological Sciences</b:ChapterNumber>
+        <b:Publisher>National Academy of Sciences</b:Publisher>
+        <b:BIBTEX_KeyWords>China, Grain-to-Green Program, program re-enrollment, stated choice, sustainability</b:BIBTEX_KeyWords>
+        <b:URL>https://www.pnas.org/content/106/28/11812</b:URL>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2009</b:Year>
+        <b:Volume>106</b:Volume>
+        <b:BIBTEX_Abstract>An increasing amount of investment has been devoted to protecting and restoring ecosystem services worldwide. The efficiency of conservation investments, including payments for ecosystem services (PES), has been found to be affected by biological, political, economic, demographic, and social factors, but little is known about the effects of social norms at the neighborhood level. As a first attempt to quantify the effects of social norms, we studied the effects of a series of possible factors on people's intentions of maintaining forest on their Grain-to-Green Program (GTGP) land plots if the program ends. GTGP is one of the world's largest PES programs and plays an important role in global conservation efforts. Our study was conducted in China's Wolong Nature Reserve, home to the world-famous endangered giant pandas and &gt;4,500 farmers. We found that, in addition to conservation payment amounts and program duration, social norms at the neighborhood level had significant impacts on program re-enrollment, suggesting that social norms can be used to leverage participation to enhance the sustainability of conservation benefits from PES programs. Moreover, our results demonstrate that economic and demographic trends also have profound implications for sustainable conservation. Thus, social norms should be incorporated with economic and demographic trends for efficient conservation investments.</b:BIBTEX_Abstract>
+        <b:Tag>Chen2009</b:Tag>
+        <b:DOI>10.1073/pnas.0809980106</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Pan</b:Last>
-                        <b:First>Wenqi</b:First>
+                        <b:Last>Chen</b:Last>
+                        <b:First>Xiaodong</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Kim</b:Last>
-                        <b:First>Man-Keun</b:First>
+                        <b:Last>Lupi</b:Last>
+                        <b:First>Frank</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Ning</b:Last>
-                        <b:First>Zhuo</b:First>
+                        <b:Last>He</b:Last>
+                        <b:First>Guangming</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Liu</b:Last>
+                        <b:First>Jianguo</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>11812–11817</b:Pages>
+        <b:Month>7</b:Month>
+        <b:JournalName>Proceedings of the National Academy of Sciences</b:JournalName>
+        <b:Number>28</b:Number>
+        <b:StandardNumber> ISSN: 0027-8424, 1091-6490</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2016</b:Year>
+        <b:Volume>17</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Indigenous communities’ perception regarding payments for environmental services programme in Oaxaca Mexico</b:Title>
+        <b:BIBTEX_Abstract>Payments for environmental services (PES) programs have been implemented during the last 10 years in Mexico, and nearly 20 percent of the beneficiaries are indigenous communities; however, little has been said regarding the impact of these interventions on indigenous groups. This study analyses the link between PES outcomes and the characteristics of indigenous communities, such as identity and language, world view and territory, government, collective work and household economy. The study includes four Zapotec communities located in the state of Oaxaca. The main results suggest the importance to adapt the PES programme to indigenous communities that preserve their identity and language; and the possibility that PES programme is crowding in the relation between household and natural resources and certain variables related to government and collective work.</b:BIBTEX_Abstract>
+        <b:Tag>RodriguezRobayo2016</b:Tag>
+        <b:BIBTEX_KeyWords>Payment for environmental services, Indigenous communities, Perceptions, Crowding in/out effect</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S2212041615300632</b:URL>
+        <b:DOI>10.1016/j.ecoser.2015.11.013</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Rodríguez-Robayo</b:Last>
+                        <b:Middle>Juliana</b:Middle>
+                        <b:First>Karla</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Ávila-Foucat</b:Last>
+                        <b:Middle>Sophie</b:Middle>
+                        <b:First>V.</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Maldonado</b:Last>
+                        <b:Middle>H.</b:Middle>
+                        <b:First>Jorge</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>163–171</b:Pages>
+        <b:Month>2</b:Month>
+        <b:JournalName>Ecosystem Services</b:JournalName>
+        <b:StandardNumber> ISSN: 2212-0416</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:Year>2017</b:Year>
+        <b:Volume>30</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Environmental Policies Can Buttress Conservation Norms</b:Title>
+        <b:BIBTEX_Abstract>In an attempt to solve large-scale environmental problems, government agencies often resort to formal sanctioning systems: market-based incentives or command-and-control regulations, to promote cooperation. The purpose of this study was to investigate how the presence of these formal sanctioning systems impacts informal sanctioning systems for environmental protection. Study 1 used an experimental game to explore the influence of market-based and regulatory programs on informal sanctioning in a laboratory setting. Study 2 was a quasi-experimental field survey that compared informal sanctioning among Massachusetts residents living in towns with voluntary, mandatory, and pay-as-you-throw recycling programs. Results showed that in the presence of a formal sanctioning system, individuals felt guiltier for not engaging in the cooperative behavior and expressed more disapproval for non-cooperators. Combined, these results show that environmental policies can buttress conservation norms.</b:BIBTEX_Abstract>
+        <b:Publisher>Routledge</b:Publisher>
+        <b:Tag>Nolan2017</b:Tag>
+        <b:BIBTEX_KeyWords>Conservation behavior, sanctioning systems, social dilemmas, social norms</b:BIBTEX_KeyWords>
+        <b:URL>https://doi.org/10.1080/08941920.2016.1209266</b:URL>
+        <b:DOI>10.1080/08941920.2016.1209266</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Nolan</b:Last>
+                        <b:Middle>M.</b:Middle>
+                        <b:First>Jessica</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>228–244</b:Pages>
+        <b:Month>2</b:Month>
+        <b:JournalName>Society &amp; Natural Resources</b:JournalName>
+        <b:Number>2</b:Number>
+        <b:StandardNumber> ISSN: 0894-1920</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:ShortTitle>Does the Impact of Norms Vary by Type of Norm and Type of Conservation Behavior?</b:ShortTitle>
+        <b:Year>2020</b:Year>
+        <b:Volume>33</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Does the Impact of Norms Vary by Type of Norm and Type of Conservation Behavior? A Meta-Analysis</b:Title>
+        <b:BIBTEX_Abstract>Norms can be powerful motivators of conservation behavior. Research has distinguished between subjective or injunctive norms, descriptive norms, and personal norms. To date, there is no clear consensus on the relative influence of these different norms on intentions to engage in different conservation behaviors. We conducted a meta-analysis of 100 articles (142 evaluation contexts) examining links between subjective/injunctive, descriptive, and/or personal norms and behavioral intentions to identify how correlations vary by the type of norm and type of conservation behavior. Adding personal and descriptive norms to behavioral intention models significantly reduced the effect of subjective/injunctive norms on intentions. Personal and descriptive norms had a larger relative influence on intentions and were more often significantly associated with intentions compared to subjective norms. Our review highlights the importance of including all three types of norms in models of conservation behavior intentions.</b:BIBTEX_Abstract>
+        <b:Publisher>Routledge</b:Publisher>
+        <b:Tag>Niemiec2020</b:Tag>
+        <b:BIBTEX_KeyWords>Behavioral intentions, conservation behavior, meta-analysis, pro-environmental behavior, review, subjective norms</b:BIBTEX_KeyWords>
+        <b:URL>https://doi.org/10.1080/08941920.2020.1729912</b:URL>
+        <b:DOI>10.1080/08941920.2020.1729912</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Niemiec</b:Last>
+                        <b:Middle>M.</b:Middle>
+                        <b:First>Rebecca</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Champine</b:Last>
+                        <b:First>Veronica</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Vaske</b:Last>
+                        <b:Middle>J.</b:Middle>
+                        <b:First>Jerry</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Mertens</b:Last>
+                        <b:First>Andrew</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>1024–1040</b:Pages>
+        <b:Month>8</b:Month>
+        <b:JournalName>Society &amp; Natural Resources</b:JournalName>
+        <b:Number>8</b:Number>
+        <b:StandardNumber> ISSN: 0894-1920</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2018</b:Year>
+        <b:Volume>43</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Assessing local acceptance of protected area management using public participation GIS (PPGIS)</b:Title>
+        <b:BIBTEX_Abstract>Protected area management can be highly contentious. Information about the acceptability of conservation actions can help environmental authorities design policies that are accepted locally, and identify potential areas of conflict between land users and conservation objectives. In this study, we implemented a spatially-explicit method for eliciting public preferences for land use and conservation policy (web-based public participation GIS; PPGIS). We invited randomly selected local residents in two mountainous regions in Norway to map their preferences for consumptive resource use, motorized use, land development and predator-control. We assessed whether local communities favored or opposed these human activities in nearby protected areas using mixed-effects logistic regression and controlling for landscape characteristics, accessibility and demographics. Local residents strongly favored consumptive resource use and predator control regardless of protected area status, and were more likely to oppose than favor land development inside protected areas. These preferences are largely consistent with the present protected area policy in Norway and Europe that promotes traditional consumptive use and the maintenance of cultural landscapes, but restricts land development. Our results suggest that use-based framing of conservation is more likely to resonate with these communities than narratives tied to the preservation of pristine nature and emerging conservation ideas of the rewilding of nature. Mapped community preferences can be a valuable tool for policy makers and stakeholders representing community interests in participatory processes, and for assessing the local acceptance of alternative management actions within protected areas.</b:BIBTEX_Abstract>
+        <b:Tag>Engen2018</b:Tag>
+        <b:BIBTEX_KeyWords>Governance, PPGIS, Biodiversity conservation, Participatory mapping</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S1617138117302406</b:URL>
+        <b:DOI>10.1016/j.jnc.2017.12.002</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Engen</b:Last>
+                        <b:First>Sigrid</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Runge</b:Last>
+                        <b:First>Claire</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Brown</b:Last>
+                        <b:First>Greg</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Fauchald</b:Last>
+                        <b:First>Per</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Nilsen</b:Last>
+                        <b:First>Lennart</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Hausner</b:Last>
+                        <b:First>Vera</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>27–34</b:Pages>
+        <b:Month>6</b:Month>
+        <b:JournalName>Journal for Nature Conservation</b:JournalName>
+        <b:StandardNumber> ISSN: 1617-1381</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:ShortTitle>Why local people do not support conservation</b:ShortTitle>
+        <b:Year>2014</b:Year>
+        <b:Volume>44</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Why local people do not support conservation: Community perceptions of marine protected area livelihood impacts, governance and management in Thailand</b:Title>
+        <b:BIBTEX_Abstract>Conservation success is often predicated on local support for conservation which is strongly influenced by perceptions of the impacts that are experienced by local communities and opinions of management and governance. Marine protected areas (MPAs) are effective conservation and fisheries management tools that can also have a broad array of positive and negative social, economic, cultural, and political impacts on local communities. Drawing on results from a mixed-methods study of communities on the Andaman Coast of Thailand, this paper explores perceptions of MPA impacts on community livelihood resources (assets) and outcomes as well as MPA governance and management. The area includes 17 National Marine Parks (NMPs) that are situated near rural communities that are highly dependent on coastal resources. Interview participants perceived NMPs to have limited to negative impacts on fisheries and agricultural livelihoods and negligible benefits for tourism livelihoods. Perceived impacts on livelihoods were felt to result from NMPs undermining access to or lacking support for development of cultural, social, political, financial, natural, human, physical, and political capital assets. Conflicting views emerged on whether NMPs resulted in negative or positive marine or terrestrial conservation outcomes. Perceptions of NMP governance and management processes were generally negative. These results point to some necessary policy improvements and actions to ameliorate: the relationship between the NMP and communities, NMP management and governance processes, and socio-economic and conservation outcomes.</b:BIBTEX_Abstract>
+        <b:Publisher>Elsevier</b:Publisher>
+        <b:Tag>Bennett2014</b:Tag>
+        <b:BIBTEX_KeyWords>Marine protected areas, Conservation impacts, Livelihoods, Governance, Management</b:BIBTEX_KeyWords>
+        <b:URL>https://econpapers.repec.org/article/eeemarpol/v_3a44_3ay_3a2014_3ai_3ac_3ap_3a107-116.htm</b:URL>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Bennett</b:Last>
+                        <b:Middle>James</b:Middle>
+                        <b:First>Nathan</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Dearden</b:Last>
+                        <b:First>Philip</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>107–116</b:Pages>
+        <b:JournalName>Marine Policy</b:JournalName>
+        <b:Number>C</b:Number>
+        <b:StandardNumber> ISSN: 0308-597X</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:ShortTitle>Narratives in REDD+ benefit sharing</b:ShortTitle>
+        <b:Year>2019</b:Year>
+        <b:Volume>19</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Narratives in REDD+ benefit sharing: examining evidence within and beyond the forest sector</b:Title>
+        <b:BIBTEX_Abstract>REDD+ was designed globally as a results-based instrument to incentivize emissions reduction from deforestation and forest degradation. Over 50 countries have developed strategies for REDD+, implemented pilot activities and/or set up forest monitoring and reporting structures, safeguard systems and benefit sharing mechanisms (BSMs), offering lessons on how particular ideas guide policy design. The implementation of REDD+ at national, sub-national and local levels required payments to filter through multiple governance structures and priorities. REDD+ was variously interpreted by different actors in different contexts to create legitimacy for certain policy agendas. Using an adapted 3E (effectiveness, efficiency, equity and legitimacy) lens, we examine four common narratives underlying REDD+ BSMs: (1) that results-based payment (RBP) is an effective and transparent approach to reducing deforestation and forest degradation; (2) that emphasis on co-benefits risks diluting carbon outcomes; (3) that directing REDD+ benefits predominantly to poor smallholders, forest communities and marginalized groups helps address equity; and (4) that social equity and gender concerns can be addressed by well-designed safeguards. This paper presents a structured examination of eleven BSMs from within and beyond the forest sector and analyses the evidence to variably support and challenge these narratives and their underlying assumptions to provide lessons for REDD+ BSM design. Our findings suggest that contextualizing the design of BSMs, and a reflexive approach to examining the underlying narratives justifying particular design features, is critical for achieving effectiveness, equity and legitimacy.Key policy insights A results-based payment approach does not guarantee an effective REDD+; the contexts in which results are defined and agreed, along with conditions enabling social and political acceptance, are critical.A flexible and reflexive approach to designing a benefit-sharing mechanism that delivers emissions reductions at the same time as co-benefits can increase perceptions of equity and participation.Targeting REDD+ to smallholder communities is not by default equitable, if wider rights and responsibilities are not taken into accountSafeguards cannot protect communities or society without addressing underlying power and gendered relations.The narratives and their underlying generic assumptions, if not critically examined, can lead to repeated failure of REDD+ policies and practices.</b:BIBTEX_Abstract>
+        <b:Publisher>Taylor &amp; Francis</b:Publisher>
+        <b:Tag>Wong2019</b:Tag>
+        <b:BIBTEX_KeyWords>Results based payments, co-benefits, safeguards, equity, effectiveness, legitimacy</b:BIBTEX_KeyWords>
+        <b:URL>https://doi.org/10.1080/14693062.2019.1618786</b:URL>
+        <b:DOI>10.1080/14693062.2019.1618786</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Wong</b:Last>
+                        <b:Middle>Yee</b:Middle>
+                        <b:First>Grace</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Luttrell</b:Last>
+                        <b:First>Cecilia</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Loft</b:Last>
+                        <b:First>Lasse</b:First>
                     </b:Person>
                     <b:Person>
                         <b:Last>Yang</b:Last>
-                        <b:First>Hongqiang</b:First>
+                        <b:First>Anastasia</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Pham</b:Last>
+                        <b:Middle>Thu</b:Middle>
+                        <b:First>Thuy</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Naito</b:Last>
+                        <b:First>Daisuke</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Assembe-Mvondo</b:Last>
+                        <b:First>Samuel</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Brockhaus</b:Last>
+                        <b:First>Maria</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>102161</b:Pages>
-        <b:JournalName>Forest Policy and Economics</b:JournalName>
+        <b:Pages>1038–1051</b:Pages>
+        <b:Month>9</b:Month>
+        <b:JournalName>Climate Policy</b:JournalName>
+        <b:Number>8</b:Number>
+        <b:StandardNumber> ISSN: 1469-3062</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2018</b:Year>
-        <b:Volume>155</b:Volume>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2012</b:Year>
+        <b:BIBTEX_Series>Modeling Human Decisions</b:BIBTEX_Series>
+        <b:Volume>229</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Intra-village and inter-village resource use conflict in Indonesia: The case of the Kei Islands</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>yamazaki2018intra</b:Tag>
+        <b:Title>Agent-based modeling of the effects of social norms on enrollment in payments for ecosystem services</b:Title>
+        <b:BIBTEX_Abstract>Conservation investments are increasingly being implemented through payments for ecosystem services (PES) for the protection and restoration of ecosystem services around the world. Previous studies suggested that social norms have substantial impacts on environmental behaviors of humans, including enrollment of PES programs. However, it is still not well understood how social norms are affected by the design of PES programs and how the evolution of social norms may affect the efficiency of conservation investments. In this paper, we developed an agent-based simulation model to demonstrate the evolution and impacts of social norms on the enrollment of agricultural land in a PES program. We applied the model to land plots that have been enrolled in China's Grain-to-Green Program (GTGP) to examine reenrollment in an alternative payment program when the current payments ceased. The study was conducted in Wolong Nature Reserve where several thousand plant and animal species, including giant pandas, may benefit from the reenrollment. We found that over 15% more GTGP land can be reenrolled at the same payment if social norms were leveraged by allowing more than 10 rounds of interactions among landholders regarding their reenrollment decisions. With only three rounds of interactions, an additional 7.5% GTGP land was reenrolled at the same payment due to the effects of social norms. In addition, the effects of social norms were largest at intermediate payments and were smaller at much higher or much smaller payments. Even in circumstances where frequent interactions among landholders about their enrollment decisions are not feasible, policy arrangements that divide households into multiple waves for sequential enrollment can enroll over 11% more land at a given payment level. The approach presented in this paper can be used to improve the efficiency of existing PES programs and many other conservation investments worldwide.</b:BIBTEX_Abstract>
+        <b:Tag>Chen2012</b:Tag>
+        <b:BIBTEX_KeyWords>Agent-based model, Conservation investments, Grain-to-Green Program, Payments for ecosystem services, Social norms</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S0304380011003401</b:URL>
+        <b:DOI>10.1016/j.ecolmodel.2011.06.007</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Yamazaki</b:Last>
-                        <b:First>Satoshi</b:First>
+                        <b:Last>Chen</b:Last>
+                        <b:First>Xiaodong</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Resosudarmo</b:Last>
-                        <b:Middle>P.</b:Middle>
-                        <b:First>Budy</b:First>
+                        <b:Last>Lupi</b:Last>
+                        <b:First>Frank</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Girsang</b:Last>
-                        <b:First>Wardis</b:First>
+                        <b:Last>An</b:Last>
+                        <b:First>Li</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Hoshino</b:Last>
-                        <b:First>Eriko</b:First>
+                        <b:Last>Sheely</b:Last>
+                        <b:First>Ryan</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Viña</b:Last>
+                        <b:First>Andrés</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Liu</b:Last>
+                        <b:First>Jianguo</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>50–59</b:Pages>
-        <b:JournalName>Ocean &amp; coastal management</b:JournalName>
+        <b:Pages>16–24</b:Pages>
+        <b:Month>3</b:Month>
+        <b:JournalName>Ecological Modelling</b:JournalName>
+        <b:StandardNumber> ISSN: 0304-3800</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2008</b:Year>
+        <b:BIBTEX_Copyright>© . Freely available online through the PNAS open access option.</b:BIBTEX_Copyright>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Irrigation systems as common-pool resources. Examples from Northern Italy</b:Title>
-        <b:Publisher>Association pour la diffusion de la recherche alpine et UGA Éditions.</b:Publisher>
-        <b:Tag>bravo2008irrigation</b:Tag>
+        <b:Title>Collective action and the evolution of social norm internalization</b:Title>
+        <b:ChapterNumber>Biological Sciences</b:ChapterNumber>
+        <b:Publisher>National Academy of Sciences</b:Publisher>
+        <b:BIBTEX_KeyWords>cooperation, conflict, modeling, evolution, values</b:BIBTEX_KeyWords>
+        <b:URL>https://www.pnas.org/content/114/23/6068</b:URL>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2017</b:Year>
+        <b:Volume>114</b:Volume>
+        <b:BIBTEX_Abstract>Human behavior is strongly affected by culturally transmitted norms and values. Certain norms are internalized (i.e., acting according to a norm becomes an end in itself rather than merely a tool in achieving certain goals or avoiding social sanctions). Humans’ capacity to internalize norms likely evolved in our ancestors to simplify solving certain challenges—including social ones. Here we study theoretically the evolutionary origins of the capacity to internalize norms. In our models, individuals can choose to participate in collective actions as well as punish free riders. In making their decisions, individuals attempt to maximize a utility function in which normative values are initially irrelevant but play an increasingly important role if the ability to internalize norms emerges. Using agent-based simulations, we show that norm internalization evolves under a wide range of conditions so that cooperation becomes “instinctive.” Norm internalization evolves much more easily and has much larger effects on behavior if groups promote peer punishment of free riders. Promoting only participation in collective actions is not effective. Typically, intermediate levels of norm internalization are most frequent but there are also cases with relatively small frequencies of “oversocialized” individuals willing to make extreme sacrifices for their groups no matter material costs, as well as “undersocialized” individuals completely immune to social norms. Evolving the ability to internalize norms was likely a crucial step on the path to large-scale human cooperation.</b:BIBTEX_Abstract>
+        <b:Tag>Gavrilets2017</b:Tag>
+        <b:DOI>10.1073/pnas.1703857114</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Bravo</b:Last>
-                        <b:First>Giangiacomo</b:First>
+                        <b:Last>Gavrilets</b:Last>
+                        <b:First>Sergey</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Marelli</b:Last>
-                        <b:First>Beatrice</b:First>
+                        <b:Last>Richerson</b:Last>
+                        <b:Middle>J.</b:Middle>
+                        <b:First>Peter</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>15–26</b:Pages>
-        <b:JournalName>Journal of Alpine Research| Revue de géographie alpine</b:JournalName>
-        <b:Number>96-3</b:Number>
+        <b:Pages>6068–6073</b:Pages>
+        <b:Month>6</b:Month>
+        <b:JournalName>Proceedings of the National Academy of Sciences</b:JournalName>
+        <b:Number>23</b:Number>
+        <b:StandardNumber> ISSN: 0027-8424, 1091-6490</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2006</b:Year>
-        <b:Volume>20</b:Volume>
+        <b:Year>2012</b:Year>
+        <b:Volume>5</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Testing hypotheses for the success of different conservation strategies</b:Title>
-        <b:Publisher>Wiley Online Library</b:Publisher>
-        <b:Tag>brooks2006testing</b:Tag>
+        <b:Title>Managing the risk of biodiversity leakage from prioritising REDD+ in the most carbon-rich forests: the case study of peat-swamp forests in Kalimantan, Indonesia</b:Title>
+        <b:Tag>harrison2012managing</b:Tag>
+        <b:Publisher>SAGE Publications Sage CA: Los Angeles, CA</b:Publisher>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Brooks</b:Last>
-                        <b:Middle>S.</b:Middle>
-                        <b:First>Jeremy</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Franzen</b:Last>
-                        <b:Middle>A.</b:Middle>
-                        <b:First>Margaret</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Holmes</b:Last>
-                        <b:Middle>M.</b:Middle>
-                        <b:First>Christopher</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Grote</b:Last>
-                        <b:Middle>N.</b:Middle>
+                        <b:Last>Harrison</b:Last>
+                        <b:Middle>E.</b:Middle>
                         <b:First>Mark</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Mulder</b:Last>
-                        <b:Middle>Borgerhoff</b:Middle>
-                        <b:First>Monique</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>1528–1538</b:Pages>
-        <b:JournalName>Conservation biology</b:JournalName>
-        <b:Number>5</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2021</b:Year>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Carbon leakage revisited based on carbon terms of trade: Has Kyoto Protocol strengthened China’s comparative advantage in dirty products?</b:Title>
-        <b:Tag>outchiri2021carbon</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Outchiri</b:Last>
-                        <b:Middle>Naser</b:Middle>
-                        <b:First>Banie</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Jie</b:Last>
-                        <b:Middle>E.</b:Middle>
-                        <b:First>H.</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-    </b:Source>
-    <b:Source>
-        <b:Year>2015</b:Year>
-        <b:Volume>9</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Between-group competition, intra-group cooperation and relative performance</b:Title>
-        <b:Publisher>Frontiers</b:Publisher>
-        <b:Tag>cardenas2015between</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Cárdenas</b:Last>
-                        <b:Middle>C.</b:Middle>
-                        <b:First>Juan</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Mantilla</b:Last>
-                        <b:First>César</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>33</b:Pages>
-        <b:JournalName>Frontiers in behavioral neuroscience</b:JournalName>
-    </b:Source>
-    <b:Source>
-        <b:Year>1990</b:Year>
-        <b:BIBTEX_Entry>book</b:BIBTEX_Entry>
-        <b:SourceType>Book</b:SourceType>
-        <b:Title>Governing the commons: The evolution of institutions for collective action</b:Title>
-        <b:Publisher>Cambridge university press</b:Publisher>
-        <b:Tag>ostrom1990governing</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Ostrom</b:Last>
-                        <b:First>Elinor</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-    </b:Source>
-    <b:Source>
-        <b:Year>2018</b:Year>
-        <b:Volume>53</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Middle-range theories of land system change</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>meyfroidt2018middle</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Meyfroidt</b:Last>
-                        <b:First>Patrick</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Chowdhury</b:Last>
-                        <b:Middle>Roy</b:Middle>
-                        <b:First>R.</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>de Bremond</b:Last>
-                        <b:First>Ariane</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Ellis</b:Last>
-                        <b:Middle>C.</b:Middle>
-                        <b:First>Erle</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Erb</b:Last>
-                        <b:First>K.-H.</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Filatova</b:Last>
-                        <b:First>Tatiana</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Garrett</b:Last>
+                        <b:Last>Paoli</b:Last>
                         <b:Middle>D.</b:Middle>
-                        <b:First>R.</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Grove</b:Last>
-                        <b:Middle>Morgan</b:Middle>
-                        <b:First>J.</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Heinimann</b:Last>
-                        <b:First>Andreas</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Kuemmerle</b:Last>
-                        <b:First>Tobias</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>others</b:Last>
+                        <b:First>Gary</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>52–67</b:Pages>
-        <b:JournalName>Global environmental change</b:JournalName>
+        <b:Pages>426–433</b:Pages>
+        <b:JournalName>Tropical Conservation Science</b:JournalName>
+        <b:Number>4</b:Number>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2019</b:Year>
+        <b:BIBTEX_Entry>misc</b:BIBTEX_Entry>
+        <b:SourceType>Misc</b:SourceType>
+        <b:Title>Political and economic changes across Europe</b:Title>
+        <b:BIBTEX_Abstract>When asked about changes that have taken place since the end of the communist era, people across the former Eastern Bloc express support for the shift</b:BIBTEX_Abstract>
+        <b:Tag>1615L.St2019</b:Tag>
+        <b:URL>https://www.pewresearch.org/global/2019/10/14/political-and-economic-changes-since-the-fall-of-communism/</b:URL>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>1615 L. St</b:Last>
+                        <b:Middle>W.</b:Middle>
+                        <b:First>N.</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>800Washington</b:Last>
+                        <b:First>Suite</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Inquiries</b:Last>
+                        <b:Middle>20036USA202-419-4300 | Main202-857-8562 | Fax202-419-4372 | Media</b:Middle>
+                        <b:First>D.C.</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Month>10</b:Month>
+        <b:JournalName>Pew Research Center's Global Attitudes Project</b:JournalName>
+        <b:PublicationTitle>Political and economic changes across Europe</b:PublicationTitle>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2004</b:Year>
+        <b:Volume>17</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Institutional Herding</b:Title>
+        <b:BIBTEX_Abstract>Abstract. Institutional investors' demand for a security this quarter is positively correlated with their demand for the security last quarter. We attribute th</b:BIBTEX_Abstract>
+        <b:Publisher>Oxford Academic</b:Publisher>
+        <b:Tag>Sias2004</b:Tag>
+        <b:URL>https://academic.oup.com/rfs/article/17/1/165/1564376</b:URL>
+        <b:DOI>10.1093/rfs/hhg035</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Sias</b:Last>
+                        <b:Middle>W.</b:Middle>
+                        <b:First>Richard</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>165–206</b:Pages>
+        <b:Month>1</b:Month>
+        <b:JournalName>The Review of Financial Studies</b:JournalName>
+        <b:Number>1</b:Number>
+        <b:StandardNumber> ISSN: 0893-9454</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:ShortTitle>Conservation as if People Also Mattered</b:ShortTitle>
+        <b:Year>2013</b:Year>
+        <b:Volume>11</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Conservation as if People Also Mattered: Policy and Practice of Community-based Conservation</b:Title>
+        <b:BIBTEX_Abstract>Community-based conservation is being increasingly recognised as a major global force in the protection and sustainable management of ecosystems and species. Yet documentation of its main achievements and shortcomings, and the key issues it faces, is still at a nascent stage. This paper introduces the concept and experience of two forms of community-based conservation: Collaborative Management of Protected Areas (CMPA), and Indigenous Peoples’ and Local Community Conserved Territories and Areas (ICCAs). It explores the emergence of these approaches in the context of global international conservation policy. Reviewing four case studies that were presented at a symposium convened at the Bowdoin College (Maine, USA, in November 2008), and drawing from the discussion during that session, it identifies some key lessons and principles that are likely to be applicable to community-based conservation across the world.</b:BIBTEX_Abstract>
+        <b:Publisher>[Ashoka Trust for Research in Ecology and the Environment, Wolters Kluwer India Pvt. Ltd.]</b:Publisher>
+        <b:Tag>Kothari2013</b:Tag>
+        <b:URL>https://www.jstor.org/stable/26393095</b:URL>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Kothari</b:Last>
+                        <b:First>Ashish</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Camill</b:Last>
+                        <b:First>Philip</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Brown</b:Last>
+                        <b:First>Jessica</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>1–15</b:Pages>
+        <b:JournalName>Conservation and Society</b:JournalName>
+        <b:Number>1</b:Number>
+        <b:StandardNumber> ISSN: 0972-4923</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>Subjective probability</b:ShortTitle>
+        <b:Year>1972</b:Year>
+        <b:Volume>3</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Subjective probability: A judgment of representativeness</b:Title>
+        <b:BIBTEX_Abstract>This paper explores a heuristic—representativeness—according to which the subjective probability of an event, or a sample, is determined by the degree to which it: (i) is similar in essential characteristics to its parent population; and (ii) reflects the salient features of the process by which it is generated. This heuristic is explicated in a series of empirical examples demonstrating predictable and systematic errors in the evaluation of uncertain events. In particular, since sample size does not represent any property of the population, it is expected to have little or no effect on judgment of likelihood. This prediction is confirmed in studies showing that subjective sampling distributions and posterior probability judgments are determined by the most salient characteristic of the sample (e.g., proportion, mean) without regard to the size of the sample. The present heuristic approach is contrasted with the normative (Bayesian) approach to the analysis of the judgment of uncertainty.</b:BIBTEX_Abstract>
+        <b:Tag>Kahneman1972</b:Tag>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/0010028572900163</b:URL>
+        <b:DOI>10.1016/0010-0285(72)90016-3</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Kahneman</b:Last>
+                        <b:First>Daniel</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Tversky</b:Last>
+                        <b:First>Amos</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>430–454</b:Pages>
+        <b:Month>7</b:Month>
+        <b:JournalName>Cognitive Psychology</b:JournalName>
+        <b:Number>3</b:Number>
+        <b:StandardNumber> ISSN: 0010-0285</b:StandardNumber>
     </b:Source>
     <b:Source>
         <b:Year>2014</b:Year>
@@ -598,8 +931,8 @@
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
         <b:Title>REDD+ and international leakage via food and timber markets: a CGE analysis</b:Title>
-        <b:Publisher>Springer</b:Publisher>
         <b:Tag>kuik2014redd+</b:Tag>
+        <b:Publisher>Springer</b:Publisher>
         <b:Author>
             <b:Author>
                 <b:NameList>
@@ -615,98 +948,265 @@
         <b:Number>6</b:Number>
     </b:Source>
     <b:Source>
-        <b:Year>2019</b:Year>
-        <b:Volume>14</b:Volume>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2009</b:Year>
+        <b:Volume>94</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Deforestation displaced: trade in forest-risk commodities and the prospects for a global forest transition</b:Title>
-        <b:Publisher>IOP Publishing</b:Publisher>
-        <b:Tag>pendrill2019deforestation</b:Tag>
+        <b:Title>Institutional industry herding</b:Title>
+        <b:BIBTEX_Abstract>We examine whether institutional investors follow each other into and out of the same industries. Our empirical results reveal strong evidence of institutional industry herding. The cross-sectional correlation between the fraction of institutional traders buying an industry this quarter and the fraction buying last quarter, for example, averages 40%. Additional tests suggest that correlated signals primarily drive institutional industry herding. Our results also provide empirical support for “style investing” models.</b:BIBTEX_Abstract>
+        <b:Tag>Choi2009</b:Tag>
+        <b:BIBTEX_KeyWords>Herding, Institutional investors, Style investing</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S0304405X09001408</b:URL>
+        <b:DOI>10.1016/j.jfineco.2008.12.009</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Pendrill</b:Last>
-                        <b:First>Florence</b:First>
+                        <b:Last>Choi</b:Last>
+                        <b:First>Nicole</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Persson</b:Last>
-                        <b:Middle>Martin</b:Middle>
-                        <b:First>U.</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Godar</b:Last>
-                        <b:First>Javier</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Kastner</b:Last>
-                        <b:First>Thomas</b:First>
+                        <b:Last>Sias</b:Last>
+                        <b:Middle>W.</b:Middle>
+                        <b:First>Richard</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>055003</b:Pages>
-        <b:JournalName>Environmental Research Letters</b:JournalName>
-        <b:Number>5</b:Number>
+        <b:Pages>469–491</b:Pages>
+        <b:Month>12</b:Month>
+        <b:JournalName>Journal of Financial Economics</b:JournalName>
+        <b:Number>3</b:Number>
+        <b:StandardNumber> ISSN: 0304-405X</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2013</b:Year>
-        <b:Volume>33</b:Volume>
+        <b:ShortTitle>Learning From ‘Actually Existing’ REDD+</b:ShortTitle>
+        <b:Year>2019</b:Year>
+        <b:Volume>17</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Using a multilevel approach to analyse the case of forest conflicts in the Terai, Nepal</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>pravat2013using</b:Tag>
+        <b:Title>Learning From ‘Actually Existing’ REDD+: A Synthesis of Ethnographic Findings</b:Title>
+        <b:BIBTEX_Abstract>The 2015 United Nations Paris Agreement on Climate reinforces actions to conserve and enhance forests as carbon reservoirs. A decade after sub-national demonstration projects to reduce emissions from deforestation and forest degradation (REDD+) commenced, we examine why many REDD+ schemes appear to have fuelled social conflict while having limited success in addressing the drivers of forest loss and degradation. Our analysis is two-tiered: first we synthesise findings from a set of ethnographic case studies of REDD+ in Mainland Southeast Asia, conducted by the authors; second, we explore whether the insights from our regional synthesis apply globally, through a comparative review of published qualitative research on REDD+ field experiences. Our results reveal three major implementation dynamics that can undermine REDD+ in practice, which we conceptualise from science and technology studies and critical political ecology as follows: 1) problems with the enrolment of governments, civil society, and local forest users in REDD+ governance; 2) the prevalence of overly simplified codification systems for REDD+ implementation that mismatch targeted societies and landscapes; and 3) the consequent dissonance between REDD+ objectives and outcomes. Together, these problematic dynamics reveal how and why REDD+ so often misses its targets of reducing deforestation and delivering community benefits. In effect, it appears that REDD+ in the course of implementation maps onto local power structures and political economies, rendering it blunt as tool for change. The potential of REDD+ as a ‘solution’ in the global climate regime must therefore be scrutinized, along with other similar mechanisms espoused by the green economy.</b:BIBTEX_Abstract>
+        <b:Publisher>[Ashoka Trust for Research in Ecology and the Environment, Wolters Kluwer India Pvt. Ltd.]</b:Publisher>
+        <b:Tag>Milne2019</b:Tag>
+        <b:URL>https://www.jstor.org/stable/26554473</b:URL>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Pravat</b:Last>
-                        <b:Middle>Satyal</b:Middle>
-                        <b:First>Poshendra</b:First>
+                        <b:Last>Milne</b:Last>
+                        <b:First>Sarah</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Humphreys</b:Last>
-                        <b:First>David</b:First>
+                        <b:Last>Mahanty</b:Last>
+                        <b:First>Sango</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>To</b:Last>
+                        <b:First>Phuc</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Dressler</b:Last>
+                        <b:First>Wolfram</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Kanowski</b:Last>
+                        <b:First>Peter</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Thavat</b:Last>
+                        <b:First>Maylee</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>47–55</b:Pages>
-        <b:JournalName>Forest policy and economics</b:JournalName>
+        <b:Pages>84–95</b:Pages>
+        <b:JournalName>Conservation &amp; Society</b:JournalName>
+        <b:Number>1</b:Number>
+        <b:StandardNumber> ISSN: 0972-4923</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2019</b:Year>
-        <b:Volume>93</b:Volume>
+        <b:Year>2016</b:Year>
+        <b:Volume>66</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Does the EU ETS cause carbon leakage in European manufacturing?</b:Title>
+        <b:Title>Insights from the ground level? A content analysis review of multi-national REDD+ studies since 2010</b:Title>
+        <b:Tag>fischer2016insights</b:Tag>
         <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>naegele2019does</b:Tag>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Naegele</b:Last>
-                        <b:First>Helene</b:First>
+                        <b:Last>Fischer</b:Last>
+                        <b:First>Richard</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Zaklan</b:Last>
-                        <b:First>Aleksandar</b:First>
+                        <b:Last>Hargita</b:Last>
+                        <b:First>Yvonne</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Günter</b:Last>
+                        <b:First>Sven</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>125–147</b:Pages>
-        <b:JournalName>Journal of Environmental Economics and Management</b:JournalName>
+        <b:Pages>47–58</b:Pages>
+        <b:JournalName>Forest Policy and Economics</b:JournalName>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>The Persistence of Treatment Effects with Norm-Based Policy Instruments</b:ShortTitle>
+        <b:Year>2011</b:Year>
+        <b:Volume>101</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>The Persistence of Treatment Effects with Norm-Based Policy Instruments: Evidence from a Randomized Environmental Policy Experiment</b:Title>
+        <b:BIBTEX_Abstract>Policymakers increasingly use norm-based messages to promote conservation efforts. Despite the apparent success of such strategies, empirical analyses have thus far focused exclusively on short-run effects. From a policy perspective, however, whether and how such strategies influence behavior in the long-run is of equal interest. We partner with a metropolitan water utility to implement a natural field experiment examining the effect of such messages on longer-run patterns of water use. Empirical results are striking. While appeals to pro-social preferences affect short-run patterns of water use, only messages augmented with social comparisons have a lasting impact on water demand.</b:BIBTEX_Abstract>
+        <b:Tag>Ferraro2011</b:Tag>
+        <b:BIBTEX_KeyWords>Micro-Based Behavioral Economics: Role and Effects of Psychological, Emotional, Social, and Cognitive Factors on Decision Making, Consumer Economics: Empirical Analysis, Economic Sociology, Economic Anthropology, Social and Economic Stratification</b:BIBTEX_KeyWords>
+        <b:URL>https://www.aeaweb.org/articles?id=10.1257/aer.101.3.318</b:URL>
+        <b:DOI>10.1257/aer.101.3.318</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Ferraro</b:Last>
+                        <b:Middle>J.</b:Middle>
+                        <b:First>Paul</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Miranda</b:Last>
+                        <b:Middle>Jose</b:Middle>
+                        <b:First>Juan</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Price</b:Last>
+                        <b:Middle>K.</b:Middle>
+                        <b:First>Michael</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>318–322</b:Pages>
+        <b:Month>5</b:Month>
+        <b:JournalName>American Economic Review</b:JournalName>
+        <b:Number>3</b:Number>
+        <b:StandardNumber> ISSN: 0002-8282</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:Year>2019</b:Year>
+        <b:Volume>238</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Learning from published project failures in conservation</b:Title>
+        <b:BIBTEX_Abstract>Conservation professionals need to know what has worked and what has not when designing, implementing, evaluating and refining conservation projects. Project failure reporting is an important, but largely unexploited, source of learning that capitalizes on the learning opportunity of failure provided through the experience of navigating research-implementation ‘spaces’. Learning from others through reading available literature is one way to supplement learning gained through direct experience. Learning vicariously is especially effective when presenting failure as opposed to success experiences. We reviewed the peer-reviewed conservation science literature to identify the extent and characteristics of failed project reporting, focusing our analysis upon social dimensions as opposed to biological causes, which have been comparatively well addressed. We quantified the degree to which articles reported activities commonly applied to learn from failure in business, medicine, the military and commercial aviation. These included activities for identifying, analyzing, correcting and sharing project failures. We used qualitative thematic analysis to identify the social causes of project failure. Reports of failed project experiences are rare and lack standardization. Human dimensions of project failure, such as stakeholder relationships, are more commonly reported than other causes of failure. The peer-reviewed literature has the potential to become a useful repository of lessons learned from failed projects. However, practical challenges such as identifying individuals' cognitive biases, cultivating psychological safety in teams, mainstreaming systemic team learning behaviors, addressing varied leadership styles, and confronting fear of failure in organizational culture must be overcome if conservation professionals are to effectively navigate research-implementation ‘spaces’.</b:BIBTEX_Abstract>
+        <b:Tag>Catalano2019</b:Tag>
+        <b:BIBTEX_KeyWords>Conservation psychology, Evaluation, Research-implementation gap, Human dimensions, Failure, Team learning</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S0006320719307451</b:URL>
+        <b:DOI>10.1016/j.biocon.2019.108223</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Catalano</b:Last>
+                        <b:Middle>S.</b:Middle>
+                        <b:First>Allison</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Lyons-White</b:Last>
+                        <b:First>Joss</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Mills</b:Last>
+                        <b:Middle>M.</b:Middle>
+                        <b:First>Morena</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Knight</b:Last>
+                        <b:Middle>T.</b:Middle>
+                        <b:First>Andrew</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>108223</b:Pages>
+        <b:Month>10</b:Month>
+        <b:JournalName>Biological Conservation</b:JournalName>
+        <b:StandardNumber> ISSN: 0006-3207</b:StandardNumber>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>The Impact of Social Norms, Feedback, and Price Information on Conservation Behavior</b:ShortTitle>
+        <b:Year>2018</b:Year>
+        <b:BIBTEX_Entry>techreport</b:BIBTEX_Entry>
+        <b:SourceType>Report</b:SourceType>
+        <b:Title>The Impact of Social Norms, Feedback, and Price Information on Conservation Behavior: A Meta-Analysis</b:Title>
+        <b:BIBTEX_Abstract>No abstract is available for this item.</b:BIBTEX_Abstract>
+        <b:Tag>Nemati2018</b:Tag>
+        <b:Institution>Agricultural and Applied Economics Association</b:Institution>
+        <b:BIBTEX_KeyWords>Resource and Environmental Policy Analysis, Behavioral &amp; Institutional Economics, Experimental Economics</b:BIBTEX_KeyWords>
+        <b:URL>https://ideas.repec.org/p/ags/aaea18/274431.html</b:URL>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Nemati</b:Last>
+                        <b:First>Mehdi</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Penn</b:Last>
+                        <b:First>Jerrod</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Month>6</b:Month>
+        <b:JournalName>2018 Annual Meeting, August 5-7, Washington, D.C.</b:JournalName>
+        <b:ThesisType>Tech. rep.</b:ThesisType>
+    </b:Source>
+    <b:Source>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>Expectations, impacts and attitudes</b:ShortTitle>
+        <b:BIBTEX_Copyright>Copyright © 2000 John Wiley &amp; Sons, Ltd.</b:BIBTEX_Copyright>
+        <b:Year>2000</b:Year>
+        <b:Volume>12</b:Volume>
+        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
+        <b:SourceType>JournalArticle</b:SourceType>
+        <b:Title>Expectations, impacts and attitudes: conservation and development in Cross River National Park, Nigeria</b:Title>
+        <b:BIBTEX_Abstract>Integrated conservation–development projects (ICDPs) have been widely developed and adopted in sub-Saharan Africa as a new approach to protected area management. Earlier studies have examined the conceptual foundations and performance of ICDPs at the macro scale. This paper uses household-level data to review experience with the ICDP approach in the Cross River National Park in southeast Nigeria. The paper argues that the failure of the project to meet local expectations precipitated arguments about resource tenure in this part of Nigeria which has a long history of community forest resource use and management. The implications for the sustainability of the conservation initiative are discussed. Copyright © 2000 John Wiley &amp; Sons, Ltd.</b:BIBTEX_Abstract>
+        <b:Tag>Ite2000</b:Tag>
+        <b:URL>https://onlinelibrary.wiley.com/doi/abs/10.1002/%28SICI%291099-1328%28200004%2912%3A3%3C325%3A%3AAID-JID655%3E3.0.CO%3B2-X</b:URL>
+        <b:DOI>10.1002/(SICI)1099-1328(200004)12:3&lt;325::AID-JID655&gt;3.0.CO;2-X</b:DOI>
+        <b:Author>
+            <b:Author>
+                <b:NameList>
+                    <b:Person>
+                        <b:Last>Ite</b:Last>
+                        <b:First>Uwem</b:First>
+                    </b:Person>
+                    <b:Person>
+                        <b:Last>Adams</b:Last>
+                        <b:First>William</b:First>
+                    </b:Person>
+                </b:NameList>
+            </b:Author>
+        </b:Author>
+        <b:Pages>325–342</b:Pages>
+        <b:JournalName>Journal of International Development</b:JournalName>
+        <b:Number>3</b:Number>
+        <b:StandardNumber> ISSN: 1099-1328</b:StandardNumber>
     </b:Source>
     <b:Source>
         <b:Year>2021</b:Year>
+        <b:Volume>21</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
         <b:Title>REDD+ and leakage: debunking myths and promoting integrated solutions</b:Title>
-        <b:Publisher>Taylor &amp; Francis</b:Publisher>
         <b:Tag>streck2021redd+</b:Tag>
+        <b:Publisher>Taylor &amp; Francis</b:Publisher>
         <b:Author>
             <b:Author>
                 <b:NameList>
@@ -717,477 +1217,100 @@
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>1–10</b:Pages>
+        <b:Pages>843–852</b:Pages>
         <b:JournalName>Climate Policy</b:JournalName>
+        <b:Number>6</b:Number>
     </b:Source>
     <b:Source>
-        <b:Year>2009</b:Year>
-        <b:Volume>324</b:Volume>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>Dispossession and disenchantment</b:ShortTitle>
+        <b:Year>2018</b:Year>
+        <b:Volume>88</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Did warfare among ancestral hunter-gatherers affect the evolution of human social behaviors?</b:Title>
-        <b:Publisher>American Association for the Advancement of Science</b:Publisher>
-        <b:Tag>bowles2009did</b:Tag>
+        <b:Title>Dispossession and disenchantment: The micropolitics of marine conservation in southeastern Tanzania</b:Title>
+        <b:BIBTEX_Abstract>Advocates of marine biodiversity conservation have intensified their calls for the rapid expansion of marine protected areas (MPAs) across the globe, while researchers continue to examine why some people in affected communities support MPAs and others oppose them. Drawing on an ethnographic study of dispossession and the micropolitics of marine conservation in southeastern Tanzania, this paper examines the local dynamics pertaining to the Mnazi Bay-Ruvuma Estuary Marine Park (MBREMP) in rural Mtwara on Tanzania's border with Mozambique. In-depth interviews with 160 individuals and eight focus group discussions with 48 participants were conducted in four sea-bordering villages. By analyzing the narratives of people living in the MBREMP's catchment area regarding their lived experiences with the MBREMP, the paper highlights inter-village and intra-village similarities and differences in the perceived significance and social impact of the MBREMP. Through narratives, people revealed their feelings of angst, disempowerment and vulnerability, emanating from their awareness of the state-directed dispossession they had experienced. The MBREMP's gendered impact was evident as women frequently blamed the park rangers for making their lives difficult through unreasonable and coercive restrictive practices. The paper argues that to achieve the laudable global goals of marine biodiversity conservation, it is imperative that the social complexities of the local context, livelihood concerns, gender relations, social hierarchies and the diverse perspectives of residents are ethnographically documented and integrated into policies leading to the practice of good governance of MPAs.</b:BIBTEX_Abstract>
+        <b:Tag>Kamat2018</b:Tag>
+        <b:BIBTEX_KeyWords>Marine protected areas, Dispossession, Opposition, Violence, Gender, Governance, Tanzania</b:BIBTEX_KeyWords>
+        <b:URL>http://www.sciencedirect.com/science/article/pii/S0308597X17303482</b:URL>
+        <b:DOI>10.1016/j.marpol.2017.12.002</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Bowles</b:Last>
-                        <b:First>Samuel</b:First>
+                        <b:Last>Kamat</b:Last>
+                        <b:Middle>R.</b:Middle>
+                        <b:First>Vinay</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>1293–1298</b:Pages>
-        <b:JournalName>Science</b:JournalName>
-        <b:Number>5932</b:Number>
+        <b:Pages>261–268</b:Pages>
+        <b:Month>2</b:Month>
+        <b:JournalName>Marine Policy</b:JournalName>
+        <b:StandardNumber> ISSN: 0308-597X</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2013</b:Year>
-        <b:Volume>33</b:Volume>
+        <b:LCID>1033</b:LCID>
+        <b:ShortTitle>Learning from the Behavior of Others</b:ShortTitle>
+        <b:Year>1998</b:Year>
+        <b:Volume>12</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Using a multilevel approach to analyse the case of forest conflicts in the Terai, Nepal</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>pravat2013using</b:Tag>
+        <b:Title>Learning from the Behavior of Others: Conformity, Fads, and Informational Cascades</b:Title>
+        <b:BIBTEX_Abstract>Learning by observing the past decisions of others can help explain some otherwise puzzling phenomena about human behavior. For example, why do people tend to converge on similar behavior? Why is mass behavior prone to error and fads? The authors argue that the theory of observational learning, and particularly of informational cascades, has much to offer economics, business strategy, political science, and the study of criminal behavior.</b:BIBTEX_Abstract>
+        <b:Tag>Bikhchandani1998</b:Tag>
+        <b:BIBTEX_KeyWords>Search, Learning, Information and Knowledge, Communication, Belief</b:BIBTEX_KeyWords>
+        <b:URL>https://www.aeaweb.org/articles?id=10.1257/jep.12.3.151</b:URL>
+        <b:DOI>10.1257/jep.12.3.151</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Pravat</b:Last>
-                        <b:Middle>Satyal</b:Middle>
-                        <b:First>Poshendra</b:First>
+                        <b:Last>Bikhchandani</b:Last>
+                        <b:First>Sushil</b:First>
                     </b:Person>
                     <b:Person>
-                        <b:Last>Humphreys</b:Last>
+                        <b:Last>Hirshleifer</b:Last>
                         <b:First>David</b:First>
                     </b:Person>
+                    <b:Person>
+                        <b:Last>Welch</b:Last>
+                        <b:First>Ivo</b:First>
+                    </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-        <b:Pages>47–55</b:Pages>
-        <b:JournalName>Forest policy and economics</b:JournalName>
+        <b:Pages>151–170</b:Pages>
+        <b:Month>9</b:Month>
+        <b:JournalName>Journal of Economic Perspectives</b:JournalName>
+        <b:Number>3</b:Number>
+        <b:StandardNumber> ISSN: 0895-3309</b:StandardNumber>
     </b:Source>
     <b:Source>
-        <b:Year>2012</b:Year>
-        <b:Volume>6</b:Volume>
+        <b:Year>2000</b:Year>
+        <b:Volume>71</b:Volume>
         <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
         <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>The Economics of Territorial Use Rights Fisheries, or TURFs</b:Title>
-        <b:Publisher>Association of Environmental and Resource Economists</b:Publisher>
-        <b:Tag>wilen2012economics</b:Tag>
+        <b:Title>The Life Cycle of Academic Management Fads</b:Title>
+        <b:Publisher>Routledge</b:Publisher>
+        <b:Tag>Birnbaum2000</b:Tag>
+        <b:URL>https://doi.org/10.1080/00221546.2000.11780813</b:URL>
+        <b:DOI>10.1080/00221546.2000.11780813</b:DOI>
         <b:Author>
             <b:Author>
                 <b:NameList>
                     <b:Person>
-                        <b:Last>Wilen</b:Last>
-                        <b:First>James</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Cancino</b:Last>
-                        <b:First>José</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Uchida</b:Last>
-                        <b:First>Hirotsugu</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>237–257</b:Pages>
-        <b:JournalName>Review of Environmental Economics and Policy</b:JournalName>
-        <b:Number>2</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2020</b:Year>
-        <b:Volume>15</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Focus on leakage and spillovers: informing land-use governance in a tele-coupled world</b:Title>
-        <b:Publisher>IOP Publishing</b:Publisher>
-        <b:Tag>meyfroidt2020focus</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Meyfroidt</b:Last>
-                        <b:First>Patrick</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Börner</b:Last>
-                        <b:First>Jan</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Garrett</b:Last>
-                        <b:First>Rachael</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Gardner</b:Last>
-                        <b:First>Toby</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Godar</b:Last>
-                        <b:First>Javier</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Kis-Katos</b:Last>
-                        <b:First>Krisztina</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Soares-Filho</b:Last>
-                        <b:Middle>S.</b:Middle>
-                        <b:First>Britaldo</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Wunder</b:Last>
-                        <b:First>Sven</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>090202</b:Pages>
-        <b:JournalName>Environmental Research Letters</b:JournalName>
-        <b:Number>9</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2008</b:Year>
-        <b:BIBTEX_Entry>book</b:BIBTEX_Entry>
-        <b:SourceType>Book</b:SourceType>
-        <b:Title>Mathematical models of social evolution: A guide for the perplexed</b:Title>
-        <b:Publisher>University of Chicago Press</b:Publisher>
-        <b:Tag>mcelreath2008mathematical</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>McElreath</b:Last>
-                        <b:First>Richard</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Boyd</b:Last>
+                        <b:Last>Birnbaum</b:Last>
                         <b:First>Robert</b:First>
                     </b:Person>
                 </b:NameList>
             </b:Author>
         </b:Author>
-    </b:Source>
-    <b:Source>
-        <b:Year>2007</b:Year>
-        <b:Volume>96</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Team competition and the public goods game</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>tan2007team</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Tan</b:Last>
-                        <b:Middle>H. W.</b:Middle>
-                        <b:First>Jonathan</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Bolle</b:Last>
-                        <b:First>Friedel</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>133–139</b:Pages>
-        <b:JournalName>Economics letters</b:JournalName>
+        <b:Pages>1–16</b:Pages>
+        <b:Month>1</b:Month>
+        <b:JournalName>The Journal of Higher Education</b:JournalName>
         <b:Number>1</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2011</b:Year>
-        <b:Volume>23</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Agents’ beliefs and the evolution of institutions for common-pool resource management</b:Title>
-        <b:Publisher>Sage Publications Sage UK: London, England</b:Publisher>
-        <b:Tag>bravo2011agents</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Bravo</b:Last>
-                        <b:First>Giangiacomo</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>117–152</b:Pages>
-        <b:JournalName>Rationality and Society</b:JournalName>
-        <b:Number>1</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2018</b:Year>
-        <b:Volume>84</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Consumption-based versus production-based accounting of CO2 emissions: Is there evidence for carbon leakage?</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>franzen2018consumption</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Franzen</b:Last>
-                        <b:First>Axel</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Mader</b:Last>
-                        <b:First>Sebastian</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>34–40</b:Pages>
-        <b:JournalName>Environmental Science &amp; Policy</b:JournalName>
-    </b:Source>
-    <b:Source>
-        <b:Year>1994</b:Year>
-        <b:Volume>30</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Cooperation in intergroup and single-group social dilemmas</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>bornstein1994cooperation</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Bornstein</b:Last>
-                        <b:First>Gary</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Ben-Yossef</b:Last>
-                        <b:First>Meyrav</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>52–67</b:Pages>
-        <b:JournalName>Journal of Experimental Social Psychology</b:JournalName>
-        <b:Number>1</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2012</b:Year>
-        <b:Volume>17</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>A review of the state of research, policies and strategies in addressing leakage from reducing emissions from deforestation and forest degradation (REDD+)</b:Title>
-        <b:Publisher>Springer</b:Publisher>
-        <b:Tag>atmadja2012review</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Atmadja</b:Last>
-                        <b:First>Stibniati</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Verchot</b:Last>
-                        <b:First>Louis</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>311–336</b:Pages>
-        <b:JournalName>Mitigation and Adaptation Strategies for Global Change</b:JournalName>
-        <b:Number>3</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2018</b:Year>
-        <b:Volume>13</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Evidence of cultural group selection in territorial lobstering in Maine</b:Title>
-        <b:Publisher>Springer</b:Publisher>
-        <b:Tag>waring2018evidence</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Waring</b:Last>
-                        <b:First>Timothy</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Acheson</b:Last>
-                        <b:First>James</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>21–34</b:Pages>
-        <b:JournalName>Sustainability science</b:JournalName>
-        <b:Number>1</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2015</b:Year>
-        <b:Volume>20</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>A multilevel evolutionary framework for sustainability analysis</b:Title>
-        <b:Publisher>JSTOR</b:Publisher>
-        <b:Tag>waring2015multilevel</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Waring</b:Last>
-                        <b:Middle>M.</b:Middle>
-                        <b:First>Timothy</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Kline Ann</b:Last>
-                        <b:First>Michelle</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Brooks</b:Last>
-                        <b:Middle>S.</b:Middle>
-                        <b:First>Jeremy</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Goff</b:Last>
-                        <b:Middle>H.</b:Middle>
-                        <b:First>Sandra</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Gowdy</b:Last>
-                        <b:First>John</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Janssen</b:Last>
-                        <b:Middle>A.</b:Middle>
-                        <b:First>Marco</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Smaldino</b:Last>
-                        <b:Middle>E.</b:Middle>
-                        <b:First>Paul</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Jacquet</b:Last>
-                        <b:First>Jennifer</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:JournalName>Ecology and Society</b:JournalName>
-        <b:Number>2</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2012</b:Year>
-        <b:Volume>17</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>A review of the state of research, policies and strategies in addressing leakage from reducing emissions from deforestation and forest degradation (REDD+)</b:Title>
-        <b:Publisher>Springer</b:Publisher>
-        <b:Tag>atmadja2012review</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Atmadja</b:Last>
-                        <b:First>Stibniati</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Verchot</b:Last>
-                        <b:First>Louis</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>311–336</b:Pages>
-        <b:JournalName>Mitigation and Adaptation Strategies for Global Change</b:JournalName>
-        <b:Number>3</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2006</b:Year>
-        <b:Volume>101</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Embedding social dilemmas in intergroup competition reduces free-riding</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>gunnthorsdottir2006embedding</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Gunnthorsdottir</b:Last>
-                        <b:First>Anna</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Rapoport</b:Last>
-                        <b:First>Amnon</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>184–199</b:Pages>
-        <b:JournalName>Organizational Behavior and Human Decision Processes</b:JournalName>
-        <b:Number>2</b:Number>
-    </b:Source>
-    <b:Source>
-        <b:Year>2015</b:Year>
-        <b:Volume>112</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>Towards more accurate and policy relevant footprint analyses: tracing fine-scale socio-environmental impacts of production to consumption</b:Title>
-        <b:Publisher>Elsevier</b:Publisher>
-        <b:Tag>godar2015towards</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Godar</b:Last>
-                        <b:First>Javier</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Persson</b:Last>
-                        <b:Middle>Martin</b:Middle>
-                        <b:First>U.</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Tizado</b:Last>
-                        <b:Middle>Jorge</b:Middle>
-                        <b:First>E.</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Meyfroidt</b:Last>
-                        <b:First>Patrick</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>25–35</b:Pages>
-        <b:JournalName>Ecological Economics</b:JournalName>
-    </b:Source>
-    <b:Source>
-        <b:Year>2007</b:Year>
-        <b:Volume>318</b:Volume>
-        <b:BIBTEX_Entry>article</b:BIBTEX_Entry>
-        <b:SourceType>JournalArticle</b:SourceType>
-        <b:Title>The coevolution of parochial altruism and war</b:Title>
-        <b:Publisher>American Association for the Advancement of Science</b:Publisher>
-        <b:Tag>choi2007coevolution</b:Tag>
-        <b:Author>
-            <b:Author>
-                <b:NameList>
-                    <b:Person>
-                        <b:Last>Choi</b:Last>
-                        <b:First>Jung-Kyoo</b:First>
-                    </b:Person>
-                    <b:Person>
-                        <b:Last>Bowles</b:Last>
-                        <b:First>Samuel</b:First>
-                    </b:Person>
-                </b:NameList>
-            </b:Author>
-        </b:Author>
-        <b:Pages>636–640</b:Pages>
-        <b:JournalName>science</b:JournalName>
-        <b:Number>5850</b:Number>
+        <b:StandardNumber> ISSN: 0022-1546</b:StandardNumber>
     </b:Source>
 </b:Sources>

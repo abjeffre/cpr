@@ -390,6 +390,16 @@
   year      = {1990},
 }
 
+@Article{waring2015multilevel,
+  author    = {Waring, Timothy M and Kline Ann, Michelle and Brooks, Jeremy S and Goff, Sandra H and Gowdy, John and Janssen, Marco A and Smaldino, Paul E and Jacquet, Jennifer},
+  journal   = {Ecology and Society},
+  title     = {A multilevel evolutionary framework for sustainability analysis},
+  year      = {2015},
+  number    = {2},
+  volume    = {20},
+  publisher = {JSTOR},
+}
+
 @Article{,
 }
 
