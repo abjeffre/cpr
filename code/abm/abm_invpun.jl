@@ -99,7 +99,7 @@ function cpr_abm(
   kmax_data = nothing,
   back_leak = false,
   fines_on = false,
-  inspect_timing = nothing,
+  inspect_timing = nothing,           # options: nothing, "before", "after", if nothing then it randomizes to half and half
   inher = false,
   tech_data = nothing,
   harvest_type = "individual",
@@ -112,50 +112,57 @@ function cpr_abm(
   reset = 100000,
   socialLearnYear = nothing,
   αlearn = 1, 
-  indvLearn = false
+  indvLearn = false,
+  full_save = false,
+  compress_data = true,
+  control_learning = false
 )
   ################################################
   ##### The multiverse will be recorded  #########
-   history=Dict(
-     :stock => zeros(nrounds, ngroups, nsim),
-     :effort => zeros(nrounds, ngroups, nsim),
-     :limit => zeros(nrounds, ngroups, nsim),
-     :leakage => zeros(nrounds, ngroups, nsim),
-     :og => zeros(nrounds, ngroups, nsim),
-     :harvest => zeros(nrounds, ngroups, nsim),
-     :punish => zeros(nrounds, ngroups, nsim),
-     :punish2 => zeros(nrounds, ngroups, nsim),
-     :fine1 => zeros(nrounds, ngroups, nsim),
-     :fine2 =>zeros(nrounds, ngroups, nsim),
-     :effortLeak => zeros(nrounds, ngroups, nsim),
-     :effortNoLeak => zeros(nrounds, ngroups, nsim),
-     :harvestLeak => zeros(nrounds, ngroups, nsim),
-     :harvestNoLeak => zeros(nrounds, ngroups, nsim),
-     :payoffR => zeros(nrounds, ngroups, nsim),
-     :age_max => zeros(nrounds, ngroups, nsim),
-     :seized => zeros(nrounds, ngroups, nsim),
-     :seized2 => zeros(nrounds, ngroups, nsim),
-     :seized2in => zeros(nrounds, ngroups, nsim),
-     :forsize =>  zeros(ngroups, nsim),
-     :cel =>  zeros(nrounds, ngroups, nsim),
-     :clp2 => zeros(nrounds, ngroups, nsim),
-     :cep2 => zeros(nrounds, ngroups, nsim),
-     :ve => zeros(nrounds, ngroups, nsim),
-     :vp2 => zeros(nrounds, ngroups, nsim),
-     :vl => zeros(nrounds, ngroups, nsim),
-     :roi => zeros(nrounds, ngroups, nsim),
-     :fstEffort => zeros(nrounds, nsim),
-     :fstLimit => zeros(nrounds, nsim),
-     :fstLeakage => zeros(nrounds, nsim),
-     :fstPunish => zeros(nrounds, nsim),
-     :fstPunish2 => zeros(nrounds, nsim),
-     :fstFine1 => zeros(nrounds, nsim),
-     :fstFine2 => zeros(nrounds, nsim),
-     :fstOg => zeros(nrounds, nsim),
-     :wealth => Float64[],
-     :wealthgroups => Float64[]
-     )
-
+    history=Dict{Symbol, Any}(
+      :stock => zeros(nrounds, ngroups, nsim),
+      :effort => zeros(nrounds, ngroups, nsim),
+      :limit => zeros(nrounds, ngroups, nsim),
+      :leakage => zeros(nrounds, ngroups, nsim),
+      :og => zeros(nrounds, ngroups, nsim),
+      :harvest => zeros(nrounds, ngroups, nsim),
+      :punish => zeros(nrounds, ngroups, nsim),
+      :punish2 => zeros(nrounds, ngroups, nsim),
+      :cel =>  zeros(nrounds, ngroups, nsim),
+      :clp2 => zeros(nrounds, ngroups, nsim),
+      :cep2 => zeros(nrounds, ngroups, nsim),
+      :fine1 => zeros(nrounds, ngroups, nsim),
+      :fine2 =>zeros(nrounds, ngroups, nsim),
+      :payoffR => zeros(nrounds, ngroups, nsim))
+    if full_save == true 
+      history[:effortLeak] = zeros(nrounds, ngroups, nsim)
+      history[:effortNoLeak] = zeros(nrounds, ngroups, nsim)
+      history[:harvestLeak] = zeros(nrounds, ngroups, nsim)
+      history[:harvestNoLeak] = zeros(nrounds, ngroups, nsim)
+      history[:age_max] = zeros(nrounds, ngroups, nsim)
+      history[:seized] = zeros(nrounds, ngroups, nsim)
+      history[:seized2] = zeros(nrounds, ngroups, nsim)
+      history[:seized2in] = zeros(nrounds, ngroups, nsim)
+      history[:forsize] =  zeros(ngroups, nsim)
+      history[:cel] =  zeros(nrounds, ngroups, nsim)
+      history[:clp2] = zeros(nrounds, ngroups, nsim)
+      history[:cep2] = zeros(nrounds, ngroups, nsim)
+      history[:ve] = zeros(nrounds, ngroups, nsim)
+      history[:vp2] = zeros(nrounds, ngroups, nsim)
+      history[:vl] = zeros(nrounds, ngroups, nsim)
+      history[:roi] = zeros(nrounds, ngroups, nsim)
+      #history[:fstEffort] = zeros(nrounds, nsim)
+      #history[:fstLimit] = zeros(nrounds, nsim)
+      #history[:fstLeakage] = zeros(nrounds, nsim)
+      #history[:fstPunish] = zeros(nrounds, nsim)
+      #history[:fstPunish2] = zeros(nrounds, nsim)
+      #history[:fstFine1] = zeros(nrounds, nsim)
+      #history[:fstFine2] = zeros(nrounds, nsim)
+      #history[:fstOg] = zeros(nrounds, nsim)
+      history[:wealth] = Float64[]
+      history[:wealthgroups] = Float64[]
+    end
+  
      if rec_history == true
       history[:wealth] = zeros(n, nrounds, nsim)
       history[:wealthgroups] = zeros(n, nrounds, nsim)
@@ -242,13 +249,14 @@ function cpr_abm(
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
       end
-      # Setup leakage
-    leak_temp =zeros(gs_init)
-    leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
-    for i = 1:ngroups
-    Random.seed!(seed+i+2+ngroups)
-      traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
-    end
+    # Setup leakage
+          leak_temp =zeros(gs_init)
+          leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
+          if zero  leak_temp[1:asInt(ceil(gs_init/(gs_init*.9)))].=1 end #10% START AS LEAKERS
+          for i = 1:ngroups
+          Random.seed!(seed+i+2+ngroups)
+            traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
+          end
     # Setup punishment
     for i = 1:ngroups
       Random.seed!(seed+(i)+2+(ngroups*2))
@@ -416,6 +424,8 @@ function cpr_abm(
       seized2=GetGroupSeized(HG, caught2, loc, ngroups)
       SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
       SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
+      
+      
       FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
       FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
       MC1 = punish_cost*traits.punish_type
@@ -493,30 +503,32 @@ function cpr_abm(
         history[:punish2][year,:,sim]  .= round.(report(traits.punish_type2,agents.gid, ngroups), digits=3)
         history[:fine1][year,:,sim] .= round.(reportMedian(traits.fines1, agents.gid, ngroups), digits=3)
         history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fines2, agents.gid, ngroups), digits=3)
-        #history[:effortLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==1, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
-        #history[:effortNoLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==0, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
-        #history[:harvestLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==1], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
-        #history[:harvestNoLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==0], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
         history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round,agents.gid, ngroups), digits=3)
-        history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
-        history[:seized][year,:,sim] .=  round.(reportSum(SP1, agents.gid, ngroups), digits =2)
-        history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
-        history[:seized2in][year,:,sim] .= seized2 
-        history[:forsize][:,sim] .= kmax
-        history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)
-        history[:clp2][year,:,sim] .= round.(reportCor(effort[:,2], traits.punish_type2,agents.gid, ngroups), digits=3)
-        history[:cep2][year,:,sim] .= round.(reportCor(traits.harv_limit, traits.punish_type2,agents.gid, ngroups), digits=3)
-        history[:ve][year,:,sim] .= round.(reportVar(effort[:,2],agents.gid, ngroups), digits=3)
-        history[:vp2][year,:,sim] .= round.(reportVar(traits.punish_type2,agents.gid, ngroups), digits=3)
-        history[:vl][year,:,sim] .= round.(reportVar(traits.harv_limit,agents.gid, ngroups), digits=3)
-        history[:fstEffort][year,sim] = GetFST(effort[:,2], agents.gid, ngroups, experiment_group, experiment)
-        history[:fstLimit][year,sim]  = GetFST(traits.harv_limit, agents.gid, ngroups, experiment_group, experiment)
-        history[:fstLeakage][year,sim]   = GetFST(traits.leakage_type, agents.gid, ngroups, experiment_group, experiment)
-        history[:fstPunish][year,sim]   = GetFST(traits.punish_type, agents.gid, ngroups, experiment_group, experiment)
-        history[:fstPunish2][year,sim]  = GetFST(traits.punish_type2, agents.gid, ngroups, experiment_group, experiment)
-        history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
-        history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
-        history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
+        if full_save == true
+          #history[:effortLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==1, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+          #history[:effortNoLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==0, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+          #history[:harvestLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==1], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+          #history[:harvestNoLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==0], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
+          history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
+          history[:seized][year,:,sim] .=  round.(reportSum(SP1, agents.gid, ngroups), digits =2)
+          history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
+          history[:seized2in][year,:,sim] .= seized2 
+          history[:forsize][:,sim] .= kmax
+          history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)
+          history[:clp2][year,:,sim] .= round.(reportCor(effort[:,2], traits.punish_type2,agents.gid, ngroups), digits=3)
+          history[:cep2][year,:,sim] .= round.(reportCor(traits.harv_limit, traits.punish_type2,agents.gid, ngroups), digits=3)
+          history[:ve][year,:,sim] .= round.(reportVar(effort[:,2],agents.gid, ngroups), digits=3)
+          history[:vp2][year,:,sim] .= round.(reportVar(traits.punish_type2,agents.gid, ngroups), digits=3)
+          history[:vl][year,:,sim] .= round.(reportVar(traits.harv_limit,agents.gid, ngroups), digits=3)
+        #  history[:fstEffort][year,sim] = GetFST(effort[:,2], agents.gid, ngroups, experiment_group, experiment)
+        #  history[:fstLimit][year,sim]  = GetFST(traits.harv_limit, agents.gid, ngroups, experiment_group, experiment)
+        #  history[:fstLeakage][year,sim]   = GetFST(traits.leakage_type, agents.gid, ngroups, experiment_group, experiment)
+        #  history[:fstPunish][year,sim]   = GetFST(traits.punish_type, agents.gid, ngroups, experiment_group, experiment)
+        #  history[:fstPunish2][year,sim]  = GetFST(traits.punish_type2, agents.gid, ngroups, experiment_group, experiment)
+        #  history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
+        #  history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
+        #  history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
+        end
         if rec_history == true 
               history[:wealth][:,year,sim]  = agents.payoff
               history[:wealthgroups][:,year,sim]  = agents.gid
@@ -598,7 +610,8 @@ function cpr_abm(
       agents.payoff_round[agents.payoff_round.<=0] .=0
       agents.payoff[agents.payoff.<=0] .=0
       sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
-      if experiment==true
+      learnfromcontrol = (experiment == true) & (control_learning == true) ? false : true
+      if learnfromcontrol==true
         pop = agents.id[agents.gid .∈  [experiment_group]]
         died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(pop, agents.id, sample_payoff, died)
@@ -661,5 +674,11 @@ function cpr_abm(
       year += 1
     end #End the year
   end #End Sims
+  if compress_data == true
+    ky=keys(history)
+    for key in ky
+      history[key]=convert.(Float16, history[key]) 
+    end#loop
+  end#Compress data
   return(history)
 end#End Function
