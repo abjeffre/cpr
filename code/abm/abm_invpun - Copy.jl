@@ -4,28 +4,28 @@ using Distributions
 using Random
 using Distributions
 using StatsBase
-include("cpr/code/abm/submodules/SplitGroupsTest.jl")
-include("cpr/code/abm/submodules/SocialTransmission.jl")
-include("cpr/code/abm/submodules/ResourceDynamics.jl")
-include("cpr/code/abm/submodules/MutateAgents.jl")
-include("cpr/code/abm/submodules/MakeBabies.jl")
-include("cpr/code/abm/submodules/KillAgents.jl")
-include("cpr/code/abm/submodules/GetSeizedPay.jl")
-include("cpr/code/abm/submodules/GetPollution.jl")
-include("cpr/code/abm/submodules/GetPolicy.jl")
-include("cpr/code/abm/submodules/GetPatch.jl")
-include("cpr/code/abm/submodules/GetModels.jl")
-include("cpr/code/abm/submodules/GetInspection.jl")
-include("cpr/code/abm/submodules/GetIndvHarvest.jl")
-include("cpr/code/abm/submodules/GetHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupSeized.jl")
-include("cpr/code/abm/submodules/GetFinesPay.jl")
-include("cpr/code/abm/submodules/GetEcoSysServ.jl")
-include("cpr/code/abm/submodules/TransferWealth.jl")
-include("cpr/code/abm/submodules/GetModelsn1.jl")
-include("cpr/code/abm/submodules/RWLearn.jl")
-include("functions/utility.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/SplitGroupsTest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/SocialTransmission.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/ResourceDynamics.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/MutateAgents.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/MakeBabies.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/KillAgents.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetSeizedPay.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPollution.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPolicy.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPatch.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetModels.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetInspection.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetIndvHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetGroupHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetGroupSeized.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetFinesPay.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetEcoSysServ.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/TransferWealth.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetModelsn1.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/RWLearn.jl")
+include("C:/Users/jeffr/Documents/Work/functions/utility.jl")
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
@@ -99,7 +99,7 @@ function cpr_abm(
   kmax_data = nothing,
   back_leak = false,
   fines_on = false,
-  inspect_timing = nothing,           # options: nothing, "before", "after", if nothing then it randomizes to half and half
+  inspect_timing = nothing,
   inher = false,
   tech_data = nothing,
   harvest_type = "individual",
@@ -114,8 +114,7 @@ function cpr_abm(
   αlearn = 1, 
   indvLearn = false,
   full_save = false,
-  compress_data = true,
-  control_learning = false
+  compress_data = true
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -249,14 +248,13 @@ function cpr_abm(
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
       end
-    # Setup leakage
-          leak_temp =zeros(gs_init)
-          leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
-          if zero  leak_temp[1:asInt(ceil(gs_init/(gs_init*.9)))].=1 end #10% START AS LEAKERS
-          for i = 1:ngroups
-          Random.seed!(seed+i+2+ngroups)
-            traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
-          end
+      # Setup leakage
+    leak_temp =zeros(gs_init)
+    leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
+    for i = 1:ngroups
+    Random.seed!(seed+i+2+ngroups)
+      traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
+    end
     # Setup punishment
     for i = 1:ngroups
       Random.seed!(seed+(i)+2+(ngroups*2))
@@ -424,8 +422,6 @@ function cpr_abm(
       seized2=GetGroupSeized(HG, caught2, loc, ngroups)
       SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
       SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
-      
-      
       FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
       FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
       MC1 = punish_cost*traits.punish_type
@@ -610,8 +606,7 @@ function cpr_abm(
       agents.payoff_round[agents.payoff_round.<=0] .=0
       agents.payoff[agents.payoff.<=0] .=0
       sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
-      learnfromcontrol = (experiment == true) & (control_learning == true) ? false : true
-      if learnfromcontrol==true
+      if experiment==true
         pop = agents.id[agents.gid .∈  [experiment_group]]
         died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
         babies = MakeBabies(pop, agents.id, sample_payoff, died)

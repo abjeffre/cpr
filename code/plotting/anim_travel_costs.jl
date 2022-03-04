@@ -3,7 +3,7 @@ using Statistics
 using JLD2
 using Plots
 
-@JLD2.load("cpr\\data\\leak_travel.jld2")
+@JLD2.load("cpr\\data\\abm\\abmDatLeak.jld2")
 
 travelcost = unique(S[:,4])
 sort!(travelcost)
@@ -114,7 +114,7 @@ gif(anim, string("cpr\\output\\pred_tc.gif"), fps = fps)
 for r in 1:length(pars)
         for k in 1:length(labor)
                 for j in 1:length(travelcost)
-                        l=findall(x->x==0.001, S[:,10])
+                        l=findall(x->x==0.000, S[:,10])
                         h=findall(x->x==0.9, S[:,10])
                         q=findall(x->x==labor[k], S[:,6])
                         v=findall(x->x==travelcost[j], S[:,4])
@@ -147,8 +147,8 @@ for r in 1:length(pars)
 end
 
 
-ps1 = [p_arr[1, 2, 1] p_arr[8, 2, 1] p_arr[10, 2, 1]]
-ps2 = [p_arr[1, 2, 2] p_arr[8, 2, 2] p_arr[10, 2, 2]]
+ps1 = [p_arr[1, 1, 1] p_arr[2, 1, 1] p_arr[10, 1, 1]]
+ps2 = [p_arr[1, 1, 2] p_arr[8, 1, 2] p_arr[10, 1, 2]]
 
 l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color bar
 Plots.GridLayout(1, 3)

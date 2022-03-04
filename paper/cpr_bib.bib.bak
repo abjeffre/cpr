@@ -43,7 +43,15 @@
   publisher = {Elsevier},
 }
 
-@Article{,
+@Article{brooks2006testing,
+  author    = {Brooks, Jeremy S and Franzen, Margaret A and Holmes, Christopher M and Grote, Mark N and Mulder, Monique Borgerhoff},
+  journal   = {Conservation biology},
+  title     = {Testing hypotheses for the success of different conservation strategies},
+  year      = {2006},
+  number    = {5},
+  pages     = {1528--1538},
+  volume    = {20},
+  publisher = {Wiley Online Library},
 }
 @article{bravo2011agents,
   title={Agents’ beliefs and the evolution of institutions for common-pool resource management},
@@ -55,4 +63,334 @@
   year={2011},
   publisher={Sage Publications Sage UK: London, England}
 }
+
+@Article{naegele2019does,
+  author    = {Naegele, Helene and Zaklan, Aleksandar},
+  journal   = {Journal of Environmental Economics and Management},
+  title     = {Does the EU ETS cause carbon leakage in European manufacturing?},
+  year      = {2019},
+  pages     = {125--147},
+  volume    = {93},
+  publisher = {Elsevier},
+}
+
+@Article{franzen2018consumption,
+  author    = {Franzen, Axel and Mader, Sebastian},
+  journal   = {Environmental Science \& Policy},
+  title     = {Consumption-based versus production-based accounting of CO2 emissions: Is there evidence for carbon leakage?},
+  year      = {2018},
+  pages     = {34--40},
+  volume    = {84},
+  publisher = {Elsevier},
+}
+
+@Article{outchiri2021carbon,
+  author = {Outchiri, Banie Naser and Jie, HE},
+  title  = {Carbon leakage revisited based on carbon terms of trade: Has Kyoto Protocol strengthened China’s comparative advantage in dirty products?},
+  year   = {2021},
+}
+
+@Article{pan2020carbon,
+  author    = {Pan, Wenqi and Kim, Man-Keun and Ning, Zhuo and Yang, Hongqiang},
+  journal   = {Forest Policy and Economics},
+  title     = {Carbon leakage in energy/forest sectors and climate policy implications using meta-analysis},
+  year      = {2020},
+  pages     = {102161},
+  volume    = {115},
+  publisher = {Elsevier},
+}
+
+@Article{brooks2006testing,
+  author    = {Brooks, Jeremy S and Franzen, Margaret A and Holmes, Christopher M and Grote, Mark N and Mulder, Monique Borgerhoff},
+  journal   = {Conservation biology},
+  title     = {Testing hypotheses for the success of different conservation strategies},
+  year      = {2006},
+  number    = {5},
+  pages     = {1528--1538},
+  volume    = {20},
+  publisher = {Wiley Online Library},
+}
+
+@Article{atmadja2012review,
+  author    = {Atmadja, Stibniati and Verchot, Louis},
+  journal   = {Mitigation and Adaptation Strategies for Global Change},
+  title     = {A review of the state of research, policies and strategies in addressing leakage from reducing emissions from deforestation and forest degradation (REDD+)},
+  year      = {2012},
+  number    = {3},
+  pages     = {311--336},
+  volume    = {17},
+  publisher = {Springer},
+}
+
+@Article{kuik2014redd+,
+  author    = {Kuik, Onno},
+  journal   = {Mitigation and adaptation strategies for global change},
+  title     = {REDD+ and international leakage via food and timber markets: a CGE analysis},
+  year      = {2014},
+  number    = {6},
+  pages     = {641--655},
+  volume    = {19},
+  publisher = {Springer},
+}
+
+@Article{streck2021redd+,
+  author    = {Streck, Charlotte},
+  journal   = {Climate Policy},
+  title     = {REDD+ and leakage: debunking myths and promoting integrated solutions},
+  year      = {2021},
+  pages     = {1--10},
+  publisher = {Taylor \& Francis},
+}
+
+@Article{atmadja2012review,
+  author    = {Atmadja, Stibniati and Verchot, Louis},
+  journal   = {Mitigation and Adaptation Strategies for Global Change},
+  title     = {A review of the state of research, policies and strategies in addressing leakage from reducing emissions from deforestation and forest degradation (REDD+)},
+  year      = {2012},
+  number    = {3},
+  pages     = {311--336},
+  volume    = {17},
+  publisher = {Springer},
+}
+
+@Article{lima2019leakage,
+  author    = {Lima, Mairon G Bastos and Persson, U Martin and Meyfroidt, Patrick},
+  journal   = {Environmental Research Letters},
+  title     = {Leakage and boosting effects in environmental governance: a framework for analysis},
+  year      = {2019},
+  number    = {10},
+  pages     = {105006},
+  volume    = {14},
+  publisher = {IOP Publishing},
+}
+
+@Article{meyfroidt2020focus,
+  author    = {Meyfroidt, Patrick and B{\"o}rner, Jan and Garrett, Rachael and Gardner, Toby and Godar, Javier and Kis-Katos, Krisztina and Soares-Filho, Britaldo S and Wunder, Sven},
+  journal   = {Environmental Research Letters},
+  title     = {Focus on leakage and spillovers: informing land-use governance in a tele-coupled world},
+  year      = {2020},
+  number    = {9},
+  pages     = {090202},
+  volume    = {15},
+  publisher = {IOP Publishing},
+}
+
+@Article{meyfroidt2018middle,
+  author    = {Meyfroidt, Patrick and Chowdhury, R Roy and de Bremond, Ariane and Ellis, Erle C and Erb, K-H and Filatova, Tatiana and Garrett, RD and Grove, J Morgan and Heinimann, Andreas and Kuemmerle, Tobias and others},
+  journal   = {Global environmental change},
+  title     = {Middle-range theories of land system change},
+  year      = {2018},
+  pages     = {52--67},
+  volume    = {53},
+  publisher = {Elsevier},
+}
+
+@Article{ford2020deforestation,
+  author    = {Ford, Scott Alan and Jepsen, Martin Rudbeck and Kingston, Naomi and Lewis, Edward and Brooks, Thomas M and MacSharry, Brian and Mertz, Ole},
+  journal   = {Global Ecology and Biogeography},
+  title     = {Deforestation leakage undermines conservation value of tropical and subtropical forest protected areas},
+  year      = {2020},
+  number    = {11},
+  pages     = {2014--2024},
+  volume    = {29},
+  publisher = {Wiley Online Library},
+}
+
+@Article{godar2015towards,
+  author    = {Godar, Javier and Persson, U Martin and Tizado, E Jorge and Meyfroidt, Patrick},
+  journal   = {Ecological Economics},
+  title     = {Towards more accurate and policy relevant footprint analyses: tracing fine-scale socio-environmental impacts of production to consumption},
+  year      = {2015},
+  pages     = {25--35},
+  volume    = {112},
+  publisher = {Elsevier},
+}
+
+@Article{pendrill2019deforestation,
+  author    = {Pendrill, Florence and Persson, U Martin and Godar, Javier and Kastner, Thomas},
+  journal   = {Environmental Research Letters},
+  title     = {Deforestation displaced: trade in forest-risk commodities and the prospects for a global forest transition},
+  year      = {2019},
+  number    = {5},
+  pages     = {055003},
+  volume    = {14},
+  publisher = {IOP Publishing},
+}
+
+@Article{pravat2013using,
+  author    = {Pravat, Poshendra Satyal and Humphreys, David},
+  journal   = {Forest policy and economics},
+  title     = {Using a multilevel approach to analyse the case of forest conflicts in the Terai, Nepal},
+  year      = {2013},
+  pages     = {47--55},
+  volume    = {33},
+  publisher = {Elsevier},
+}
+
+@Article{pravat2013using,
+  author    = {Pravat, Poshendra Satyal and Humphreys, David},
+  journal   = {Forest policy and economics},
+  title     = {Using a multilevel approach to analyse the case of forest conflicts in the Terai, Nepal},
+  year      = {2013},
+  pages     = {47--55},
+  volume    = {33},
+  publisher = {Elsevier},
+}
+
+@Article{waring2018evidence,
+  author    = {Waring, Timothy and Acheson, James},
+  journal   = {Sustainability science},
+  title     = {Evidence of cultural group selection in territorial lobstering in Maine},
+  year      = {2018},
+  number    = {1},
+  pages     = {21--34},
+  volume    = {13},
+  publisher = {Springer},
+}
+
+@Article{wilen2012economics,
+  author    = {Wilen, James and Cancino, Jos{\'e} and Uchida, Hirotsugu},
+  journal   = {Review of Environmental Economics and Policy},
+  title     = {The Economics of Territorial Use Rights Fisheries, or TURFs},
+  year      = {2012},
+  number    = {2},
+  pages     = {237--257},
+  volume    = {6},
+  publisher = {Association of Environmental and Resource Economists},
+}
+
+@Article{yamazaki2018intra,
+  author    = {Yamazaki, Satoshi and Resosudarmo, Budy P and Girsang, Wardis and Hoshino, Eriko},
+  journal   = {Ocean \& coastal management},
+  title     = {Intra-village and inter-village resource use conflict in Indonesia: The case of the Kei Islands},
+  year      = {2018},
+  pages     = {50--59},
+  volume    = {155},
+  publisher = {Elsevier},
+}
+
+@Article{bowles2009did,
+  author    = {Bowles, Samuel},
+  journal   = {Science},
+  title     = {Did warfare among ancestral hunter-gatherers affect the evolution of human social behaviors?},
+  year      = {2009},
+  number    = {5932},
+  pages     = {1293--1298},
+  volume    = {324},
+  publisher = {American Association for the Advancement of Science},
+}
+
+@Article{bowles2003co,
+  author    = {Bowles, Samuel and Choi, Jung-Kyoo and Hopfensitz, Astrid},
+  journal   = {Journal of theoretical biology},
+  title     = {The co-evolution of individual behaviors and social institutions},
+  year      = {2003},
+  number    = {2},
+  pages     = {135--147},
+  volume    = {223},
+  publisher = {Elsevier},
+}
+
+@Article{waring2017coevolution,
+  author    = {Waring, Timothy M and Goff, Sandra H and Smaldino, Paul E},
+  journal   = {Ecological economics},
+  title     = {The coevolution of economic institutions and sustainable consumption via cultural group selection},
+  year      = {2017},
+  pages     = {524--532},
+  volume    = {131},
+  publisher = {Elsevier},
+}
+
+@Article{choi2007coevolution,
+  author    = {Choi, Jung-Kyoo and Bowles, Samuel},
+  journal   = {science},
+  title     = {The coevolution of parochial altruism and war},
+  year      = {2007},
+  number    = {5850},
+  pages     = {636--640},
+  volume    = {318},
+  publisher = {American Association for the Advancement of Science},
+}
+
+@Article{bornstein1994cooperation,
+  author    = {Bornstein, Gary and Ben-Yossef, Meyrav},
+  journal   = {Journal of Experimental Social Psychology},
+  title     = {Cooperation in intergroup and single-group social dilemmas},
+  year      = {1994},
+  number    = {1},
+  pages     = {52--67},
+  volume    = {30},
+  publisher = {Elsevier},
+}
+
+@Article{gunnthorsdottir2006embedding,
+  author    = {Gunnthorsdottir, Anna and Rapoport, Amnon},
+  journal   = {Organizational Behavior and Human Decision Processes},
+  title     = {Embedding social dilemmas in intergroup competition reduces free-riding},
+  year      = {2006},
+  number    = {2},
+  pages     = {184--199},
+  volume    = {101},
+  publisher = {Elsevier},
+}
+
+@Article{tan2007team,
+  author    = {Tan, Jonathan HW and Bolle, Friedel},
+  journal   = {Economics letters},
+  title     = {Team competition and the public goods game},
+  year      = {2007},
+  number    = {1},
+  pages     = {133--139},
+  volume    = {96},
+  publisher = {Elsevier},
+}
+
+@Article{cardenas2015between,
+  author    = {C{\'a}rdenas, Juan C and Mantilla, C{\'e}sar},
+  journal   = {Frontiers in behavioral neuroscience},
+  title     = {Between-group competition, intra-group cooperation and relative performance},
+  year      = {2015},
+  pages     = {33},
+  volume    = {9},
+  publisher = {Frontiers},
+}
+
+@Book{mcelreath2008mathematical,
+  author    = {McElreath, Richard and Boyd, Robert},
+  publisher = {University of Chicago Press},
+  title     = {Mathematical models of social evolution: A guide for the perplexed},
+  year      = {2008},
+}
+
+@Article{de2017deterring,
+  author    = {De Geest, Lawrence R and Stranlund, John K and Spraggon, John M},
+  journal   = {Journal of Economic Behavior \& Organization},
+  title     = {Deterring poaching of a common pool resource},
+  year      = {2017},
+  pages     = {254--276},
+  volume    = {141},
+  publisher = {Elsevier},
+}
+
+@Article{kendal2009evolution,
+  author    = {Kendal, Jeremy and Giraldeau, Luc-Alain and Laland, Kevin},
+  journal   = {Journal of theoretical biology},
+  title     = {The evolution of social learning rules: payoff-biased and frequency-dependent biased transmission},
+  year      = {2009},
+  number    = {2},
+  pages     = {210--219},
+  volume    = {260},
+  publisher = {Elsevier},
+}
+
+@Book{ostrom1990governing,
+  author    = {Ostrom, Elinor},
+  publisher = {Cambridge university press},
+  title     = {Governing the commons: The evolution of institutions for collective action},
+  year      = {1990},
+}
+
+@Article{,
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
