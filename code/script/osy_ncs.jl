@@ -15,8 +15,8 @@ cd("C:\\Users\\jeffr\\Documents\\Work\\")
 #######################################################################
 ############### VARYING PRICE AND WAGE ################################
 @everywhere L = expand_grid(
-                       10 .^(collect(range(-3, stop = 1, length = 10))),#wage 
-                       10 .^(collect(range(-3, stop = 1, length = 10)))# Price
+                       10 .^(collect(range(-3, stop = 1, length = 20))),#wage 
+                       10 .^(collect(range(-3, stop = 1, length = 20)))# Price
        )
 
 
@@ -54,11 +54,14 @@ ncsh=[mean(ncs[i][:payoffR][700:end,1,1]) for i in 1:length(ncs)]
 
 @JLD2.save("cpr\\data\\abm\\ncs.jld2", ncs, L)
 @JLD2.load("cpr\\data\\abm\\osy.jld2")
+@JLD2.load("cpr\\data\\abm\\ncs.jld2")
 
+
+osyp = [mean(osyp[i]) for i in 1:length(osyp)]
 ########## FIND WHERE THE DIFFRENCE IS THE LARGEST
-diff = findmax(osyp./ncsh)
-par=L[diff[2],:]
-lim=osy[diff[2]]
+diffi = findmax(osyp./ncsh)
+par=L[diffi[2],:]
+lim=osy[diffi[2]]
 
 nc=cpr_abm(n = 300, ngroups = 2, lattice = (1,2), max_forest = 1400*300, regrow = 0.025,
         leak = false, pun1_on = false, pun2_on = false, learn_type = "income", mortality_rate = 0.01,
