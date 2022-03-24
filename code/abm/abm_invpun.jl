@@ -63,6 +63,7 @@ function cpr_abm(
   self_policing = true,         # Toggles if Punishers also target members of their own ingroup for harvesting over limit
   harvest_limit = 5,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
   harvest_var = 1.5,
+  harvest_var_ind = .5,
   pun2_on = true,
   pun1_on = true,
   seized_on = true,
@@ -249,13 +250,14 @@ function cpr_abm(
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
       end
-      # Setup leakage
-    leak_temp =zeros(gs_init)
-    leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
-    for i = 1:ngroups
-    Random.seed!(seed+i+2+ngroups)
-      traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
-    end
+    # Setup leakage
+          leak_temp =zeros(gs_init)
+          leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
+          if zero  leak_temp[1:asInt(ceil(gs_init/(gs_init*.9)))].=1 end #10% START AS LEAKERS
+          for i = 1:ngroups
+          Random.seed!(seed+i+2+ngroups)
+            traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
+          end
     # Setup punishment
     for i = 1:ngroups
       Random.seed!(seed+(i)+2+(ngroups*2))
@@ -268,7 +270,7 @@ function cpr_abm(
     temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
     for i in 1:ngroups
       Random.seed!(seed+i+2)
-      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
+      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], harvest_var_ind), gs_init))
     end
     # Fines
     if fine_start != nothing

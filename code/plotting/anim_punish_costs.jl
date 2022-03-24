@@ -87,9 +87,9 @@ Plots.GridLayout(1, 3)
 set2 = plot(ps2..., heatmap((0:0.01:1).*ones(101,1),
 legend=:none, xticks=:none, c=cols[2], yticks=(1:10:101,
 string.(-1:0.2:1)), title ="\\Delta X", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
-
 plot(set1, set2, size = (1000, 550), left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px,
  layout = (2,1))
+
 
 test=bar([i], xlim = (0,10), orientation = :horizontal, label = false, xlabel = "Insitutional Costs",     xguidefontsize=9, bottom_margin = 20px, xticks = ([0, 10], ("Low", "High")), yticks = ([10], ("")),  size = (1000, 100))
 vline!([10], label = false)
@@ -100,7 +100,55 @@ Plots.GridLayout(3, 1)
 plot(set1, set2, test, size = (1000, 700), left_margin = 20px, bottom_margin = 20px, right_margin = 10px,
  layout = l)
 end
-gif(anim, string("cpr\\output\\pun1.gif"), fps = fps)
+gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_pc1.gif")
+, fps = fps)
+
+
+
+########################################################
+########### STATIC #####################################
+
+
+fps = 2
+anim = @animate for i = 1:10
+#Define line settings
+ps1 = [p_arr[1, 1, 1] p_arr[7, 1, 1] p_arr[10, 1, 1]]
+ps2 = [p_arr[1, 1, 2] p_arr[7, 1, 2] p_arr[10, 1, 2]]
+
+l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color bar
+Plots.GridLayout(1, 3)
+set1 = plot(ps1..., heatmap((0:0.01:1).*ones(101,1),
+legend=:none, xticks=:none, c=cols[1], yticks=(1:10:101,
+string.(-1:0.2:1)), title ="\\Delta E", titlefont = 8), layout=l, left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px) # Plot them set y values of color bar accordingly
+
+
+l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color bar
+Plots.GridLayout(1, 3)
+set2 = plot(ps2..., heatmap((0:0.01:1).*ones(101,1),
+legend=:none, xticks=:none, c=cols[2], yticks=(1:10:101,
+string.(-1:0.2:1)), title ="\\Delta X", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
+plot(set1, set2, size = (1000, 550), left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px,
+ layout = (2,1))
+
+
+test=bar([i], xlim = (0,10), orientation = :horizontal, label = false, xlabel = "Insitutional Costs",     xguidefontsize=9, bottom_margin = 20px, xticks = ([0, 10], ("Low", "High")), yticks = ([10], ("")),  size = (1000, 100))
+vline!([10], label = false)
+
+
+l = @layout[a;b;c{.05h}]
+Plots.GridLayout(3, 1)
+plot(set1, set2, test, size = (1000, 700), left_margin = 20px, bottom_margin = 20px, right_margin = 10px,
+ layout = l)
+end
+gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\pred_pc1.gif")
+, fps = fps)
+
+
+
+
+
+
+
 
 
 ######################################################
