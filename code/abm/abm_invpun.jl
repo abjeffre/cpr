@@ -4,28 +4,28 @@ using Distributions
 using Random
 using Distributions
 using StatsBase
-include("cpr/code/abm/submodules/SplitGroupsTest.jl")
-include("cpr/code/abm/submodules/SocialTransmission.jl")
-include("cpr/code/abm/submodules/ResourceDynamics.jl")
-include("cpr/code/abm/submodules/MutateAgents.jl")
-include("cpr/code/abm/submodules/MakeBabies.jl")
-include("cpr/code/abm/submodules/KillAgents.jl")
-include("cpr/code/abm/submodules/GetSeizedPay.jl")
-include("cpr/code/abm/submodules/GetPollution.jl")
-include("cpr/code/abm/submodules/GetPolicy.jl")
-include("cpr/code/abm/submodules/GetPatch.jl")
-include("cpr/code/abm/submodules/GetModels.jl")
-include("cpr/code/abm/submodules/GetInspection.jl")
-include("cpr/code/abm/submodules/GetIndvHarvest.jl")
-include("cpr/code/abm/submodules/GetHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupSeized.jl")
-include("cpr/code/abm/submodules/GetFinesPay.jl")
-include("cpr/code/abm/submodules/GetEcoSysServ.jl")
-include("cpr/code/abm/submodules/TransferWealth.jl")
-include("cpr/code/abm/submodules/GetModelsn1.jl")
-include("cpr/code/abm/submodules/RWLearn.jl")
-include("functions/utility.jl")
+include("submodules/SplitGroupsTest.jl")
+include("submodules/SocialTransmission.jl")
+include("submodules/ResourceDynamics.jl")
+include("submodules/MutateAgents.jl")
+include("submodules/MakeBabies.jl")
+include("submodules/KillAgents.jl")
+include("submodules/GetSeizedPay.jl")
+include("submodules/GetPollution.jl")
+include("submodules/GetPolicy.jl")
+include("submodules/GetPatch.jl")
+include("submodules/GetModels.jl")
+include("submodules/GetInspection.jl")
+include("submodules/GetIndvHarvest.jl")
+include("submodules/GetHarvest.jl")
+include("submodules/GetGroupHarvest.jl")
+include("submodules/GetGroupSeized.jl")
+include("submodules/GetFinesPay.jl")
+include("submodules/GetEcoSysServ.jl")
+include("submodules/TransferWealth.jl")
+include("submodules/GetModelsn1.jl")
+include("submodules/RWLearn.jl")
+#include("functions/utility.jl")
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
@@ -63,6 +63,7 @@ function cpr_abm(
   self_policing = true,         # Toggles if Punishers also target members of their own ingroup for harvesting over limit
   harvest_limit = 5,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
   harvest_var = 1.5,
+  harvest_var_ind = .5,
   pun2_on = true,
   pun1_on = true,
   seized_on = true,
@@ -269,7 +270,7 @@ function cpr_abm(
     temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
     for i in 1:ngroups
       Random.seed!(seed+i+2)
-      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
+      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], harvest_var_ind), gs_init))
     end
     # Fines
     if fine_start != nothing
