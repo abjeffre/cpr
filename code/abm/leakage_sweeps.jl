@@ -343,7 +343,7 @@ S[:,16], S[:,17], S[:,18], S[:,19], S[:, 20])
 
 
 S =expand_grid( [150*12],        #Population Size
-                [12],             #ngroups
+                [2],             #ngroups
                 [[3, 4]],        #lattice, will be replaced below
                 [10],            #travel cost
                 [1],             #tech
@@ -413,14 +413,14 @@ S[:,16], S[:,17], S[:,18], S[:,19], S[:, 20])
 
 
 ##################################################################################
-######################## ALL Labor .5 #############################################
+######################## ALL Labor .1 #############################################
 
 
 
 S =expand_grid( [150*12],        #Population Size
-                [12],             #ngroups
+                [2],             #ngroups
                 [[3, 4]],        #lattice, will be replaced below
-                [.1],            #travel cost
+                [10],            #travel cost
                 [1],             #tech
                 [.5],            #labor
                 [5],           #limit seed values
@@ -451,7 +451,7 @@ S =expand_grid( [150*12],        #Population Size
             leak = true,
             pun1_on = true,
             pun2_on = true,
-            back_leak = false,
+            back_leak = true,
             experiment_effort = 1,
             harvest_var = 1,
             n = n,
@@ -492,7 +492,7 @@ S[:,16], S[:,17], S[:,18], S[:,19], S[:, 20])
 
 
 S =expand_grid( [150*12],        #Population Size
-                [12],             #ngroups
+                [2],             #ngroups
                 [[3, 4]],        #lattice, will be replaced below
                 [10],            #travel cost
                 [1],             #tech

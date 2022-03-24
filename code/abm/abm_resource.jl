@@ -4,25 +4,26 @@ using Distributions
 using Random
 using Distributions
 using StatsBase
-include("cpr/code/abm/submodules/SplitGroupsTest.jl")
-include("cpr/code/abm/submodules/SocialTransmission.jl")
-include("cpr/code/abm/submodules/ResourceDynamics.jl")
-include("cpr/code/abm/submodules/MutateAgents.jl")
-include("cpr/code/abm/submodules/MakeBabies.jl")
-include("cpr/code/abm/submodules/KillAgents.jl")
-include("cpr/code/abm/submodules/GetSeizedPay.jl")
-include("cpr/code/abm/submodules/GetPollution.jl")
-include("cpr/code/abm/submodules/GetPolicy.jl")
-include("cpr/code/abm/submodules/GetPatch.jl")
-include("cpr/code/abm/submodules/GetModels.jl")
-include("cpr/code/abm/submodules/GetInspection.jl")
-include("cpr/code/abm/submodules/GetIndvHarvest.jl")
-include("cpr/code/abm/submodules/GetHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupHarvest.jl")
-include("cpr/code/abm/submodules/GetGroupSeized.jl")
-include("cpr/code/abm/submodules/GetFinesPay.jl")
-include("cpr/code/abm/submodules/GetEcoSysServ.jl")
-include("cpr/code/abm/submodules/TransferWealth.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/SplitGroupsTest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/SocialTransmission.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/ResourceDynamics.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/MutateAgents.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/MakeBabies.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/KillAgents.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetSeizedPay.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPollution.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPolicy.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetPatch.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetModels.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetInspection.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetIndvHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetGroupHarvest.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetGroupSeized.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetFinesPay.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/GetEcoSysServ.jl")
+include("C:/Users/jeffr/Documents/Work/cpr/code/abm/submodules/TransferWealth.jl")
+include("C:/Users/jeffr/Documents/Work/functions/utility.jl")
 
 function cpr_abm(
   ;nsim = 1,                    # Number of simulations per call
@@ -35,8 +36,7 @@ function cpr_abm(
   wages = .1,                   # Wage rate in other sectors - opportunity costs
   wage_data = nothing,
   labor_market = false,         # This controls labor market competition
-  market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
-  max_forest = 15000,               # Average max stock
+  max_forest = 350000,               # Average max stock
   var_forest = 0,                   # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
@@ -56,19 +56,19 @@ function cpr_abm(
   monitor_tech = [1,1],             # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
   defensibility = 1,            # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
   def_perc = true,              # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
-  punish_cost = 0.001,           # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
+  punish_cost = 0.1,           # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
   fine = 0.0,                   # This controls the size of the fine issued when caught, note that in a real world situation this could be recouped by the injured parties but it is not
   self_policing = true,         # Toggles if Punishers also target members of their own ingroup for harvesting over limit
-  harvest_limit = 0.25,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
-  harvest_var = .07,
+  harvest_limit = 5,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
+  harvest_var = 1.5,
   pun2_on = true,
   pun1_on = true,
   seized_on = true,
   fines_evolve = true,
   fines1_on = true,
   fines2_on = true,
-  fine_start = .1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
-  fine_var = .02,                #Determines the group offset for fines at the begining
+  fine_start = 1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
+  fine_var = .2,                #Determines the group offset for fines at the begining
   distance_adj =0.9,            # This affects the proboabilty of sampling a more close group.
   travel_cost = .00,            # This basically controls the travel time for individuals who travel to neightboring communities to steal from Note that higher values mean less leakage
   groups_sampled = 1,           # When leakers sample candidate wards to visit they draw this number of groups to compare forest sizes
@@ -80,10 +80,6 @@ function cpr_abm(
   baseline = .01,                # Baseline payoff to be added each round -
   invade = true,
   REDD = false,                 # This controls whether or not the natural experiment REDD+ is on, if REDD is on INST must be on
-  REDD_dates = 300,             # This can either be an int or vector of dates that development initative try and seed insitutions
-  law = .1,                     # This controls sustainable harvesting limit when REDD+ is introduced
-  num_cofma = 1,                # This controls the number of Groups that will be converted to CoFMA
-  cofma_gid = nothing,          # This allows you to choose the group id - specificy a spatial identity for the ward that becomes protected.
   leak = true,                  # This controls whether individuals are able to move into neightboring territory to harvest
   verbose = false,              # verbose reporting for debugging
   seed = 1984,
@@ -109,7 +105,9 @@ function cpr_abm(
   rec_history =  false,            # You can record the history of wealth but it is costly. 
   resource_zero = false,
   harvest_zero = false,
-  wealth_degrade = nothing
+  wealth_degrade = nothing,
+  slearn_freq = 1, 
+  reset = 100000
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -132,6 +130,7 @@ function cpr_abm(
      :age_max => zeros(nrounds, ngroups, nsim),
      :seized => zeros(nrounds, ngroups, nsim),
      :seized2 => zeros(nrounds, ngroups, nsim),
+     :seized2in => zeros(nrounds, ngroups, nsim),
      :forsize =>  zeros(ngroups, nsim),
      :cel =>  zeros(nrounds, ngroups, nsim),
      :clp2 => zeros(nrounds, ngroups, nsim),
@@ -317,7 +316,7 @@ function cpr_abm(
     temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
     for i in 1:ngroups
       Random.seed!(seed+i+2)
-      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
+      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
     end
     # Fines
     if fine_start != nothing
@@ -325,7 +324,7 @@ function cpr_abm(
       temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
       for i in 1:ngroups
         Random.seed!(seed+i+20)
-        traits.fines1[agents.gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
+        traits.fines1[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
       end
       Random.seed!(seed+21)
       temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
@@ -432,13 +431,14 @@ function cpr_abm(
       if catch_before == true
         temp_hg = zeros(n)
         caught1=GetInspection(temp_hg, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal")
+       # println(sum(caught1))
         temp_effort = effort[:,2] .* (1 .-caught1)
         if harvest_type == "collective"
           GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
           HG=GetIndvHarvest(GH, temp_effort, loc, necessity, ngroups)
         else
           HG=GetHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups)
-          GH=reportSum(HG, agents.gid, ngroups)
+          GH=reportSum(HG, loc, ngroups)
         end
       else
         if harvest_type == "collective"
@@ -446,7 +446,7 @@ function cpr_abm(
           HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
         else
           HG=GetHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, necessity, ngroups)
-          GH=reportSum(HG, agents.gid, ngroups)
+          GH=reportSum(HG, loc, ngroups)
         end
       end
 
@@ -456,6 +456,8 @@ function cpr_abm(
         caught1=GetInspection(HG, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal") 
       end
       caught2=GetInspection(HG, traits.punish_type2, loc, agents.gid, groups.limit, monitor_tech, groups.def, "local")
+      pun1_on ? nothing : caught1 .= 0
+      pun2_on ? nothing : caught2 .= 0
       caught_sum = caught1 + caught2
       if catch_before == true  
         seized1=GetGroupSeized(caught1, caught1, loc, ngroups) 
@@ -473,6 +475,7 @@ function cpr_abm(
       if fines_on == false FP2 = FP1 = zeros(n) end
       if catch_before == true SP1 .=0 end
 
+
       #EcoSystem Public Goods
       ecosys ? ECO =  GetEcoSysServ(ngroups, eco_slope, eco_C, K, kmax) :  ECO = zeros(n)
       pollution ? POL =  GetPollution(effort[:,2], loc, ngroups, pol_slope, pol_C, K, kmax) : POL = zeros(n)
@@ -480,7 +483,6 @@ function cpr_abm(
 
       #Wage Labor Market
       WL = wages*effort[:,1]*tech
-
       #Calculate agents.payoffs
       agents.payoff_round = HG .*(1 .- caught_sum).*price +
        WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
@@ -513,7 +515,9 @@ function cpr_abm(
 
       K=ResourceDynamics(GH, K, kmax, regrow, volatility, ngroups, harvest_zero)
 
-
+      if year ∈ reset 
+         K = kmax 
+      end
       #################################################
       ############# RECORD HISTORY ####################
         history[:stock][year,:,sim] .=round.(K./kmax, digits=3)
@@ -534,6 +538,7 @@ function cpr_abm(
         history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
         history[:seized][year,:,sim] .=  round.(reportSum(SP1, agents.gid, ngroups), digits =2)
         history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
+        history[:seized2in][year,:,sim] .= seized2 
         history[:forsize][:,sim] .= kmax
         history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)
         history[:clp2][year,:,sim] .= round.(reportCor(effort[:,2], traits.punish_type2,agents.gid, ngroups), digits=3)
@@ -587,7 +592,7 @@ function cpr_abm(
       effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
     end
 
-
+    
       #########################################
       ############# GENERAL UPDATING ##########
       agents.age .+= 1
@@ -654,7 +659,7 @@ function cpr_abm(
 
       ############################################
       ############ WEALTH DYNAMICS ###############
-
+  
       wealth_degrade !== nothing ? agents.payoff = agents.payoff .* wealth_degrade : nothing
 
       #

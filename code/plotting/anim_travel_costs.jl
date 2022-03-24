@@ -3,7 +3,7 @@ using Statistics
 using JLD2
 using Plots
 
-@JLD2.load("cpr\\data\\leak_travel.jld2")
+@JLD2.load("cpr\\data\\abm\\abmDatLeak.jld2")
 
 travelcost = unique(S[:,4])
 sort!(travelcost)
@@ -25,7 +25,7 @@ for r in 1:length(pars)
                         h=findall(x->x==0.9, S[:,10])
                         q=findall(x->x==labor[k], S[:,6])
                         v=findall(x->x==travelcost[j], S[:,4])
-                        w = findall(x->x==true, S[:,20])
+                        w = findall(x->x==false, S[:,20])
                         l=l[l.∈ Ref(v)]
                         l=l[l.∈ Ref(q)]
                         l=l[l.∈ Ref(w)]
@@ -106,6 +106,68 @@ end
 
 
 gif(anim, string("cpr\\output\\pred_tc.gif"), fps = fps)
+
+
+####################################################################################
+#################### STATIC ########################################################
+
+for r in 1:length(pars)
+        for k in 1:length(labor)
+                for j in 1:length(travelcost)
+                        l=findall(x->x==0.000, S[:,10])
+                        h=findall(x->x==0.9, S[:,10])
+                        q=findall(x->x==labor[k], S[:,6])
+                        v=findall(x->x==travelcost[j], S[:,4])
+                        l=l[l.∈ Ref(v)]
+                        l=l[l.∈ Ref(q)]
+                        h=h[h.∈ Ref(v)]
+                        h=h[h.∈ Ref(q)]
+                        low = abm_dat[l]
+                        high =abm_dat[h]
+                        m = zeros(20,20)
+                        for i = 1:length(high)
+                            m[i]  = mean(mean(high[i][pars[r]][:,2,:], dims =2)-mean(low[i][pars[r]][:,2,:], dims =2))# - mean(low[i]["effort"][:,2,:], dims = 2))
+                            end
+                        using Plots
+                        gr()
+                         p_arr[j,k,r]=p1=heatmap(m,
+                             c=cols[r],
+                             clim= ifelse(r==3, (-.1,.1), (-1,1)),
+                             xlab = ifelse(r==2, "Wages", " "),
+                             ylab = ifelse(k==1, "Price", " "),
+                             yguidefontsize=9,
+                             xguidefontsize=9,
+                             legend = false,
+                             xticks = ([2,19], ifelse(r == 2, ("Low", "High"), (" ", " "))),
+                             yticks = ([2,19], ifelse(k == 2, ("Low", "High"), (" ", " "))),
+                             title = ifelse(r==1, string("Travel Cost: ", round(travelcost[j], digits = 4)), " "),
+                             titlefontsize = 9)
+                end
+        end
+end
+
+
+ps1 = [p_arr[1, 1, 1] p_arr[2, 1, 1] p_arr[10, 1, 1]]
+ps2 = [p_arr[1, 1, 2] p_arr[8, 1, 2] p_arr[10, 1, 2]]
+
+l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color bar
+Plots.GridLayout(1, 3)
+set1 = plot(ps1..., heatmap((0:0.01:1).*ones(101,1),
+legend=:none, xticks=:none, c=cols[1], yticks=(1:10:101,
+string.(-1:0.2:1)), title ="\\Delta E", titlefont = 8), layout=l, left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px) # Plot them set y values of color bar accordingly
+
+l = @layout[grid(1,3) a{0.05w}] # Stack a layout that rightmost one is for color bar
+Plots.GridLayout(1, 3)
+set2 = plot(ps2..., heatmap((0:0.01:1).*ones(101,1),
+legend=:none, xticks=:none, c=cols[2], yticks=(1:10:101,
+string.(-1:0.2:1)), title ="\\Delta L", titlefont = 8), layout=l) # Plot them set y values of color bar accordingly
+plot(set1, set2, size = (1000, 550), left_margin = 20px, bottom_margin = 10px, top_margin = 10px, right_margin = 10px,
+ layout = (2,1))
+
+
+ png(string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\travelCost.png"))
+
+
 
 
 ####################################################################################
