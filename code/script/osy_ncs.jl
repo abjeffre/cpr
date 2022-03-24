@@ -254,16 +254,21 @@ S =expand_grid( [150*9],         #Population Size
 [.5] # outgroup punishment experiment 
 )
 
-
-for i in size(S)[1]
-    price = findall(x->x == S[i, 16], L[i,2])
-    wage = findall(x->x == S[i, 19], L[i,1])
-    inds=findall(price ∈ wage) 
-    S[i, 7] = osy[ind]
+@JLD2.load("cpr\\data\\abm\\osy.jld2")
+new = zeros(size(S)[1])
+for i in 1:size(S)[1]
+    println(i)
+    price = findall(x->x ≈ S[i, 16], L[:,2])
+    wage = findall(x->x ≈ S[i, 19], L[:,1])
+    tinds=findall.(x->x ∈ wage, price)
+    inds=price[findall(x->x == [1], tinds)] 
+    new[i] = convert.(Float64, osy[inds][1])
 end
 S[:,11] = ifelse.(S[:,10].==.0001, .0001, .9)
 S[:,11] = ifelse.(S[:,10].==.0001, .0001, .9)
 S[:,20] = ifelse.(S[:,10].==.0001, .0001, .9)
+S[:,7]= new
+
 
 
 
