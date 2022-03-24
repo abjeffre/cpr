@@ -5,9 +5,9 @@ using JLD2
 using Plots
 using ColorSchemes
 using Distributed
-cd("C:\\Users\\jeffr\\Documents\\Work\\")
-
-
+using DataFrames
+#cd("C:\\Users\\jeffr\\Documents\\Work\\")
+#cd("Y:\\eco_andrews\\Projects\\")
 ###########
 
 
@@ -16,10 +16,16 @@ cd("C:\\Users\\jeffr\\Documents\\Work\\")
 pay = []
 stock = []
 
-cd("C:\\Users\\jeffr\\Documents\\Work\\")
+# cd("C:\\Users\\jeffr\\Documents\\Work\\")
 
-@everywhere include("C:\\Users\\jeffr\\Documents\\Work\\cpr\\code\\abm\\abm_invpun.jl")
-@everywhere include("C:\\Users\\jeffr\\Documents\\Work\\functions\\utility.jl")
+# @everywhere include("C:\\Users\\jeffr\\Documents\\Work\\cpr\\code\\abm\\abm_invpun.jl")
+# @everywhere include("C:\\Users\\jeffr\\Documents\\Work\\functions\\utility.jl")
+
+ @everywhere include("Y:\\eco_andrews\\Projects\\cpr\\code\\abm\\abm_invpun.jl")
+ @everywhere include("Y:\\eco_andrews\\Projects\\functions\\utility.jl")
+ @everywhere include("Y:\\eco_andrews\\Projects\\cpr\\code\\abm\\abm_group_policy.jl")
+
+
 
 S=collect(0.0:0.05:1.0)
 # set up a smaller call function that allows for only a sub-set of pars to be manipulated
@@ -74,6 +80,7 @@ a=reduce(vcat, y[2:51])
 ########################### SUPPORT FOR REGULATION #############################################################################################
 
 ########## FIND WHERE THE DIFFRENCE IS THE LARGEST
+@JLD2.load("cpr\\data\\abm\\osy.jld2")
 diff = findmax(osyp./ncsh)
 par=L[diff[2],:]
 lim=osy[diff[2]]
@@ -81,10 +88,10 @@ lim=osy[diff[2]]
 S=collect(0:.02:1)
 # set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(L)
-    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 5,
+    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
     lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, 
     wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.00010525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
     experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true)
 end
 dat=pmap(g, S)
@@ -106,14 +113,8 @@ end
 dat2=pmap(g, S)
 #@JLD2.save("brute2.jld2", dat)
 
-
-
-
-
-
-
-
 @JLD2.load("cpr\\data\\abm\\brute2.jld2")
+load("cpr\\data\\abm\\brute21.jld")
 
 y = [median(median(dat[i][:punish2][100:end,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
 a=reduce(vcat, y[2:51])
@@ -128,8 +129,6 @@ mean(y)
 self=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
  ylab = "Support for self-regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
 scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
-
-
 
 plot(border, self, size = (1300/2, 600/2), bottom_margin = 20px, left_margin = 20px)
 png("cpr//output//ostromfirstprinciple.png")
@@ -147,7 +146,7 @@ png("cpr//output//ostromfirstprinciple.png")
 
 
 
-@JLD2.load("cpr\\data\\abm\\brute2.jld2")
+@JLD2.load("CPR\\data\\abm\\brute2.jld2")
 
 y = [mean(mean(dat[i][:limit][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
 a=reduce(vcat, y[2:51])
@@ -175,7 +174,7 @@ x=repeat(x, 50)
 mean(y)
 limit=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
  ylab = "MAH", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
- hline!([4.5], label = false)
+ hline!([8.29], label = false)
 # scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
 
@@ -482,21 +481,89 @@ scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 #############################################################################################
 ###################### TIME SERISE ##########################################################
 
-plot(mean(mean(dat[2][:punish2][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
-plot!(mean(mean(dat[2][:stock][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
-plot!(mean(mean(dat[2][:leakage][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
-
-
 plot(mean(mean(dat[27][:punish2][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
 plot!(mean(mean(dat[27][:stock][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
 plot!(mean(mean(dat[27][:leakage][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
 
 
-tempa=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 1,
-lattice = [3,3], harvest_limit = 4.8, regrow = .025, pun1_on = true, 
-wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-punish_cost = 0.01, labor = .7, zero = true, experiment_punish1 = .1, 
-experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true)
+plot(mean(mean(dat[10][:punish2][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
+plot!(mean(mean(dat[10][:stock][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
+plot!(mean(mean(dat[10][:leakage][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
+
+
+tempa=cpr_abm(n = 75*49, max_forest = 49*75*1400, ngroups =49, nsim = 1,
+lattice = [7,7], harvest_limit = 8.13+2, regrow = .025, pun1_on = true, full_save = true, 
+harvest_var = 3, harvest_var_ind = 1,
+wages = 0.0069519279617756054, 
+price = 0.0016237767391887226,
+defensibility = 1, 
+fines1_on = false,
+fines2_on = false, 
+punish_cost = 0.00001,
+labor = .7,
+zero = true,
+ learn_group_policy = true,
+nrounds = 1000, 
+outgroup = 0.01)
+
+
+tempb=cpr_abm(n = 75*49, max_forest = 49*75*1400, ngroups =49, nsim = 1,
+lattice = [7,7], harvest_limit = 8.13+2, regrow = .025, pun1_on = true, full_save = true, 
+harvest_var = 3, harvest_var_ind = 1,
+wages = 0.0069519279617756054, 
+price = 0.0016237767391887226,
+defensibility = 1, 
+fines1_on = false,
+fines2_on = false, 
+punish_cost = 0.00001,
+labor = .7,
+zero = true,
+ learn_group_policy = false,
+nrounds = 1000, 
+outgroup = 0.01)
+
+
+plot(tempa[:punish2][:,:,1], ylim = (0, 1), label = false)
+plot(tempa[:punish][:,:,1], ylim = (0, 1), label = false)
+plot(tempa[:payoffR][:,:,1], label = false)
+plot(tempa[:limit][:,:,1], label = false)
+plot(tempa[:stock][:,:,1], label = false)
+plot(tempa[:harvest][:,:,1])
+
+
+plot(tempb[:punish2][:,:,1], ylim = (0, 1), label = false)
+plot(tempb[:punish][:,:,1], ylim = (0, 1), label = false)
+plot(tempb[:payoffR][:,:,1], label = false)
+plot(tempb[:limit][:,:,1], label = false)
+plot(tempb[:stock][:,:,1], label = false)
+plot(tempa[:harvest][:,:,1])
+
+
+plot(temp2[:punish2][:,:,1], ylim = (0, 1))
+
+hline!([8.19])
+plot(temp2[:limit][:,:,1])
+
+
+
+mean(temp2[:punish2][:,:,1])
+mean(tempa[:punish2][:,:,1])
+
+plot!(mean(mean(tempa[:stock][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
+
+
+plot(mean(mean(tempa[:punish2][:,:,1], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
+plot!(mean(mean(tempa[:punish][:,:,1], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
+plot!(mean(mean(tempa[:leakage][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
+plot!(mean(mean(tempa[:stock][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
+
+
+plot(mean(mean(tempa[:vl][:,:,:], dims = 3), dims = 2)[:,:,1])
+plot(mean(mean(tempa[:limit][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 16))
+plot(mean(mean(tempa[:vl][:,:,:], dims = 3), dims = 2)[:,:,1])
+plot(mean(mean(tempb[:stock][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
+plot(mean(mean(tempb[:payoffR][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 2))
+
 
 
 tempb =   cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 1,
@@ -506,10 +573,6 @@ punish_cost = 0.01, labor = .7, zero = true, experiment_punish1 = .55,
 experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true)
 
 plot(tempb[:punish2][:,:,1])
-
-
-
-
 
 
 tempb =   cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10,
