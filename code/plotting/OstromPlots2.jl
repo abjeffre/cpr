@@ -58,7 +58,7 @@ dat=pmap(g, S)
 
 y = [mean(dat[i][:punish][100:end,2,:], dims =1) for i in 1:length(dat)]
 a=reduce(vcat, y[2:51])
-μ = mean(a, dims = 2)
+μ = median(a, dims = 2)
 PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
 PI=vecvec_to_matrix(PI) 
 y=reduce(vcat, a)
@@ -66,13 +66,14 @@ x=collect(.02:.02:1)
 x=repeat(x, 10)
 
 mean(y)
-border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Resource competition", ylab = "Support for borders",
-xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "IRC", ylab = "Support for borders",
+xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (300, 250))
 scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
+png("cpr//output//ostromfirstprinciple.png")
 
-z = [mean(dat[i][:stock][:,2,:], dims =1) for i in 1:length(d)]
-a=reduce(vcat, y[2:51])
+
+
 
 
 
@@ -98,20 +99,24 @@ dat=pmap(g, S)
 #@JLD2.save("brute2.jld2", dat)
 
 
-#####################################################################################################################################################
-############################ CHECK WITHOUT SEIZURES #################################################################################################
+
+##############################################################################
+################### FOR DRAMATIC EFFECT ######################################
+@everywhere include("cpr/code/abm/abm_group_policy.jl")
 
 S=collect(0:.02:1)
 # set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(L)
-    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 5,
-    lattice = [3,3], harvest_limit = 4.8, regrow = .025, pun1_on = true, 
-    wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = false,
-    punish_cost = 0.0001, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
-    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true)
+    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
+    lattice = [3,3], harvest_limit = 8.259-2, regrow = .025, pun1_on = true, 
+    wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
 end
-dat2=pmap(g, S)
-#@JLD2.save("brute2.jld2", dat)
+dat=pmap(g, S)
+@JLD2.save("brute3.jld2", dat)
+
+
 
 @JLD2.load("cpr\\data\\abm\\brute2.jld2")
 load("cpr\\data\\abm\\brute21.jld")
@@ -130,14 +135,87 @@ self=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label 
  ylab = "Support for self-regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
 scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
-plot(border, self, size = (1300/2, 600/2), bottom_margin = 20px, left_margin = 20px)
+
 png("cpr//output//ostromfirstprinciple.png")
 
 
+#########################################################################
+################ Leakage##################################################
+
+@JLD2.load("CPR\\data\\abm\\brute2.jld2")
+
+
+y = [mean(mean(dat[i][:leakage][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = mean(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+
+mean(y)
+leakage=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "IRC", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
+###########################################################
+########## Seizure #########################################
+
+y = [mean(mean(dat[i][:seized][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])./150
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+
+mean(y)
+Seized=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "Seizures from out-groups", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
 
 
+y = [mean(mean(dat[i][:seized2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])./150
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
 
+mean(y)
+Seized2=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "Seziures from in-group", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+l = grid(1, 3)
+plot(leakage, Seized, Seized2, layout = l, size = (810, 250), left_margin = 20px, bottom_margin = 20px)
+png("cpr\\output\\leakage_ostrom.png")
+
+#########################################################################
+######################## PUNISH #########################################
+
+y = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+
+mean(y)
+Punish=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "Support for Regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
 
 
@@ -145,8 +223,6 @@ png("cpr//output//ostromfirstprinciple.png")
 ################ LIMIT ##############################
 
 
-
-@JLD2.load("CPR\\data\\abm\\brute2.jld2")
 
 y = [mean(mean(dat[i][:limit][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
 a=reduce(vcat, y[2:51])
@@ -161,7 +237,8 @@ limitvar=plot(μ, c=:orange, label = false, xlab = "Presence of borders",
  ylab = "Std(MAH)", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
 
 
-y = [mean(mean(dat[i][:limit][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+
+y = [mean(mean(dat[i][:limit][300:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
 a=reduce(vcat, y[2:51])
 μ = mean(a, dims = 2)
 PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
@@ -172,10 +249,99 @@ x=repeat(x, 50)
 
 
 mean(y)
-limit=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+Limit=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
  ylab = "MAH", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
  hline!([8.29], label = false)
 # scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
+
+@JLD2.load("CPR\\data\\abm\\brute3.jld2")
+
+y1 = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y1[2:51])
+μ = mean(a, dims = 2)
+a=reduce(vcat, y1[2:51])
+a=reduce(vcat, a)
+
+y2 = [mean(mean(dat[i][:limit][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a2=reduce(vcat, y1[2:51])
+μ = mean(a2, dims = 2)
+a2=reduce(vcat, y2[2:51])
+a2=reduce(vcat, a2)
+
+
+Selection=scatter(a, a2, c=:firebrick, ylim = (5, 16), label = false, xlab = "Support for Regulation", 
+ylab = "Policy level")
+hline!([8.19], lw = 2, c=:blue, label = "OSY", )
+
+
+
+@JLD2.load("CPR\\data\\abm\\brute2.jld2")
+
+
+
+
+
+###########################################################
+########## Stock #########################################
+
+y = [mean(mean(dat[i][:stock][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+
+mean(y)
+Stock=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "stock", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
+l = grid(1, 3)
+a=plot(Punish, Selection, Stock, layout = l, size = (810, 250), left_margin = 20px, bottom_margin = 20px)
+
+png("cpr\\output\\punsih2_ostrom.png")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -199,26 +365,6 @@ mean(y)
 payoff=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
  ylab = "Payoff", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
 scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
-
-#########################################################################
-################ Leakage##################################################
-
-
-y = [mean(mean(dat[i][:leakage][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
-a=reduce(vcat, y[2:51])
-μ = mean(a, dims = 2)
-PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
-PI=vecvec_to_matrix(PI) 
-y=reduce(vcat, a)
-x=collect(.02:.02:1)
-x=repeat(x, 50)
-
-
-mean(y)
-leakage=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
- ylab = "leakage", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
-scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
-
 
 
 ###########################################################
@@ -322,8 +468,29 @@ x=repeat(x, 50)
 
 mean(y)
 Seized=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
- ylab = "stock", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+ ylab = "Seizures from out-groups", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
 scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
+
+y = [mean(mean(dat[i][:seized2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])./150
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+mean(y)
+Seized2=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "Seziures from in-group", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+plot(leakage, Seized, Seized2, Effort)
+
+
+
 
 
 
@@ -491,8 +658,8 @@ plot!(mean(mean(dat[10][:stock][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 
 plot!(mean(mean(dat[10][:leakage][:,:,:], dims = 2), dims = 3)[:,:,1], ylim = (0, 1))
 
 
-tempa=cpr_abm(n = 75*49, max_forest = 49*75*1400, ngroups =49, nsim = 1,
-lattice = [7,7], harvest_limit = 8.13+2, regrow = .025, pun1_on = true, full_save = true, 
+tempa=cpr_abm(n = 75*9, max_forest = 9*75*1400, ngroups =9, nsim = 1,
+lattice = [3,3], harvest_limit = 8.13-2, regrow = .025, pun1_on = true, full_save = true, 
 harvest_var = 3, harvest_var_ind = 1,
 wages = 0.0069519279617756054, 
 price = 0.0016237767391887226,
@@ -502,13 +669,14 @@ fines2_on = false,
 punish_cost = 0.00001,
 labor = .7,
 zero = true,
- learn_group_policy = true,
-nrounds = 1000, 
+learn_group_policy = true,
+nrounds = 1500, 
+glearn_strat = "income",
 outgroup = 0.01)
 
 
 tempb=cpr_abm(n = 75*49, max_forest = 49*75*1400, ngroups =49, nsim = 1,
-lattice = [7,7], harvest_limit = 8.13+2, regrow = .025, pun1_on = true, full_save = true, 
+lattice = [7,7], harvest_limit = 8.13-2, regrow = .025, pun1_on = true, full_save = true, 
 harvest_var = 3, harvest_var_ind = 1,
 wages = 0.0069519279617756054, 
 price = 0.0016237767391887226,
