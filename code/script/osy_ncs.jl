@@ -34,7 +34,7 @@ for i in 1:size(L)[1]
         nmodels = 3, var_forest = 0, mutation = .01, social_learning = true, experiment_effort = S, compress_data = false)
     end
     msy=pmap(test, S, W, P)
-    a=[msy[q][:payoffR][700:end,1,1] for q in 1:length(msy)]
+    a=[mean(msy[q][:payoffR][700:end,1,1]) for q in 1:length(msy)]
     j=findmax(a)[2]
     push!(osyp, mean(findmax(a)[1]))
     push!(osy, msy[j][:harvest][end,1,1])
