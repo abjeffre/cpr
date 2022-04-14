@@ -36,7 +36,6 @@ parameters{
 transformed parameters{
 matrix[4,3] bX[2];
 for( i in 1:2) bX[i] = (diag_pre_multiply(Sigma_X[i], L_RhoX[i]) * z[i])';
-
 }
 
 

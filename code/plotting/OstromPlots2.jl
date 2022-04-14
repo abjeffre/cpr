@@ -1,4 +1,3 @@
-
 using Plots.PlotMeasures
 using Statistics
 using JLD2
@@ -19,12 +18,15 @@ stock = []
 # cd("C:\\Users\\jeffr\\Documents\\Work\\")
 
 # @everywhere include("C:\\Users\\jeffr\\Documents\\Work\\cpr\\code\\abm\\abm_invpun.jl")
+# @everywhere include("C:\\Users\\jeffr\\Documents\\Work\\cpr\\code\\abm\\abm_bsm.jl")
 # @everywhere include("C:\\Users\\jeffr\\Documents\\Work\\functions\\utility.jl")
 
  @everywhere include("Y:\\eco_andrews\\Projects\\cpr\\code\\abm\\abm_invpun.jl")
  @everywhere include("Y:\\eco_andrews\\Projects\\functions\\utility.jl")
  @everywhere include("Y:\\eco_andrews\\Projects\\cpr\\code\\abm\\abm_group_policy.jl")
 
+
+ @everywhere include("C:\\Users\\jeffr\\Documents\\Work\\cpr\\code\\abm\\abm_group_policy.jl")
 
 
 S=collect(0.0:0.05:1.0)
@@ -71,6 +73,190 @@ xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (30
 scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
 png("cpr//output//ostromfirstprinciple.png")
+
+
+
+
+
+#############################################################################
+################### TRYPTIC #################################################
+
+
+
+@JLD2.load("cpr\\data\\abm\\brute.jld2")
+
+y = [mean(dat[i][:punish][100:end,2,:], dims =1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 10)
+
+mean(y)
+border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "IRC", ylab = "Support for borders",
+xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (300, 250))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
+
+
+########## FIND WHERE THE DIFFRENCE IS THE LARGEST
+@JLD2.load("cpr\\data\\abm\\osy.jld2")
+diff = findmax(osyp./ncsh)
+par=L[diff[2],:]
+lim=osy[diff[2]]
+
+S=collect(0:.02:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
+    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, 
+    wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true)
+end
+dat=pmap(g, S)
+#@JLD2.save("brute2.jld2", dat)
+
+@JLD2.load("CPR\\data\\abm\\brute22.jld2")
+
+y = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+
+mean(y)
+Punish=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "Support for Regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
+
+#GET LARGE POLICY DIFFRENCE
+@everywhere include("cpr/code/abm/abm_group_policy.jl")
+
+S=collect(0:.02:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
+    lattice = [3,3], harvest_limit = 8.259-2, regrow = .025, pun1_on = true, 
+    wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
+end
+dat=pmap(g, S)
+@JLD2.save("brute3.jld2", dat)
+
+
+@JLD2.load("CPR\\data\\abm\\brute3.jld2")
+
+y1 = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y1[2:51])
+μ = mean(a, dims = 2)
+a=reduce(vcat, y1[2:51])
+a=reduce(vcat, a)
+
+y2 = [mean(mean(dat[i][:limit][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a2=reduce(vcat, y1[2:51])
+μ = mean(a2, dims = 2)
+a2=reduce(vcat, y2[2:51])
+a2=reduce(vcat, a2)
+
+
+Selection=scatter(a, a2, c=:firebrick, ylim = (5, 16), label = false, xlab = "Support for Regulation", 
+ylab = "Policy level")
+hline!([8.19], lw = 2, c=:blue, label = "OSY", )
+
+
+############################################################################## 
+################## DYNAMICS ##################################################
+
+
+test=cpr_abm(price = .5, wages = 10, punish_cost = 0.0005, travel_cost = 0.0001, baseline = 5, nrounds = 5000, pun2_on = true, nsim = 5, regrow = 0.022, n = 150, max_forest = 420000/2)
+
+plot(mean(mean(test[:punish][1:750,:,3], dims = 3)[:,:,1], dims = 2), lw = 2, label = "Borders", ylab = "Trait Frequency", xlab = "time", ylim = (0, 1.2))
+plot!(mean(mean(test[:leakage][1:750,:,3], dims = 3)[:,:,1], dims = 2), lw = 2, label = "IRC")
+
+png("cpr\\output\\cylical.png")
+
+
+plot(mean(mean(test[:punish][1:750,:,2], dims = 3)[:,:,1], dims = 2), lw = 2, label = "Borders", ylab = "Trait Frequency", xlab = "time", ylim = (0, 1.2), size = (430, 350))
+plot!(mean(mean(test[:leakage][1:750,:,2], dims = 3)[:,:,1], dims = 2), lw = 2, label = "IRC")
+png("cpr\\output\\cylical2.png")
+
+
+@JLD2.load("CPR\\data\\abm\\brute22.jld2")
+
+
+y = [mean(mean(dat[i][:leakage][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = mean(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+leakage=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "IRC", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")), size = (430, 350))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+png("cpr\\output\\leak2.png")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -142,7 +328,7 @@ png("cpr//output//ostromfirstprinciple.png")
 #########################################################################
 ################ Leakage##################################################
 
-@JLD2.load("CPR\\data\\abm\\brute2.jld2")
+@JLD2.load("CPR\\data\\abm\\brute22.jld2")
 
 
 y = [mean(mean(dat[i][:leakage][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
@@ -309,6 +495,31 @@ png("cpr\\output\\punsih2_ostrom.png")
 
 
 
+plot(border, Punish, Selection, layout = l, size = (810, 250), left_margin = 20px, bottom_margin = 20px)
+png("cpr\\output\\ostrom_typtic.png")
+
+
+
+#############################################################################
+##################### TIME SERISE ###########################################
+
+test=cpr_abm(price = .5, wages = 10, punish_cost = 0.0005, travel_cost = 0.0001, baseline = 5, nrounds = 5000, pun2_on = true, nsim = 5, regrow = 0.022, n = 150, max_forest = 420000/2)
+
+plot(mean(mean(test[:punish][1:750,:,3], dims = 3)[:,:,1], dims = 2), lw = 2, label = "Borders", ylab = "Trait Frequency", xlab = "time", ylim = (0, 1.2))
+plot!(mean(mean(test[:leakage][1:750,:,3], dims = 3)[:,:,1], dims = 2), lw = 2, label = "IRC")
+
+png("cpr\\output\\cylical.png")
+
+
+plot(mean(mean(test[:punish][1:750,:,2], dims = 3)[:,:,1], dims = 2), lw = 2, label = "Borders", ylab = "Trait Frequency", xlab = "time", ylim = (0, 1.2), size = (430, 350))
+plot!(mean(mean(test[:leakage][1:750,:,2], dims = 3)[:,:,1], dims = 2), lw = 2, label = "IRC")
+png("cpr\\output\\cylical2.png")
+
+
+leakage=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
+ ylab = "IRC", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")), size = (430, 350))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+png("cpr\\output\\leak2.png")
 
 
 
@@ -318,6 +529,8 @@ png("cpr\\output\\punsih2_ostrom.png")
 
 
 
+plot(mean(mean(test[:punish][1:750,:,1], dims = 3)[:,:,1], dims = 2), lw = 2, label = "Borders", ylab = "Trait Frequency", xlab = "time", ylim = (0, 1.2))
+plot!(mean(mean(test[:leakage][1:750,:,1], dims = 3)[:,:,1], dims = 2), lw = 2, label = "IRC")
 
 
 
@@ -326,19 +539,7 @@ png("cpr\\output\\punsih2_ostrom.png")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+plot(border, Punish, Selection)
 
 
 
@@ -826,3 +1027,37 @@ plot(mean(mean(t4[:payoffR][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 2))
 plot(mean(mean(t4[:effort][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
 plot(mean(mean(t4[:harvest][:,:,:], dims = 3), dims = 2)[:,:,1])
 plot(mean(mean(t4[:harvest][:,:,:], dims = 3), dims = 2)[:,:,1]./mean(mean(t4[:effort][:,:,:], dims = 3), dims = 2)[:,:,1])
+
+
+
+
+
+
+
+
+S=collect(0:.02:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 150*2, max_forest = 2*210000, ngroups =2, nsim = 50,
+    lattice = [1,2], harvest_limit = 4.8, regrow = .025, pun2_on = false, leak=false,
+    wages = 1.3, price = .06, defensibility = 1, experiment_leak = L, experiment_effort =1, fines1_on = false,
+     punish_cost = 0.001, labor = .7, zero = true, bsm = "collective")
+end
+dat=pmap(g, S)
+#@JLD2.save("brute.jld2", dat)
+
+y = [mean(dat[i][:punish][100:end,2,:], dims =1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 10)
+
+mean(y)
+border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "IRC", ylab = "Support for borders",
+xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (300, 250))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+

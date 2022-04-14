@@ -117,7 +117,8 @@ function cpr_abm(
   full_save = false,
   compress_data = true,
   control_learning = false,
-  learn_group_policy = false
+  learn_group_policy = false, 
+  bsm = "individual"                     #Determines how the pay-off from seizures are distributed. 
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -428,12 +429,24 @@ function cpr_abm(
         seized1=GetGroupSeized(HG, caught1, loc, ngroups) #REVERT
       end
       seized2=GetGroupSeized(HG, caught2, loc, ngroups)
-      SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
-      SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
-      println(seized1)
       
-      FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
-      FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
+      if bsm == "individual"
+        SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
+        SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
+        FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
+        FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
+      end
+      if bsm == "collective"
+        SP1 = seized1./gs_init
+        SP2 = seized2./gs_init
+        FP1 = SP1.*groups.fine1
+        FP2 = SP2.*groups.fine2
+        SP1 = SP1[agents.gid]
+        SP2 = SP2[agents.gid]
+        FP1 = FP1[agents.gid]
+        FP2 = FP2[agents.gid]
+      end
+      
       MC1 = punish_cost*traits.punish_type
       MC2 = punish_cost*traits.punish_type2
       if seized_on == false SP2 = SP1 = zeros(n) end

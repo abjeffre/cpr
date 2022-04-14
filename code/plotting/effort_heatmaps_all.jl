@@ -1,5 +1,5 @@
 
-
+using(JLD2)
 @JLD2.load("C:\\Users\\jeffr\\Documents\\work\\cpr\\data\\abm\\abm_dat_effort_hm_none.jld2")
 
 ###LOW LABOR ####
@@ -15,7 +15,7 @@ low = abm_dat[l]
 high =abm_dat[h]
 m = zeros(20,20)
 for i = 1:length(high)
-    m[i]  = mean(mean(high[i]["effort"][:,2,:], dims =2) - mean(low[i]["effort"][:,2,:], dims = 2))
+    m[i]  = mean(mean(high[i][:effort][:,2,:], dims =2) - mean(low[i][:effort][:,2,:], dims = 2))
     end
 using Plots
 gr()
