@@ -135,7 +135,7 @@ abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
 S=collect(0.0:0.02:1.0)
 # set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function test(S)
-        cpr_abm(n = 30, ngroups = 2, lattice = (1,2), max_forest = 2800*30, regrow = 0.025,
+        cpr_abm(n = 30, ngroups = 2, lattice = (1,2), max_forest = (180000/150)*30, regrow = 0.025,
         leak = false, pun1_on = false, pun2_on = false, learn_type = "income", mortality_rate = 0.01,
         wages = 0.007742636826811269, price = 0.0027825594022071257, fines1_on = false, fines2_on = false, nrounds = 1000, seized_on = false,
         nmodels = 3, var_forest = 0, mutation = .01, social_learning = true, experiment_effort = S, compress_data = false)
@@ -143,6 +143,8 @@ S=collect(0.0:0.02:1.0)
 msy=pmap(test, S)
 a=[mean(msy[q][:payoffR][700:end,1,1]) for q in 1:length(msy)]
 j=findmax(a)[2]
+mean(msy[j][:harvest][700:end, 1, 1])
+
 
 
 
@@ -164,14 +166,14 @@ f2=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 5, nrounds = 100
 
 
 f3=cpr_abm(n = 150*9, max_forest = 9*410000, ngroups =9, nsim = 5, nrounds = 1000,
-    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
+    lattice = [3,3], harvest_limit = 16.168, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
      price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
     punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_leak = 0.01, experiment_effort =1,
     travel_cost = 0.003,experiment_group = [1], back_leak = true, control_learning = false, full_save = true, 
     learn_group_policy = true)
 
 f4=cpr_abm(n = 150*9, max_forest = 9*410000, ngroups =9, nsim = 5, nrounds = 1000,
-    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
+    lattice = [3,3], harvest_limit = 16.168, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
      price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
     punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_leak = 0.9, experiment_effort =1,
     travel_cost = 0.003,experiment_group = [1], back_leak = true, control_learning = false, full_save = true, 
@@ -179,7 +181,7 @@ f4=cpr_abm(n = 150*9, max_forest = 9*410000, ngroups =9, nsim = 5, nrounds = 100
 
 
 f5=cpr_abm(n = 150*9, max_forest = 9*180000, ngroups =9, nsim = 5, nrounds = 1000,
-    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
+    lattice = [3,3], harvest_limit = 6.94, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
      price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
     punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_leak = 0.01, experiment_effort =1,
     travel_cost = 0.003,experiment_group = [1], back_leak = true, control_learning = false, full_save = true, 
@@ -188,7 +190,7 @@ f5=cpr_abm(n = 150*9, max_forest = 9*180000, ngroups =9, nsim = 5, nrounds = 100
 
 
 f6=cpr_abm(n = 150*9, max_forest = 9*180000, ngroups =9, nsim = 5, nrounds = 1000,
-    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
+    lattice = [3,3], harvest_limit = 6.94, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
      price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
     punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_leak = 0.9, experiment_effort =1,
     travel_cost = 0.003,experiment_group = [1], back_leak = true, control_learning = false, full_save = true, 
@@ -203,8 +205,8 @@ f7=cpr_abm(n = 150*9, max_forest = 9*510000, ngroups =9, nsim = 5, nrounds = 100
     learn_group_policy = true)
 
 
-f8=cpr_abm(n = 150*9, max_forest = 9*510000, ngroups =9, nsim = 5, nrounds = 1000,
-    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
+f8=cpr_abm(n = 150*9, max_forest = 9*510000, ngroups =9, nsim = 1, nrounds = 1000,
+    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun2_on = true, wages = 0.007742636826811269,
      price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
     punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_leak = 0.01, experiment_effort =1,
     travel_cost = 0.003,experiment_group = [1], back_leak = true, control_learning = false, full_save = true, 
@@ -212,11 +214,75 @@ f8=cpr_abm(n = 150*9, max_forest = 9*510000, ngroups =9, nsim = 5, nrounds = 100
 ##################################################################
 ############# PREDICTIONS #########################################
 
+a=cpr_abm(n = 150*9, max_forest = 9*410000, ngroups =9, nsim = 1, nrounds = 1000,
+    lattice = [3,3], harvest_limit = 16.168, regrow = .025, pun1_on = false, pun2_on = false, wages = 0.007742636826811269,
+     price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_leak = 0.01, experiment_effort =1,
+    travel_cost = 0.003,experiment_group = [1], back_leak = true, control_learning = false, full_save = true, 
+    learn_group_policy = true)
+
+
+plot(a[:stock][:,:,1])
+
+
 plot(mean(mean(f1[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f2[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f3[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+
+a=scatter(mean(mean(f1[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f1[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), ylab =" Support for Regulate", label = "Low leak")
+scatter!(mean(mean(f2[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f2[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = "High leak")
+
+b=scatter(mean(mean(f3[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f3[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2), xlab = "resource stock level", ylim = (0, 1), label = false)
+scatter!(mean(mean(f4[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f4[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+
+c=scatter(mean(mean(f5[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f5[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), label = false)
+scatter!(mean(mean(f6[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f6[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+
+stockPunish=plot(c, a, b, layout = grid(3,1))
+
+
+a=scatter(mean(mean(f1[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f1[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), label = "Low leak")
+scatter!(mean(mean(f2[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f2[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = "High leak")
+
+b=scatter(mean(mean(f3[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f3[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), label = false)
+scatter!(mean(mean(f4[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f4[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+
+c=scatter(mean(mean(f5[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f5[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), label = false)
+scatter!(mean(mean(f6[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f6[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+
+stockPunish=plot(c, a, b, layout = grid(3,1))
+
+
+a=scatter(mean(mean(f1[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f1[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = "Low leak")
+scatter!(mean(mean(f2[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f2[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = "High leak")
+
+b=scatter(mean(mean(f3[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f3[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+scatter!(mean(mean(f4[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f4[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+
+c=scatter(mean(mean(f5[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f5[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+scatter!(mean(mean(f6[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f6[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2), label = false)
+
+stockregulate=plot(c, a, b, layout = grid(3,1))
+
+
+
+
+
+
+
+
+
+plot!(mean(mean(f1[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot!(mean(mean(f2[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+
+plot(mean(mean(f3[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f4[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f5[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot!(mean(mean(f3[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot!(mean(mean(f4[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot!(a[:stock][:,:,1])
+
+plot(mean(mean(f3[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot!(mean(mean(f4[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot(mean(mean(f5[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f6[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f7[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f8[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
@@ -225,9 +291,9 @@ plot!(mean(mean(f8[:punish2][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 
 plot(mean(mean(f1[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f2[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f3[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot(mean(mean(f3[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f4[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f5[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot(mean(mean(f5[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f6[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 
 
@@ -236,21 +302,17 @@ plot!(mean(mean(f6[:punish][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 
 plot(mean(mean(f1[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f2[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f3[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot(mean(mean(f3[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f4[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f5[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot(mean(mean(f5[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f6[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 
 plot(mean(mean(f1[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f2[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot(mean(mean(f3[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f4[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f5[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot(mean(mean(f5[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f6[:stock][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-
-plot(mean(mean(f3[:effort][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f4[:effort][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-
 
 
 
@@ -258,7 +320,7 @@ plot(mean(mean(f1[:payoffR][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f2[:payoffR][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot(mean(mean(f3[:payoffR][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f4[:payoffR][:,2:9,:], dims = 3)[:,:,1], dims = 2))
-plot!(mean(mean(f5[:payoffR][:,2:9,:], dims = 3)[:,:,1], dims = 2))
+plot(mean(mean(f5[:payoffR][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 plot!(mean(mean(f6[:payoffR][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 
 
