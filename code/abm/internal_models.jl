@@ -53,3 +53,4 @@ using Distributed
 @everywhere include("cpr/code/abm/submodules/RWLearn.jl")
 
 @everywhere include("functions/utility.jl")
+@include("cpr/code/abm/abm_group_policy.jl")

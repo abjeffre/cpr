@@ -28,96 +28,92 @@ using StatsBase
 # include("functions/utility.jl")
 
 function cpr_abm(
-  ;nsim = 1,                    # Number of simulations per call
-  nrounds = 500,               # Number of rounds per generation
-  n = 300,                     # Size of the population
-  ngroups = 2,                 # Number of Groups in the population
-  lattice = (1, 2),             # This controls the dimensions of the lattice that the world exists on
-  mortality_rate = 0.03,      # The number of deaths per 100 people
-  mutation = 0.01,            # Rate of mutation on traits
-  wages = .1,                   # Wage rate in other sectors - opportunity costs
-  wage_data = nothing,
-  labor_market = false,         # This controls labor market competition
-  max_forest = 350000,               # Average max stock
-  var_forest = 0,                   # Controls athe heterogeneity in forest size across diffrent groups
+  ;nsim = 1,                       # Number of simulations per call
+  nrounds = 500,                  # Number of rounds per generation
+  n = 300,                        # Size of the population
+  ngroups = 2,                    # Number of Groups in the population
+  lattice = (1, 2),               # This controls the dimensions of the lattice that the world exists on
+  mortality_rate = 0.03,          # The number of deaths per 100 people
+  mutation = 0.01,                # Rate of mutation on traits
+  wages = .1,                     # Wage rate in other sectors - opportunity costs
+  max_forest = 350000,            # Average max stock
+  var_forest = 0,                 # Controls athe heterogeneity in forest size across diffrent groups
   degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
-  regrow = .01,                     # the regrowth rate
-  volatility = 0,                 #the volatility of the resource each round - set as variance on a normal
-  pollution = false,
+  regrow = .01,                   # The regrowth rate
+  volatility = 0,                 # The volatility of the resource each round - set as variance on a normal
+  pollution = false,              # Pollution provides a public cost based on 
   pol_slope = .1,                 # As the slope increases the rate at which pollution increases as the resource declines increase
-  pol_C = .1,                    # As the constant increases the total amount of polution increases
-  ecosys = false,
-  eco_slope = 1,                 # As the slope increases the resource will continue to produce ecosystem servies
+  pol_C = .1,                     # As the constant increases the total amount of polution increases
+  ecosys = false,                 # Eco-system services provide a public good to all members of a group proportionalm to size of resource
+  eco_slope = 1,                  # As the slope increases the resource will continue to produce ecosystem servies
   eco_C = .01,                    # As the constant increases the total net benifit of the ecosystem services increases
-  tech = 1,                     # Used for scaling Cobb Douglas production function
-  labor = .7,                   # The elasticity of labor on harvesting production
-  price = 1,                    # This sets the price of the resource on the market
-  ngoods = 2,
-  necessity = 0,                # This sets the minimum amount of the good the household requires
-  inst = true,                  # Toggles whether or not punishment is active
-  monitor_tech = [1,1],             # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
-  defensibility = 1,            # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
-  def_perc = true,              # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
-  punish_cost = 0.1,           # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
-  fine = 0.0,                   # This controls the size of the fine issued when caught, note that in a real world situation this could be recouped by the injured parties but it is not
-  self_policing = true,         # Toggles if Punishers also target members of their own ingroup for harvesting over limit
-  harvest_limit = 5,         # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
-  harvest_var = 1.5,
-  harvest_var_ind = .5,
-  pun2_on = true,
-  pun1_on = true,
-  seized_on = true,
-  fines_evolve = true,
-  fines1_on = false,
-  fines2_on = false,
-  fine_start = 1,               #Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
-  fine_var = .2,                #Determines the group offset for fines at the begining
-  distance_adj =0.9,            # This affects the proboabilty of sampling a more close group.
-  travel_cost = .00,            # This basically controls the travel time for individuals who travel to neightboring communities to steal from Note that higher values mean less leakage
-  groups_sampled = 1,           # When leakers sample candidate wards to visit they draw this number of groups to compare forest sizes
-  social_learning = true,       # Toggels whether Presitge Biased Tranmission is on
-  nmodels = 3,                  # The number of models sampled to copy from in social learning
-  fidelity = 0.02,              # This is the fidelity of social transmission
-  learn_type = "income",        # Two Options - "wealth" and "income" indiviudals can choose to copy wealth or income if copy wealth they copy total overall payoffs, if copy income they copy payoffs from the previous round
-  outgroup = 0.01,              # This is the probability that the individual samples from the whole population and not just his group when updating0...
-  baseline = .01,                # Baseline payoff to be added each round -
-  invade = true,
-  REDD = false,                 # This controls whether or not the natural experiment REDD+ is on, if REDD is on INST must be on
-  leak = true,                  # This controls whether individuals are able to move into neightboring territory to harvest
-  verbose = false,              # verbose reporting for debugging
+  tech = 1,                       # Used for scaling Cobb Douglas production function
+  labor = .7,                     # The elasticity of labor on harvesting production
+  price = 1,                      # This sets the price of the resource on the market
+  ngoods = 2,                     # Specifiies the number of sectors
+  necessity = 0,                  # This sets the minimum amount of the good the household requires
+  monitor_tech = [1,1],           # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
+  defensibility = 1,              # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
+  def_perc = true,                # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
+  punish_cost = 0.1,              # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
+  fine = 0.0,                     # This controls the size of the fine issued when caught, note that in a real world situation this could be recouped by the injured parties but it is not
+  harvest_limit = 5,              # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
+  harvest_var = 1.5,              # Harvest limit group offset 
+  harvest_var_ind = .5,           # Harvest limit individual offset
+  pun2_on = true,                 # Turns punishment on or off. 
+  pun1_on = true,                 # Turns group borders on or lff
+  seized_on = true,               # Turns seizures on or nff
+  fines_evolve = true,            # If false fines stay fixed at initial value
+  fines1_on = false,              # Turns on fines for local agents
+  fines2_on = false,              # Turns on fines for non locals
+  fine_start = 1,                 # Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
+  fine_var = .2,                  # Determines the group offset for fines at the begining
+  distance_adj =0.9,              # This affects the proboabilty of sampling a more close group.
+  travel_cost = .00,              # This basically controls the travel time for individuals who travel to neightboring communities to steal from Note that higher values mean less leakage
+  groups_sampled = 1,             # When leakers sample candidate wards to visit they draw this number of groups to compare forest sizes
+  social_learning = true,         # Toggels whether Presitge Biased Tranmission is on
+  nmodels = 3,                    # The number of models sampled to copy from in social learning
+  fidelity = 0.02,                # This is the fidelity of social transmission
+  learn_type = "income",          # Two Options - "wealth" and "income" indiviudals can choose to copy wealth or income if copy wealth they copy total overall payoffs, if copy income they copy payoffs from the previous round
+  outgroup = 0.01,                # This is the probability that the individual samples from the whole population and not just his group when updating0...
+  baseline = .01,                 # Baseline payoff to be added each round -
+  leak = true,                    # This controls whether individuals are able to move into neightboring territory to harvest
+  verbose = false,                # verbose reporting for debugging
   seed = 1984,
   og_on = false,                  # THe evolution of listening to outgroup members.
-  experiment_leak = false,              #THIS SETS THE VALUE OF THE OTHER GROUP LEAKAGE and Punish
-  experiment_punish1 = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS PUNISHMENT
-  experiment_punish2 = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS PUNISHMENT
-  experiment_limit = false,             #THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
-  experiment_effort = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
-  experiment_group = 1,                 #determines the set of groups which the experiment will be run on
-  cmls = false,                          #determines whether cmls will operate
-  zero = false,
-  glearn_strat = false,              # options: "wealth", "income", "env"
-  split_method = "random",
-  kmax_data = nothing,
-  back_leak = false,
-  fines_on = false,
-  inspect_timing = nothing,           # options: nothing, "before", "after", if nothing then it randomizes to half and half
-  inher = false,
-  tech_data = nothing,
-  harvest_type = "individual",
-  policy_weight = "equal",       #typically takes wealth as a weight, but can take any-data that can be used to rank people.
-  rec_history =  false,            # You can record the history of wealth but it is costly. 
-  resource_zero = false,
-  harvest_zero = false,
-  wealth_degrade = nothing,
-  slearn_freq = 1, 
-  reset = 100000,
-  socialLearnYear = nothing,
-  αlearn = 1, 
-  indvLearn = false,
-  full_save = false,
-  compress_data = true,
-  control_learning = false,
-  learn_group_policy = false
+  experiment_leak = false,        # THIS SETS THE VALUE OF THE OTHER GROUP LEAKAGE and Punish
+  experiment_punish1 = false,     # THIS SETS THE VALUE OF THE OTHER GROUPS PUNISHMENT
+  experiment_punish2 = false,     # THIS SETS THE VALUE OF THE OTHER GROUPS PUNISHMENT
+  experiment_limit = false,       # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
+  experiment_effort = false,      # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
+  experiment_group = 1,           # Determines the set of groups which the experiment will be run on
+  cmls = false,                   # Determines whether cmls will operate
+  zero = false,                   # Checks invasion criteria by setting all trait start values to near zero
+  glearn_strat = false,           # options: "wealth", "income", "env"
+  split_method = "random",        # How groups split is CLMS is on
+  kmax_data = nothing,            # This takes data for k
+  back_leak = false,              # Determines whether or not individuals can back_invade
+  fines_on = false,               # Turns fines on or off!
+  inspect_timing = nothing,       # options: nothing, "before", "after", if nothing then it randomizes to half and half
+  inher = false,                  # Turns wealth inheretence on or off
+  tech_data = nothing,            # The modle can recieve data specifiying the technological capacity of the system over time
+  harvest_type = "individual",    # Individuals can pool labor before harvests 
+  policy_weight = "equal",        # Typically takes wealth as a weight, but can take any-data that can be used to rank people.
+  rec_history =  false,           # You can record the history of wealth but it is costly. 
+  resource_zero = false,          # Sets resource to zero to observe regrowth dynamics
+  harvest_zero = false,           # Automatically sets harvest to zero to observe simple regrowth dynamics
+  wealth_degrade = nothing,       # When wealth is passed on it degrades by some percent
+  slearn_freq = 1,                # Not opperational - it defines the frequency of social learning 
+  reset = 100000,                 # Is the year in which resources are reset to max
+  socialLearnYear = nothing,      # Which years individuals are allowed to socially learn in  - specify as a vector of dates
+  αlearn = 1,                     # Controls learning rate
+  indvLearn = false,              # Controls whehter individual learning is turned on
+  full_save = false,              # Saves everything if true
+  compress_data = true,           # Compresses data to Float64 if true
+  control_learning = false,       # Agents can learn from experimental groups if true
+  learn_group_policy = false,     # Agents learn the policy of targeted out group not trait of inidivudal
+  bsm = "individual",              # Defines how gains from seizures are split options = "Collective" or "individual"
+  genetic_evolution = true        # defines whether or not genetic evolution opperates.  
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -135,8 +131,16 @@ function cpr_abm(
       :cep2 => zeros(nrounds, ngroups, nsim),
       :fine1 => zeros(nrounds, ngroups, nsim),
       :fine2 =>zeros(nrounds, ngroups, nsim),
+      :loc =>zeros(nrounds, n, nsim),
+      :gid => zeros(n, nsim),
       :payoffR => zeros(nrounds, ngroups, nsim))
     if full_save == true 
+      history[:limitfull] = zeros(nrounds, n, nsim)
+      history[:effortfull] = zeros(nrounds, n, nsim)
+      history[:leakfull] = zeros(nrounds, n, nsim)
+      history[:limitfull] = zeros(nrounds, n, nsim)
+      history[:punishfull] = zeros(nrounds, n, nsim)
+      history[:punish2full] = zeros(nrounds, n, nsim)      
       history[:effortLeak] = zeros(nrounds, ngroups, nsim)
       history[:effortNoLeak] = zeros(nrounds, ngroups, nsim)
       history[:harvestLeak] = zeros(nrounds, ngroups, nsim)
@@ -328,10 +332,6 @@ function cpr_abm(
     ############# Begin years ##################
 
     year = 1
-    REDD_happened = false
-    REDD_year = 0
-
-
     for t ∈ 1:nrounds
       agents.payoff_round = zeros(n)
       ########Impose Restrictions #######
@@ -428,12 +428,26 @@ function cpr_abm(
         seized1=GetGroupSeized(HG, caught1, loc, ngroups) #REVERT
       end
       seized2=GetGroupSeized(HG, caught2, loc, ngroups)
-      SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
-      SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
-      println(seized1)
       
+      if bsm == "individual"
+        SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
+        SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
+        FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
       FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
+        FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
       FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
+      end
+      if bsm == "collective"
+        SP1 = seized1./gs_init
+        SP2 = seized2./gs_init
+        FP1 = SP1.*groups.fine1
+        FP2 = SP2.*groups.fine2
+        SP1 = SP1[agents.gid]
+        SP2 = SP2[agents.gid]
+        FP1 = FP1[agents.gid]
+        FP2 = FP2[agents.gid]
+      end
+      
       MC1 = punish_cost*traits.punish_type
       MC2 = punish_cost*traits.punish_type2
       if seized_on == false SP2 = SP1 = zeros(n) end
@@ -510,7 +524,14 @@ function cpr_abm(
         history[:fine1][year,:,sim] .= round.(reportMedian(traits.fines1, agents.gid, ngroups), digits=3)
         history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fines2, agents.gid, ngroups), digits=3)
         history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round,agents.gid, ngroups), digits=3)
+        history[:loc][year,:,sim] .= loc
+        history[:gid][:, sim] .= agents.gid
         if full_save == true
+          history[:limitfull][year, :, sim] .= traits.harv_limit
+          history[:effortfull][year, :, sim] .= effort[:,2]
+          history[:leakfull][year, :, sim] .= traits.leakage_type
+          history[:punishfull][year, :, sim] .= traits.punish_type
+          history[:punish2full][year, :, sim] .= traits.punish_type2      
           #history[:effortLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==1, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
           #history[:effortNoLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==0, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
           #history[:harvestLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==1], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
@@ -621,53 +642,55 @@ function cpr_abm(
       ####################################
       ###### Evolutionary dynamics #######
       #println(agents.payoff)
-      agents.payoff_round[agents.payoff_round.<=0] .=0
-      agents.payoff[agents.payoff.<=0] .=0
-      sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
-      learnfromcontrol = (experiment == true) & (control_learning == true) ? false : true
-      if learnfromcontrol==true
-        pop = agents.id[agents.gid .∈  [experiment_group]]
-        died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
-        babies = MakeBabies(pop, agents.id, sample_payoff, died)
-        traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
-        effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        if inher == true
-          GetChildList(babies, died, children)
-          agents.payoff = DistributWealth(died, agents.payoff, children)
-          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
-        end
-        agents.payoff[died] .= 0
-        agents.age[died]  .= 0
-        
-        #Non-experimental Group
+      if genetic_evolution
+        agents.payoff_round[agents.payoff_round.<=0] .=0
+        agents.payoff[agents.payoff.<=0] .=0
         sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
-        pop = agents.id[agents.gid .∉  [experiment_group]]
-        died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
-        babies = MakeBabies(pop, agents.id, sample_payoff, died)
-        traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
-        effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        if inher == true
-          GetChildList(babies, died, children)
-          agents.payoff = DistributWealth(died, agents.payoff, children)
-          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+        learnfromcontrol = (experiment == true) & (control_learning == true) ? false : true
+        if learnfromcontrol==true
+          pop = agents.id[agents.gid .∈  [experiment_group]]
+          died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
+          babies = MakeBabies(pop, agents.id, sample_payoff, died)
+          traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
+          effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
+          if inher == true
+            GetChildList(babies, died, children)
+            agents.payoff = DistributWealth(died, agents.payoff, children)
+            for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+          end
+          agents.payoff[died] .= 0
+          agents.age[died]  .= 0
+          
+          #Non-experimental Group
+          sample_payoff = ifelse.(agents.payoff .!=0, agents.payoff, 0.0001)
+          pop = agents.id[agents.gid .∉  [experiment_group]]
+          died =  KillAgents(pop, agents.id, agents.age, mortality_rate, sample_payoff)
+          babies = MakeBabies(pop, agents.id, sample_payoff, died)
+          traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
+          effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
+          if inher == true
+            GetChildList(babies, died, children)
+            agents.payoff = DistributWealth(died, agents.payoff, children)
+            for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+          end
+          agents.payoff[died] .= 0
+          agents.age[died]  .= 0
+          if cmls == true  agents.gid[died] = agents.gid[babies] end
+        else
+          died =  KillAgents(agents.id, agents.id, agents.age, mortality_rate, sample_payoff)
+          babies = MakeBabies(agents.id, agents.id, sample_payoff, died)
+          if inher == true
+            GetChildList(babies, died, children)
+            agents.payoff = DistributWealth(died, agents.payoff, children)
+            for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
+          end
+          traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
+          effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
+          agents.payoff[died] .= 0
+          agents.age[died]  .= 0
+          if cmls == true  agents.gid[died] = agents.gid[babies] end
         end
-        agents.payoff[died] .= 0
-        agents.age[died]  .= 0
-        if cmls == true  agents.gid[died] = agents.gid[babies] end
-      else
-        died =  KillAgents(agents.id, agents.id, agents.age, mortality_rate, sample_payoff)
-        babies = MakeBabies(agents.id, agents.id, sample_payoff, died)
-        if inher == true
-          GetChildList(babies, died, children)
-          agents.payoff = DistributWealth(died, agents.payoff, children)
-          for i in 1:length(died) children[died[i]] = Vector{Int64}[] end #remove children
-        end
-        traits[babies,:]=MutateAgents(traits[babies, :], mutation, traitTypes)
-        effort[babies, :]=MutateAgents(effort[babies, :], mutation, "Dirichlet")
-        agents.payoff[died] .= 0
-        agents.age[died]  .= 0
-        if cmls == true  agents.gid[died] = agents.gid[babies] end
-       end
+      end
 
 
       #############################################

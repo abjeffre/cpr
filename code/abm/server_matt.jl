@@ -87,7 +87,7 @@ S[:,7]= new
 # set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(n, ng, l, tc, te, la, ls, pc, mf, el, ep, eg, gs, df, vf, pr, rg, dg, wg)
     cpr_abm(nrounds = 500,
-            nsim = 10,
+            nsim = 1,
             fines1_on = false,
             fines2_on = false,
             leak = true,
@@ -121,6 +121,8 @@ S[:,7]= new
             )
 end
 
+
+S = S[1:3, :]
 
 abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
  S[:,8], S[:,9], S[:,10] , S[:,11], S[:,12] , S[:,13],  S[:,14], S[:,15],
@@ -422,3 +424,79 @@ plot!(mean(mean(t6[:limit][:,2:9,:], dims = 3)[:,:,1], dims = 2))
 #@JLD2.save("brute2.jld2", dat)
 
 plot(t1[:stock][:,2:9,1], lear)
+
+
+
+
+
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+t1=cpr_abm(n = 150*2, max_forest = 2*210000, ngroups =2, nsim = 5,
+    lattice = [2,1], harvest_limit = 9.259, regrow = .025, pun1_on = true, wages = 0.007742636826811269,
+     price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00450525196229018395, labor = .7, zero = true, 
+    travel_cost = 0,experiment_group = [1], full_save = true, learn_group_policy =true)
+
+p1=scatter(mean(mean(t1[:leakage][:,1,:], dims = 3)[1:499,:,1], dims = 2).*mean(mean(t1[:harvest][1:499,1,:], dims = 3)[:,:,1], dims = 2), mean(mean(t1[:punish][2:500,2,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), ylab =" Support for Borders", xlab = "Intensity of Roving Bandits")
+a=mean(mean(t1[:stock][:,1:2,:], dims = 3)[:,:,1], dims = 2)
+b=-[a[i].-a[i-1] for i in 2:500]
+p2=scatter(b, mean(mean(t1[:punish][2:500,2,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), ylab =" Support for borders", xlab = "Δ Stock", label = false)
+p1=scatter(mean(mean(t1[:leakage][:,1,:], dims = 3)[1:499,:,1], dims = 2).*mean(mean(t1[:harvest][1:499,1,:], dims = 3)[:,:,1], dims = 2),
+ mean(mean(t1[:limit][2:500,2,:], dims = 3)[:,:,1], dims = 2), ylim = (8, 11), ylab =" Support for Borders", xlab = "Intensity of Roving Bandits")
+ plot(t1[:limit][:,1:2,3], ylim = (0,15), label = false)
+
+
+function table(df, x)
+    combine(groupby(df, Symbol(x)), nrow => :Freq) 
+end 
+m = zeros(500, 2, 5)
+for j in 1:5
+    for i in 1:500 
+        df=DataFrame(A = t1[:loc][i,:,j][t1[:gid][:,j] .!=  t1[:loc][i,:,j]])
+        a=table(df, :A)
+        u=unique(a[:,1])
+        for k in u
+            ind=findall(x->x==k, a[:,1])
+            m[i,Int(k),j]= a[ind,2][1]
+        end
+    end
+end
+
+y=vec(t1[:limitfull][:,:,1])
+
+b = []
+for i in 1:500
+    a=m[i,:,1][Int.(t1[:gid][:,1])]
+    push!(b, a)
+end
+
+x=reduce(vcat,b)
+
+scatter(x, y)
+
+
+scatter(t1[:limit][:,1,1], m[:,1,1])
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+f1=cpr_abm(n = 150*16, max_forest = 16*210000, ngroups =16, nsim = 5,
+    lattice = [4,4], harvest_limit = 9.259, regrow = .025, pun1_on = true,
+     wages = 0.007742636826811269,
+     price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00450525196229018395, labor = .7, zero = true, 
+    travel_cost = 0,experiment_group = collect(1:16), back_leak = true, control_learning = true, 
+    full_save = true, learn_group_policy = true, experiment_punish2 = 1)
+
+ a=mean(mean(f1[:stock][:,1:9,:], dims = 3)[:,:,1], dims = 2)
+ b=-[a[i].-a[i-1] for i in 2:500]
+p3=scatter(b, mean(mean(f1[:limit][2:500,1:9,:], dims = 3)[:,:,1], dims = 2), ylim = (10, 11), ylab ="Maximum Allowable Harvest", label = false, xlab = "ΔStock")
+p4=scatter(mean(mean(f1[:leakage][200:500,1:16,:], dims = 3)[:,:,1], dims = 2).*mean(mean(f1[:harvest][200:500,1:16,:], dims = 3)[:,:,1], dims = 2),
+ mean(mean(f1[:limit][200:500,1:16,:], dims = 3)[:,:,1], dims = 2),  ylab ="Maximum Allowable Harvest", xlab = "Intensity of Roving Bandits", label = false)
+
+p4=scatter(1:500, mean(mean(f1[:leakage][:,1:9,:], dims = 3)[:,:,1], dims = 2).*mean(mean(f1[:harvest][:,1:9,:], dims = 3)[:,:,1], dims = 2), ylab ="Time", xlab = "Intensity of Roving Bandits", label = false, xlim =(0, 500))
+p4=scatter(mean(mean(f1[:leakage][:,1:9,:], dims = 3)[:,:,1], dims = 2).*mean(mean(f1[:harvest][:,1:9,:], dims = 3)[:,:,1], dims = 2), mean(mean(f1[:punish][:,1:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0, 1), ylab ="Maximum Allowable Harvest", xlab = "Intensity of Roving Bandits", label = false, xlim =(2, 15))
+plot(f1[:leakage][:,:,1], label = false)
+plot(mean(mean(f1[:punish2][:,1:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0,1))
+plot(mean(mean(f1[:limit][:,1:9,:], dims = 3)[:,:,1], dims = 2), ylim = (0,25))
+png(p1,"Documents/matt_pred_roving_border.png")
+png(p2, "Documents/matt_stock_border.png")
+png(p3, "Documents/matt_roving_limit.png")
+png(p4, "Documents/matt_stock_limit.png")
+
