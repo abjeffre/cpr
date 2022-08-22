@@ -98,7 +98,7 @@ function cpr_abm(
   inher = false,                  # Turns wealth inheretence on or off
   tech_data = nothing,            # The modle can recieve data specifiying the technological capacity of the system over time
   harvest_type = "individual",    # Individuals can pool labor before harvests 
-  policy_weight = "equal",        # Typically takes wealth as a weight, but can take any-data that can be used to rank people.
+  policy_weight = "equal",        # Typically takes wealth (use "max" or "min") as a weight, but can take any-data that can be used to rank people.
   rec_history =  false,           # You can record the history of wealth but it is costly. 
   resource_zero = false,          # Sets resource to zero to observe regrowth dynamics
   harvest_zero = false,           # Automatically sets harvest to zero to observe simple regrowth dynamics
@@ -515,7 +515,7 @@ function cpr_abm(
       ############# RECORD HISTORY ####################
         history[:stock][year,:,sim] .=round.(K./kmax, digits=3)
         history[:effort][year,:,sim] .=round.(report(effort[:,2], agents.gid, ngroups), digits=3)
-        history[:limit][year,:,sim] .= round.(reportMedian(traits.harv_limit, agents.gid, ngroups), digits=3)
+        history[:limit][year,:,sim] .= groups.limit #round.(reportMedian(traits.harv_limit, agents.gid, ngroups), digits=3)
         history[:leakage][year,:,sim] .= round.(report(traits.leakage_type,agents.gid, ngroups), digits=3)
         history[:og][year,:,sim] .= round.(report(traits.og_type,agents.gid, ngroups), digits=3)
         history[:harvest][year,:,sim] .= round.(report(HG,agents.gid, ngroups), digits=3)

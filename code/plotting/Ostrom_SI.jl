@@ -77,43 +77,52 @@ travel_costs=scatter(seq, leakage3, label = false, xlab = "TRAVEL COST", ylab = 
 
 
 
-S =expand_grid( collect(2:2:50), # Ngroups
+S =expand_grid( collect(2:1:16), # Ngroups
                 [150],           # Population size
                 [210000],        # Max Forest
                 [[1, 2]],        # lattice, will be replaced below
-                [100]             # Nsim
-                )
+                [100],             # Nsim
+                [1])
 
 S[:,2] = S[:,2] .* S[:,1]
 S[:,3] = S[:,3] .* S[:,1]
-S[:,4] = [[2, Int(1 .*S[i,1]/2)] for i in 1:size(S)[1]]
+S[:,4] = [[1, S[i,1]] for i in 1:size(S)[1]]
+S[:,5] = [collect(1:1:S[i,1]) for i in 1:size(S)[1]]
 
 # S[:,5]=S[:,5].*reverse(collect(2:2:20)*5)./10
 
 # getOSY(labor = .7, wages = .007742636826811269, price = 0027825594022071257, tech = 1, max_forest = 1400*60,  regrow = .025, n = 60, ncores = 4)
 
 
-@everywhere function g(ng, n, mf, l, ns) 
-    cpr_abm(n = n, max_forest = mf, ngroups = ng, nsim = ns, nrounds = 10000,
+@everywhere function g(ng, n, mf, l, eg) 
+    cpr_abm(n = n, max_forest = mf, ngroups = ng, nsim = 100, nrounds = 10000,
     lattice = l, harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, wages = 0.007742636826811269,
     price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
     punish_cost = 0.00220525196229018395, labor = .7, zero = true, leak = false, harvest_var_ind = 1, learn_type = "wealth", 
-    travel_cost = 0.003, full_save = true, learn_group_policy = true, glearn_strat="wealth")
+    travel_cost = 0.003, full_save = true, learn_group_policy = true, experiment_group = eg, experiment_punish2 =1, control_learning = true)
 end
 
-abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], Int.(S[:,5]))
+abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5])
 
 #@JLD2.save("SI_n_groups.jld2", abm_dat, S)
-
+using Pkg
+Pkg.add("JLD2")
 using JLD2
+
+file = jldopen("C:/users/jeffr/Documents/Work/cpr/data/abm/SI_n_groups.jld2", "abm_dat")
 @JLD2.load("Y:/eco_andrews/Projects/CPR/data/abm/SI_n_groups.jld2")
+using FileIO
+load("C:/users/jeffr/Documents/Work/cpr/data/abm/SI_n_groups.jld2")
+
+using Serialization
+abm_dat=deserialize("C:/users/jeffr/Documents/Work/cpr/data/abm/test.dat")
 
 
 
 # This code just checks the raw frequnecy of the trait. 
 out = []
 for i in 1:length(abm_dat)
-   ok=[mean(Float64.(abm_dat[i][:punish2][9000:10000, :, j]), dims = 1)  for j in 1:size(abm_dat[i][:limit])[3]]   
+   ok=[mean(Float64.(abm_dat[i][:limit][9000:10000, :, j]), dims = 1)  for j in 1:size(abm_dat[i][:limit])[3]]   
    push!(out, reduce(vcat, reduce(vcat, ok)))
 end
 

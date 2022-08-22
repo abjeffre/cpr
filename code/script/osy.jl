@@ -37,7 +37,7 @@
     #Clean up cores
     rmprocs(procs()[(nps+1):(additional_cores+nps)])
     ind = findmax(a)[2]
-    return(print("Optimal sustainable yeild effort = ", S[ind],", harvest = ", mean(msy[ind][:harvest][900:end,1,1]), " and payoff is = ", round(mean(msy[ind][:payoffR][900:end,1,1]), 2),
+    return(print("Optimal sustainable yeild effort = ", S[ind],", harvest = ", mean(msy[ind][:harvest][900:end,1,1]), " and payoff is = ", mean(msy[ind][:payoffR][900:end,1,1]),
     "and stock is ",  mean(msy[ind][:stock][900:end,1,1])))
 end
 
