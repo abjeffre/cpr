@@ -7,9 +7,6 @@ using Distributed
 using DataFrames
 #cd("C:\\Users\\jeffr\\Documents\\Work\\")
 #cd("Y:\\eco_andrews\\Projects\\")
-###########
-
-
 
 ################# Brute force a solution
 pay = []
@@ -76,32 +73,6 @@ png("cpr//output//ostromfirstprinciple.png")
 
 
 
-
-
-#############################################################################
-################### TRYPTIC #################################################
-
-
-
-@JLD2.load("cpr\\data\\abm\\brute.jld2")
-
-y = [mean(dat[i][:punish][100:end,2,:], dims =1) for i in 1:length(dat)]
-a=reduce(vcat, y[2:51])
-μ = median(a, dims = 2)
-PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
-PI=vecvec_to_matrix(PI) 
-y=reduce(vcat, a)
-x=collect(.02:.02:1)
-x=repeat(x, 10)
-
-mean(y)
-border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "IRC", ylab = "Support for borders",
-xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (300, 250))
-scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
-
-
-
-
 ########## FIND WHERE THE DIFFRENCE IS THE LARGEST
 @JLD2.load("cpr\\data\\abm\\osy.jld2")
 diff = findmax(osyp./ncsh)
@@ -119,23 +90,6 @@ S=collect(0:.02:1)
 end
 dat=pmap(g, S)
 #@JLD2.save("brute2.jld2", dat)
-
-@JLD2.load("CPR\\data\\abm\\brute22.jld2")
-
-y = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
-a=reduce(vcat, y[2:51])
-μ = median(a, dims = 2)
-PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
-PI=vecvec_to_matrix(PI) 
-y=reduce(vcat, a)
-x=collect(.02:.02:1)
-x=repeat(x, 50)
-
-
-mean(y)
-Punish=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
- ylab = "Support for Regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
-scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
 
 
@@ -155,6 +109,49 @@ dat=pmap(g, S)
 @JLD2.save("brute3.jld2", dat)
 
 
+
+#############################################################################
+################### TRYPTIC #################################################
+
+
+using JLD2
+@JLD2.load("cpr\\data\\abm\\brute.jld2")
+
+y = [mean(dat[i][:punish][100:end,2,:], dims =1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 10)
+
+mean(y)
+border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Roving Bandity", ylab = "Support for borders",
+xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (300, 250))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
+
+
+@JLD2.load("CPR\\data\\abm\\brute2.jld2")
+
+y = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:51])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.02:.02:1)
+x=repeat(x, 50)
+
+
+mean(y)
+Punish=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of Borders",
+ ylab = "Support for Regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+
+
 @JLD2.load("CPR\\data\\abm\\brute3.jld2")
 
 y1 = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
@@ -171,10 +168,12 @@ a2=reduce(vcat, a2)
 
 
 Selection=scatter(a, a2, c=:firebrick, ylim = (5, 16), label = false, xlab = "Support for Regulation", 
-ylab = "Policy level")
-hline!([8.19], lw = 2, c=:blue, label = "OSY", )
+ylab = "MAY")
+hline!([8.19], lw = 2, c=:blue, label = "Optimum", )
 
 
+plot(border, Punish, Selection, layout = grid(1,3), size = [1000, 300], left_margin = 25px, bottom_margin = 20px, top_margin = 10px, right_margin = 20px)
+png("cpr\\output\\trypic.png")
 ############################################################################## 
 ################## DYNAMICS ##################################################
 
