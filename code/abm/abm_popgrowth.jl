@@ -49,7 +49,7 @@ function cpr_abm(
   eco_C = .01,                    # As the constant increases the total net benifit of the ecosystem services increases
   tech = 1,                       # Used for scaling Cobb Douglas production function
   labor = .7,                     # The elasticity of labor on harvesting production
-  price = 1,                      # This sets the price of the resource on the market
+  price = 1.0,                      # This sets the price of the resource on the market
   ngoods = 2,                     # Specifiies the number of sectors
   necessity = 0,                  # This sets the minimum amount of the good the household requires
   monitor_tech = [1,1],           # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
@@ -86,6 +86,7 @@ function cpr_abm(
   experiment_punish2 = false,     # THIS SETS THE VALUE OF THE OTHER GROUPS PUNISHMENT
   experiment_limit = false,       # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_effort = false,      # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
+  experiment_price = false,      # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_group = 1,           # Determines the set of groups which the experiment will be run on
   cmls = false,                   # Determines whether cmls will operate
   zero = false,                   # Checks invasion criteria by setting all trait start values to near zero
@@ -180,6 +181,10 @@ function cpr_abm(
       history[:wealthgroups] = zeros(n, nrounds, nsim)
       history[:age] = zeros(n, nrounds, nsim)
     end
+
+
+    # for price experiment
+    price_copy = copy(price)
     #Ensure that n is the same 
     nstart = copy(n)
 
@@ -190,20 +195,9 @@ function cpr_abm(
       n = nstart
     #############################
     #### EXPERIMENT SETUP #######
-    # if experiment_leak==0  experiment_leak = false end
-    # if experiment_punish1==0  experiment_punish1 = false end
-    # if experiment_limit==0  experiment_limit = false end
-    # if experiment_effort==0   experiment_effort = false end
-    # if experiment_punish2==0   experiment_punish2 = false end
     temp=[experiment_effort, experiment_limit, experiment_leak, experiment_punish1,
-    experiment_punish2, experiment_price]
-    
-    if (((experiment_limit == false && experiment_leak == false) &&
-        experiment_punish1== false) && experiment_effort ==false) && experiment_punish2==false
-        experiment = false
-      else
-        experiment = true
-    end
+     experiment_punish2, experiment_price]
+    experiment =  any(temp .!= false) ?  true : false
 
     # Setup special leakage control learning group
     if special_leakage_group != nothing
@@ -263,7 +257,7 @@ function cpr_abm(
       harv_limit = zeros(n),
       og_type = zeros(n))
  
-      traitTypes = ["binary" "prob" "prob" "positivecont" "positivecont" "positivecont" "prob"]
+    traitTypes = ["binary" "prob" "prob" "positivecont" "positivecont" "positivecont" "prob"]
     if learn_group_policy 
         traitTypesGroup = ["binary" "prob" "prob" "positivecont" "positivecont" "grouppositivecont" "prob"]
     else
@@ -393,6 +387,10 @@ function cpr_abm(
         if experiment_effort != 0
           effort[agents.gid.==experiment_group[i], 2] .= experiment_effort
           effort[agents.gid.==experiment_group[i], 1] .= (1-experiment_effort)
+        end
+        if experiment_price != 0
+          price=Float64.(fill(price_copy, n))
+          price[agents.gid.==experiment_group[i]] .= experiment_price
         end
       end
       if verbose== true print(string("Experiment: COMPLETED"))
