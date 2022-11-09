@@ -1,3 +1,5 @@
+# This function should track all the children who are born and add them to a parents list
+
 function GetChildList(babies, died, children)
     push!.(children[babies], died) 
 end
