@@ -1385,3 +1385,427 @@ plot(set1, set2, test, size = (1000, 700), left_margin = 20px, bottom_margin = 2
 end
 gif(anim, string("C:\\Users\\jeffr\\Documents\\work\\cpr\\output\\test.gif")
 , fps = fps)
+
+
+
+######################################################
+################ Check group Size ####################
+
+using Plots
+
+ng =2
+test =cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
+lattice = [1,2], harvest_limit = 2, harvest_var = .5, nrounds = 75000,
+harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 20,
+experiment_punish2 = 1, leak = false, control_learning = true, back_leak= true)
+
+
+# Multicore
+ng = fill(2, 80)
+@everywhere function g2(ng) 
+    cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
+        lattice = [1,ng], harvest_limit = 2, harvest_var = .5, nrounds = 75000,
+        harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1,
+        experiment_punish2 = 1, leak = false, control_learning = true, back_leak= true)
+end
+
+test=pmap(g2, ng)
+
+#
+i=1
+a= plot(plot(test[:limit][:,:,i], label = "", alpha = .3))
+[plot!(test[:limit][:,:,i], label = "", alpha = .3) for i in 1:20]
+
+i=1
+b= plot(plot(test[:stock][:,:,i], label = "", alpha = .5))
+[plot!(test[:stock][:,:,i], label = "", alpha = .5) for i in 1:20]
+
+i=1
+c= plot(plot(test[:payoffR][:,:,i], label = "", alpha = .05))
+[plot!(test[:payoffR][:,:,i], label = "", alpha = .05) for i in 1:20]
+
+plot(a, b, c, layout = grid(1,3), size = (900, 300))
+
+
+# Increase group size
+
+using Plots
+
+ng =9
+test =cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
+lattice = [1,ng], harvest_limit = 2, harvest_var = .5, nrounds = 6000,
+harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 20,
+experiment_punish2 = 1, leak = false, control_learning = true, back_leak= true)
+
+
+# For multicore please used
+
+ng = fill(9, 20)
+pmap(g2, ng)
+
+using Serialization
+test9=deserialize("Y:/eco_andrews/Projects/CPR/data/abm/test9.dat")
+#
+i=1
+a= plot(plot(test9[:limit][:,:,i], label = "", alpha = .2))
+[plot!(test9[:limit][:,:,i], label = "", alpha = .2) for i in 1:20]
+
+i=1
+b= plot(plot(test9[:stock][:,:,i], label = "", alpha = .2))
+[plot!(test9[:stock][:,:,i], label = "", alpha = .2) for i in 1:20]
+
+i=1
+c= plot(plot(test9[:payoffR][:,:,i], label = "", alpha = .2))
+[plot!(test9[:payoffR][:,:,i], label = "", alpha = .2) for i in 1:20]
+
+plot(a, b, c, layout = grid(1,3), size = (900, 300))
+
+# Multicore
+using Plots.PlotMeasures
+
+testlong=deserialize("Y:/eco_andrews/Projects/CPR/data/abm/testlong.dat")
+using Plots
+timmer = collect(1:99:75000)
+i=1
+a= plot(testlong[i][:limit][timmer,:,1], label = "", alpha = .1, c = :black, ylab = "MAY", ylim = (0, 25))
+[plot!(testlong[i][:limit][timmer,:,1], label = "", alpha = .1, c = :black) for i in 1:80]
+hline!([3.5, 3.5], lw = 3, c = :red, label = "MSY")
+
+i=1
+b= plot(testlong[i][:stock][timmer,:,1], label = "", alpha = .1, c = :black, xlab = "Time", ylab = "Stock", title = "2 groups")
+[plot!(testlong[i][:stock][timmer,:,1], label = "", alpha = .1, c = :black) for i in 1:80]
+
+i=1
+c= plot(testlong[i][:payoffR][timmer,:,1], label = "", alpha = .1, c = :black, ylab = "Payoffs")
+[plot!(testlong[i][:payoffR][timmer,:,1], label = "", alpha = .1, c = :black) for i in 1:80]
+
+MSYsearch2groups=plot(a, b, c, layout = grid(1,3), size = (975, 300), left_margin = 25px, bottom_margin = 25px)
+savefig(MSYsearch2groups, "MSYsearch2groups.pdf")
+
+
+testlong9=deserialize("Y:/eco_andrews/Projects/CPR/data/abm/testlong9.dat")
+i=1
+timmer = collect(1:99:75000)
+a= plot(testlong9[i][:limit][timmer,:,1], label = "", alpha = .1, c = :black, ylab = "MAY")
+[plot!(testlong9[i][:limit][timmer,:,1], label = "", alpha = .1, c = :black) for i in 1:20]
+hline!([3.5, 3.5], lw = 3, c = :red, label = "MSY")
+
+i=1
+b= plot(testlong9[i][:stock][timmer,:,1], label = "", alpha = .1, c = :black, xlab = "Time", ylab = "Stock", title = "9 groups")
+[plot!(testlong9[i][:stock][timmer,:,1], label = "", alpha = .1, c = :black) for i in 1:20]
+
+i=1
+c= plot(testlong9[i][:payoffR][timmer,:,1], label = "", alpha = .1, c = :black, ylab = "Payoffs")
+[plot!(testlong9[i][:payoffR][timmer,:,1], label = "", alpha = .1, c = :black) for i in 1:20]
+
+MSYsearch9groups=plot(a, b, c, layout = grid(1,3), size = (975, 300), left_margin = 25px, bottom_margin = 25px)
+savefig(MSYsearch9groups, "MSYsearch9groups.pdf")
+plot(MSYsearch2groups, MSYsearch9groups, layout = grid(2,1), size = (975, 700))
+
+
+
+
+[testlong9[i][:limit][75000,:,1] for i in 1:20]
+
+final_limit=reduce(vcat, [testlong9[i][:limit][75000,:,1] for i in 1:20])
+histogram(final_limit)
+
+regrow = 0.01
+forest = 105000
+n = 75
+msy = ((forest*regrow)/4)/n
+
+a=cpr_abm(labor = .7, max_forest = 105000*9, n = 9*75, ngroups = 9, 
+lattice = [3,3], harvest_limit = 2, harvest_var = .2, nrounds = 5000, travel_cost = 0,
+harvest_var_ind = 0.5, experiment_group = collect(1:1:9), zero = true, nsim = 1, regrow = 0.01,
+experiment_punish2 = 1, experiment_punish1 = 0.5,  experiment_leak = 1, special_leakage_group = 5,
+leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, genetic_evolution = true,
+seed = 2, seized_on = false)
+
+plot(a[:stock][:,:,1])
+plot(a[:limit][:,:,1])
+plot(a[:harvest][:,:,1])
+plot(a[:leakage][:,:,1])
+plot(a[:effort][:,:,1])
+plot(a[:payoffR][:,:,1])
+
+
+
+
+S=collect(0.1:.05:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 75*2, max_forest = 2*105000, ngroups =2, nsim = 100,
+    lattice = [1,2], harvest_limit = 1, harvest_var = .1, harvest_var_ind = .1,
+    regrow = .01, pun2_on = true, leak=false,
+    wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, experiment_effort =.5, experiment_punish2=1,
+     fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, begin_leakage_experiment = 1)
+end
+dat=pmap(g, S)
+serialize("brutetest.dat", dat)
+
+dat = deserialize("cpr\\data\\abm\\brutetest.dat")
+
+y = [mean(dat[i][:punish][400:500,2,:], dims =1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:19])
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.01:.05:1)
+x=repeat(x, 10)
+
+mean(y)
+border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "IRC", ylab = "Support for borders",
+title = "(e)", titlelocation = :left, titlefontsize = 15)
+scatter!(x.*19, y, c=:firebrick, alpha = .2, label = false)
+
+########################################
+######## SEARCH ########################
+
+S=collect(0.1:.05:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 75*9, max_forest = 9*105000, ngroups =9, nsim = 50,
+    lattice = [3,3], harvest_limit = 4, harvest_var = .7, harvest_var_ind = .1,
+    regrow = .01, pun2_on = true, leak=true, nrounds = 500,
+    wages = 0.1, price = 1, experiment_punish1=L, experiment_group = collect(1:1:9), back_leak = true,
+    fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, learn_group_policy = true, control_learning = true)
+end
+dat=pmap(g, S)
+serialize("cpr\\data\\abm\\regulation.dat", dat)
+dat = deserialize("cpr\\data\\abm\\brutetest2.dat")
+
+
+y = [mean(mean(dat[i][:punish2][200:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y)
+μ = median(a, dims = 2)
+PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
+PI=vecvec_to_matrix(PI) 
+y=reduce(vcat, a)
+x=collect(.01:.05:1)
+x=repeat(x, 19)
+
+
+mean(y)
+Punish=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3,
+ c=:grey, label = false, xlab = "Presence of Borders",
+ ylab = "Support for Regulation", xticks = (collect(1:4:19), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
+ title = "(f)", titlelocation = :left, titlefontsize = 15)
+scatter!((x.*19 .+.9), b, c=:black, alpha = .2, label = false)
+
+
+y1 = [mean(mean(dat[i][:punish2][490:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y1[1:19])
+μ = mean(a, dims = 2)
+a=reduce(vcat, y1[1:19])
+a=reduce(vcat, a)
+
+y2 = [mean(mean(dat[i][:limit][490:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a2=reduce(vcat, y1[1:19])
+μ = mean(a2, dims = 2)
+a2=reduce(vcat, y2[1:19])
+a2=reduce(vcat, a2)
+
+
+Selection=scatter(a, a2, c=:black, ylim = (0, 6), label = false, xlab = "Support for Regulation", yticks = (0, " "), 
+ylab = "MAY", alpha = .3,
+title = "(g)", titlelocation = :left, titlefontsize = 15)
+hline!([3.5], lw = 2, c=:red, label = "MSY", )
+
+
+S=collect(0:.02:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
+    lattice = [3,3], harvest_limit = 8.259-2, regrow = .025, pun1_on = true, 
+    wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
+end
+dat=pmap(g, S)
+@JLD2.save("brute3.jld2", dat)
+
+
+
+
+
+
+####################################################################
+####### BANDITRY ON BORDERS  #######################################
+
+# Note we increase the amount of forest to ensure that it does not bottom out by the time we sample the amount of support for borders. 
+if RUN  == true
+    S=collect(0.01:.05:1)
+    # set up a smaller call function that allows for only a sub-set of pars to be manipulated
+    @everywhere function g(L)
+        cpr_abm(n = 75*9, max_forest = 9*200000, ngroups =9, nsim = 20,
+        lattice = [3,3], harvest_limit = 3.4, harvest_var = .01, harvest_var_ind = .01,
+        regrow = .01, pun2_on = true, leak=false, pun1_on = false, experiment_group = [5,6],
+        wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, 
+        experiment_effort =1, control_learning = false,
+        fines1_on = false, punish_cost = 0.1, labor = .7, 
+        zero = true, begin_leakage_experiment = 1)
+    end
+    dat=pmap(g, S)
+    serialize("test.dat", dat)
+end
+
+# Load 
+using Serialization
+dat = deserialize("cpr\\data\\abm\\test.dat")
+
+groups = [collect(1:1:4); collect(7:1:9)]
+y = [mean(dat[i][:punish2][400:500,groups,:], dims =1) for i in 1:length(dat)]
+μ = [median(y[i]) for i in 1:length(dat)]
+a = [reduce(vcat, y[i]) for i in 1:length(y)]
+PI = [quantile(a[i], [0.31,.68]) for i in 1:size(y)[1]]
+PI=vecvec_to_matrix(PI) 
+x1=collect(.01:.05:1)
+x=reduce(vcat, [fill(i, length(dat)*7) for i in x1])
+a=reduce(vcat, a)
+
+mean(y)
+bandits_on_self_regulation=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:grey, label = false,
+ xlab = "Roving Banditry", ylab = "Support for Regulation",
+xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
+title = "(g)", titlelocation = :left, titlefontsize = 15)
+scatter!(x.*20, a, c=:black, alpha = .2, label = false)
+
+
+
+
+
+
+####################################################################
+####### BANDITRY ON BORDERS  #######################################
+
+# Note we increase the amount of forest to ensure that it does not bottom out by the time we sample the amount of support for borders. 
+if RUN  == true
+    # set up a smaller call function that allows for only a sub-set of pars to be manipulated
+    S=collect(0.1:.05:1)
+    # set up a smaller call function that allows for only a sub-set of pars to be manipulated
+    @everywhere function g(L)
+        cpr_abm(n = 75*9, max_forest = 9*105000, ngroups =9, nsim = 50,
+        lattice = [3,3], harvest_limit = 2, harvest_var = .01, harvest_var_ind = .1,
+        regrow = .01, pun2_on = true, leak=true, nrounds = 1000,
+        wages = 0.1, price = 1, experiment_punish1=L, experiment_group = collect(1:1:9), back_leak = true,
+        fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, learn_group_policy = true, control_learning = true)
+    end
+    dat=pmap(g, S)
+    serialize("borders_on_reg.dat", dat)
+end
+
+# Load 
+using Serialization
+dat = deserialize("cpr\\data\\abm\\borders_on_reg.dat")
+
+groups = collect(1:1:9)
+y = [mean(dat[i][:punish2][400:500,groups,:], dims =1) for i in 1:length(dat)]
+μ = [median(y[i]) for i in 1:length(dat)]
+a = [reduce(vcat, y[i]) for i in 1:length(y)]
+PI = [quantile(a[i], [0.31,.68]) for i in 1:size(y)[1]]
+PI=vecvec_to_matrix(PI) 
+x1=collect(.1:.05:1)
+x=reduce(vcat, [fill(i, size(dat[1][:stock])[3]*9) for i in x1])
+a=reduce(vcat, a)
+
+using GR
+borders_on_selfreg=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:grey, label = false,
+ xlab = "Presence of Borders", ylab = "Support for Regulation",
+xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
+title = "(g)", titlelocation = :left, titlefontsize = 15)
+scatter!(x[collect(1:10:8550)]*20, a[collect(1:10:8550)], c=:black, alpha = .2, label = false)
+
+
+
+a=cpr_abm(n=90, lattice = [3,3], ngroups = 9, pgrowth_data = ones(500), 
+max_forest = 410000*9, population_growth = true, 
+defensibility = 100, def_perc = false)
+
+plot(a[:stock][:,:,1])
+plot(a[:punish][:,:,1])
+plot(a[:harvest][:,:,1])
+plot(a[:limit][:,:,1])
+plot(a[:punish2][:,:,1])
+plot(a[:leakage][:,:,1])
+
+
+
+include("C:/Users/jeffrey_andrews/OneDrive/Documents/MI/models/trade_spec_functions.jl")
+a=dol_abc(ngen = 50, utility = "ces",  
+ production_mode = "increasing", unit_tests= true,
+ rank = [.6, .4], trading = true, k =.5, specialization = true)
+
+baseplot(a)
+
+using Plots
+function
+
+# Prices
+p1 = scatter(fill(1, 200), a[:prices][:,1,1,1], alpha = .1, label = "", c = :firebrick)
+for j in 2:
+    for i in 2:10:1000
+        scatter!(fill(i, 200), a[:prices][:,1,i,1], alpha = .1 , label = "", c = :firebrick)
+    end
+scatter!(fill(1, 200), a[:prices][:,2,1,1], alpha = .1, label = "", c = :blue)
+for i in 2:5:1000
+    scatter!(fill(i, 200), a[:prices][:,2,i,1], alpha = .1 , label = "", c = :blue)
+end
+p1
+
+
+p3=plot([mean(a[:trade_type][:,t,1]).-1 for t in 1:1000])
+
+
+# Effort and specialziation
+p4 = scatter(fill(1, 200), a[:effort][:,1,1,1], alpha = .1, label = "", c = :firebrick)
+for i in 2:5:1000
+    scatter!(fill(i, 200), a[:effort][:,1,i,1], alpha = .1 , label = "", c = :firebrick)
+end
+scatter!(fill(1, 200), a[:effort][:,2,1,1], alpha = .1, label = "", c = :blue)
+for i in 2:5:1000
+    scatter!(fill(i, 200), a[:effort][:,2,i,1], alpha = .1 , label = "", c = :blue)
+end
+p4
+
+
+
+[sum(a[:inv][:,:,t]) for t in 1:50]
+
+
+using Plots
+plot([mean(a[:effort][:,1,t]) for t in 1:500])
+plot!([mean(a[:effort][:,2,t]) for t in 1:500])
+[sum(a[:inv][:,:,t]) for t in 1:50]
+
+
+
+a[:effort][:,:,50]
+a[:utility][:,49]
+
+
+a[:buy][:,:,50]
+a[:need][:,:,1]
+sum(a[:need][:,:,])
+a[:pre_sale_need][:,:,50]
+a[:need][:,:,50]
+
+
+
+
+sum(a[:inv][:,:,50])
+sum(a[:pre_sale_inv][:,:,50])
+
+
+need[:,:,t]=a[:pre_sale_need][:,:,3]
+inv[:,:,t]=a[:pre_sale_inv][:,:,3]
+prices[:,:,t]=a[:prices][:,:,2]
+
+a[:effort]
+
+a[:inv][:,:,1]
+a[:prices][:,:,50]
+mean(a[:prices][:,:,50], dims = 1)
+
+sum(minimum(inv[i,:,t]./rank))

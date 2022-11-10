@@ -56,9 +56,6 @@ using Distributed
 @everywhere include("cpr/code/abm/abm_group_policy.jl")
 
 
-
-
-
 using Distributed
 @everywhere using Statistics
 @everywhere using Distributions
@@ -90,4 +87,5 @@ using Distributed
 
 @everywhere include("C:/Users/jeffr/OneDrive/Documents/functions/utility.jl")
 @everywhere include("abm_group_policy.jl")
-
+@everywhere include("cpr/code/abm/abm_special_leakage.jl")
+@everywhere include("cpr/code/abm/abm_popgrowth.jl")

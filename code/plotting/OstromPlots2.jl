@@ -5,11 +5,9 @@ using Plots
 using ColorSchemes
 using Distributed
 using DataFrames
+using Serialization
 #cd("C:\\Users\\jeffr\\Documents\\Work\\")
 #cd("Y:\\eco_andrews\\Projects\\")
-###########
-
-
 
 ################# Brute force a solution
 pay = []
@@ -44,13 +42,114 @@ i=findmax(a)[2]
 lim=msy[i][:harvest][end,1,1]
 
 
+########################## HETEROGENITY IN PATCH SIZE #######################################
+a=cpr_abm(n = 150*2, max_forest = 2*410000, ngroups =2, nsim = 1, nrounds = 1000,
+lattice = [1,2], harvest_limit = 16.168, regrow = .025, pun1_on = false, pun2_on = false, wages = 0.007742636826811269,
+ price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+punish_cost = 0.00650525196229018395, labor = .7, zero = true,
+travel_cost = 0.003, full_save = true, kmax_data = [410000, 410000],
+learn_group_policy = true)
 
+
+seq = collect(210000:10000:640000)
+
+out = []
+for i in seq
+    b=cpr_abm(n = 150*2, max_forest = 2*410000, ngroups =2, nsim = 1, nrounds = 1000,
+    lattice = [1,2], harvest_limit = 16.168, regrow = .025, pun1_on = false, pun2_on = false, wages = 0.007742636826811269,
+    price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.00650525196229018395, labor = .7, zero = true,
+    travel_cost = 0.003, full_save = true, kmax_data = [i, 210000],
+    learn_group_policy = true)
+    push!(out, b)
+end
+plot(a[:leakage][:,:,1])
+plot(b[:leakage][:,:,1])
+
+het=[mean(out[i][:leakage][:,2,1]) for i in 1:length(out)]
+heterogenity=plot(seq, het, label = false, xlab = "Heterogenity in patch size",
+ylab = "Roving Banditry", c = :black,
+title = "(a)", titlelocation = :left, titlefontsize = 15)
+xticks!([minimum(seq), maximum(seq)], ["Low", "High"])
+
+
+######################### STRINGENT POLICIES #############################
+
+out2 = []
+seq = collect(.2:.2:4)
+for i in seq
+    b=cpr_abm(n = 75*2, max_forest = 2*105000, ngroups =2, nsim = 1, nrounds = 500,
+    lattice = [1,2], harvest_limit = 3.5, regrow = .01, pun1_on = false,
+    pun2_on = true, wages = 0.1,
+    price = 1, defensibility = 1, fines1_on = false,
+    fines2_on = false, seized_on = true, labor = .7,
+    zero = true, 
+    travel_cost = 0.3, full_save = true, 
+    experiment_limit = i, experiment_punish2 = 1)
+    push!(out2, b)
+end
+
+stringent=[mean(out2[i][:leakage][:,1,1]) for i in 1:length(out2)]
+stringent=plot(4 .- seq, stringent, c = :black, label = false, xlab = "Policy Stringency",
+ xtick = ((.1, 3.8), ("Low", "High")), ylab = "Roving Banditry",
+ title = "(b)", titlelocation = :left, titlefontsize = 15)
+
+##################################################
+########## EFFECT OF SEIZURES ####################
+
+out3 = []
+seq = [true, false]
+for i in seq 
+    L = fill(i, 40)
+    @everywhere function newone(L)
+        cpr_abm(n = 75*9, max_forest = 9*105000, ngroups =9, nsim = 1, nrounds = 500,
+            lattice = [3,3], harvest_limit = 2, regrow = .01, pun1_on = true,
+            pun2_on = true, wages = 0.1, harvest_var =.1,
+            price = 1, defensibility = 1, fines1_on = false,
+            fines2_on = false, seized_on = L, labor = .7,
+            zero = true, harvest_var_ind = 0.1,
+            travel_cost = 0.1, full_save = true)
+    end
+    println("gothere")
+    b=pmap(newone, L)
+    push!(out3, b)
+end
+
+serialize("seizures.dat", out3)
+
+
+######## Plot that ###########
+
+
+dat=deserialize("CPR\\data\\abm\\seizures.dat")
+
+seizures=plot(dat[1][1][:punish][:,:,1], labels = "", ylab = "Support for Borders",
+ xlab = "Time", c=:black, alpha = .1, xticks = (0, " "), ylim = (0,1),
+ title = "(d)", titlelocation = :left, titlefontsize = 15)
+[plot!(dat[1][i][:punish][:,:,1], labels = "", c =:black, alpha = .025) for i in 1:40]
+
+noseizures=plot(dat[2][1][:punish][:,:,1], labels = "", ylab = "Support for Borders", xlab = "Time",
+ c=:black, alpha = .1, xticks = (0, " "), ylim = (0,1),
+ title = "(c)", titlelocation = :left, titlefontsize = 15)
+[plot!(dat[2][i][:punish][:,:,1], labels = "", c =:black, alpha = .025) for i in 1:40]
+
+
+section21=plot(heterogenity, stringent, seizures, noseizures, layout = grid(1,4), size = (1300, 300),
+ left_margin = 25px, bottom_margin=25px)
+ png("cpr//output//causesofborders.png")
+
+
+
+
+#####################################
+#####################################
 
 S=collect(0:.02:1)
 # set up a smaller call function that allows for only a sub-set of pars to be manipulated
 @everywhere function g(L)
     cpr_abm(n = 150*2, max_forest = 2*210000, ngroups =2, nsim = 100,
-    lattice = [1,2], harvest_limit = 4.8, regrow = .025, pun2_on = false, leak=false,
+    lattice = [1,2], harvest_limit = 4.8, regrow = .025, pun2_on = false, 
+    leak=false,
     wages = 1.3, price = .06, defensibility = 1, experiment_leak = L, experiment_effort =1, fines1_on = false, punish_cost = 0.001, labor = .7, zero = true)
 end
 dat=pmap(g, S)
@@ -69,7 +168,8 @@ x=repeat(x, 10)
 
 mean(y)
 border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "IRC", ylab = "Support for borders",
-xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (300, 250))
+xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
+title = "(e)", titlelocation = :left, titlefontsize = 15)
 scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
 
 png("cpr//output//ostromfirstprinciple.png")
@@ -78,49 +178,87 @@ png("cpr//output//ostromfirstprinciple.png")
 
 
 
+
+
+S=collect(0.1:.05:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 75*2, max_forest = 2*105000, ngroups =2, nsim = 100,
+    lattice = [1,2], harvest_limit = 1, harvest_var = .1, harvest_var_ind = .1,
+    regrow = .01, pun2_on = true, leak=false,
+    wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, experiment_effort =.5, experiment_punish2=1,
+     fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, begin_leakage_experiment = 1)
+end
+dat=pmap(g, S)
+serialize("brutetest.dat", dat)
+
+
+
+#GET LARGE POLICY DIFFRENCE
+@everywhere include("cpr/code/abm/abm_group_policy.jl")
+
+S=collect(0:.02:1)
+S=collect(0.1:.05:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 75*9, max_forest = 9*105000, ngroups =9, nsim = 50,
+    lattice = [3,3], harvest_limit = 4, harvest_var = .7, harvest_var_ind = .1,
+    regrow = .01, pun2_on = true, leak=true, nrounds = 500,
+    wages = 0.1, price = 1, experiment_punish1=L, experiment_group = collect(1:1:9), back_leak = true,
+    fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, learn_group_policy = true, control_learning = true)
+end
+dat=pmap(g, S)
+serialize("brute2.dat", dat)
+
+
+
+
+@JLD2.save("brute3.jld2", dat)
+
+# SET UP PROPER COVARIANCE MAPPING
+
+S=collect(.05:.05:1)
+# set up a smaller call function that allows for only a sub-set of pars to be manipulated
+@everywhere function g(L)
+    cpr_abm(n = 150*9, max_forest = 9*201000, ngroups =9, nsim = 20,
+    lattice = [3,3], harvest_limit = 8.75, regrow = .025, pun1_on = true, fines1_on = false, fines2_on = false, seized_on = true,
+    punish_cost = 0.1, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0.1,
+    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
+end
+dat=pmap(g, S)
+
+
 #############################################################################
-################### TRYPTIC #################################################
+################### Plots ###################################################
 
 
 
-@JLD2.load("cpr\\data\\abm\\brute.jld2")
 
-y = [mean(dat[i][:punish][100:end,2,:], dims =1) for i in 1:length(dat)]
-a=reduce(vcat, y[2:51])
+using JLD2
+
+dat = deserialize("cpr\\data\\abm\\brutetest.dat")
+
+y = [mean(dat[i][:punish][400:500,2,:], dims =1) for i in 1:length(dat)]
+a=reduce(vcat, y[2:19])
 μ = median(a, dims = 2)
 PI = [quantile(a[i,:], [0.31,.68]) for i in 1:size(a)[1]]
 PI=vecvec_to_matrix(PI) 
 y=reduce(vcat, a)
-x=collect(.02:.02:1)
+x=collect(.01:.05:1)
 x=repeat(x, 10)
 
+
 mean(y)
-border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "IRC", ylab = "Support for borders",
-xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")) , size = (300, 250))
-scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
+border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:grey, label = false,
+ xlab = "Roving Bandity", ylab = "Support for borders",
+xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
+title = "(e)", titlelocation = :left, titlefontsize = 15)
+scatter!(x.*19, y, c=:black, alpha = .2, label = false)
 
 
 
 
-########## FIND WHERE THE DIFFRENCE IS THE LARGEST
-@JLD2.load("cpr\\data\\abm\\osy.jld2")
-diff = findmax(osyp./ncsh)
-par=L[diff[2],:]
-lim=osy[diff[2]]
-
-S=collect(0:.02:1)
-# set up a smaller call function that allows for only a sub-set of pars to be manipulated
-@everywhere function g(L)
-    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
-    lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, 
-    wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
-    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true)
-end
-dat=pmap(g, S)
-#@JLD2.save("brute2.jld2", dat)
-
-@JLD2.load("CPR\\data\\abm\\brute22.jld2")
+@JLD2.load("CPR\\data\\abm\\brute2.jld2")
 
 y = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
 a=reduce(vcat, y[2:51])
@@ -133,26 +271,11 @@ x=repeat(x, 50)
 
 
 mean(y)
-Punish=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:orange, label = false, xlab = "Presence of borders",
- ylab = "Support for Regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
-scatter!(x.*50, y, c=:firebrick, alpha = .2, label = false)
-
-
-
-#GET LARGE POLICY DIFFRENCE
-@everywhere include("cpr/code/abm/abm_group_policy.jl")
-
-S=collect(0:.02:1)
-# set up a smaller call function that allows for only a sub-set of pars to be manipulated
-@everywhere function g(L)
-    cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
-    lattice = [3,3], harvest_limit = 8.259-2, regrow = .025, pun1_on = true, 
-    wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
-    experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
-end
-dat=pmap(g, S)
-@JLD2.save("brute3.jld2", dat)
+Punish=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3,
+ c=:grey, label = false, xlab = "Presence of Borders",
+ ylab = "Support for Regulation", xticks = (collect(0:10:50), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
+ title = "(f)", titlelocation = :left, titlefontsize = 15)
+scatter!(x.*50, y, c=:black, alpha = .2, label = false)
 
 
 @JLD2.load("CPR\\data\\abm\\brute3.jld2")
@@ -170,9 +293,155 @@ a2=reduce(vcat, y2[2:51])
 a2=reduce(vcat, a2)
 
 
-Selection=scatter(a, a2, c=:firebrick, ylim = (5, 16), label = false, xlab = "Support for Regulation", 
-ylab = "Policy level")
-hline!([8.19], lw = 2, c=:blue, label = "OSY", )
+Selection=scatter(a, a2, c=:black, ylim = (5, 16), label = false, xlab = "Support for Regulation", yticks = (0, " "), 
+ylab = "MAY", alpha = .3,
+title = "(g)", titlelocation = :left, titlefontsize = 15)
+hline!([8.19], lw = 2, c=:red, label = "MSY", )
+
+
+plot(border, Punish, Selection, layout = grid(1,3), size = [1000, 300], left_margin = 25px, bottom_margin = 20px, top_margin = 10px, right_margin = 20px)
+png("cpr\\output\\trypic.png")
+
+
+
+
+# ADD in MAY VS PAYOFF
+
+dat=deserialize("CPR\\data\\abm\\brute5.dat")
+
+# Mark if under selection
+
+y1 = [mean(mean(dat[i][:payoffR][900:1000,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y1).+(collect(0.01:.05:1).*0.1) # adjust for institutional costs
+μ = mean(a, dims = 2)
+a=reduce(vcat, y1)
+a=reduce(vcat, a)
+
+
+y2 = [mean(mean(dat[i][:limit][900:1000,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a2=reduce(vcat, y2)
+μ = mean(a2, dims = 2)
+a2=reduce(vcat, y2)
+a2=reduce(vcat, a2)
+
+
+y3 = [mean(mean(dat[i][:punish2][900:1000,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a3=reduce(vcat, y3)
+μ = mean(a3, dims = 2)
+a3=reduce(vcat, y3)
+a3=reduce(vcat, a3)
+
+a3 = ifelse.(a3 .> .4, :red, :black)
+
+Covariance=scatter(a2[a3 .== :red], a[a3 .== :red], c=:green, label = false, xlab = "MAY", xticks = (0, " "),  
+ylab = "Payoffs", labels = "Selection", alpha = .5, markerstrokecolor = :green,
+title = "(h)", titlelocation = :left, titlefontsize = 15)
+scatter!(a2[a3 .== :black], a[a3 .== :black], c=:black, label = false, xlab = "MAY",  
+ylab = "Payoffs", labels = ("Drift"), alpha = .5)
+vline!([3.5, 3.5], c=:red, label = "MSY")
+
+
+plot(border, Punish, Selection, Covariance, layout = grid(1,4), size = [1300, 300], left_margin = 25px, bottom_margin = 25px, top_margin = 10px, right_margin = 20px)
+png("cpr\\output\\fourpic.png")
+
+
+
+###################################
+####### SEARCH PROCESS ############
+
+ # Multicore 2 groups
+ # Uses special Leakage group
+ L = fill(.01, 40)
+ ng = fill(9, 40) 
+ @everywhere function g2(L, ng)  
+    cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
+    lattice = [3,3], harvest_limit = 2, harvest_var = 0.5, nrounds = 5000, travel_cost = 0,
+    harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1, regrow = 0.01,
+    experiment_punish2 = 1, experiment_punish1 = 0.01,  experiment_leak = L, special_leakage_group = 5,
+    leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, seized_on = false,
+    begin_leakage_experiment = 1)
+end
+dat=pmap(g2, L, ng)
+serialize("lowleak.dat", dat)
+L = fill(1, 40)
+ng = fill(9, 40)
+@everywhere function g2(L, ng) 
+       cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
+       lattice = [3,3], harvest_limit = 2, harvest_var = 0.5, nrounds = 5000, travel_cost = 0,
+       harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1, regrow = 0.01,
+       experiment_punish2 = 1, experiment_punish1 = 0.01,  experiment_leak = L, special_leakage_group = 5,
+       leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, seized_on = false,
+       begin_leakage_experiment = 1)
+end
+
+dat=pmap(g2, L, ng)
+serialize("highleak.dat", dat)
+
+
+#################################################
+############### STABLIZATION ####################
+
+L = fill(1, 40)
+ng = fill(9, 40)
+@everywhere function g2(L, ng) 
+       cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
+       lattice = [3,3], harvest_limit = 2, harvest_var = 0.5, nrounds = 10000, travel_cost = 0,
+       harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1, regrow = 0.01,
+       experiment_punish2 = 1, experiment_punish1 = 0.01,  experiment_leak = L, special_leakage_group = 5,
+       leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, seized_on = false,
+       begin_leakage_experiment = 5000)
+end
+
+dat=pmap(g2, L, ng)
+
+#############Plot ###################
+dat=deserialize("CPR\\data\\abm\\stabilization.dat")
+    trim = collect(1:10:10000)
+    groups = [collect(1:4);collect(6:9)]
+    a=plot(dat[1][:limit][trim,:,1], label = "", alpha = 0.1, c=:black)
+    [plot!(dat[i][:limit][trim,:,1], label = "", alpha = 0.1, c=:black) for i in 2:20]
+ 
+    a=plot(dat[1][:stock][trim,:,1], label = "", alpha = 0.1, c=:black)
+    [plot!(dat[i][:stock][trim,:,1], label = "", alpha = 0.1, c=:black) for i in 2:20]
+ 
+
+
+
+##########################
+####### SEARCH ###########
+
+using Serialization
+dat=[deserialize("CPR\\data\\abm\\lowleak.dat"), deserialize("CPR\\data\\abm\\highleak.dat")]
+
+plotsl = []
+for j in 1:2
+    trim = collect(1:10:5000)
+    groups = [collect(1:4);collect(6:9)]
+    lab = ifelse(j == 1, "(i)", "(j)")
+    col = ifelse.(dat[j][1][:stock][trim,groups,1] .> .1, :green, :black)
+    a=plot(dat[j][1][:limit][trim,groups,1], label = "", alpha = 0.1, linecolor=col, xticks = (0, ""), yticks = (0, ""),
+     xlab = "Time", ylab = "MAY", ylim = (0, 6.1),
+     title = lab, titlelocation = :left, titlefontsize = 15)
+    for i in 1:40
+        col = ifelse.(dat[j][i][:stock][trim,groups,1] .> .1, :green, :black)
+        plot!(dat[j][i][:limit][trim,groups,1], label = "", alpha = 0.1, c=col)
+    end
+
+    hline!([3.5, 3.5], c = :red, label = "")
+    push!(plotsl, a)
+end
+
+
+
+savefig(a, "test.pdf")
+
+a=plot(heterogenity, stringent, noseizures, seizures, border, Punish, Selection, Covariance,
+ plotsl[1], plotsl[2], layout = grid(3,4), size = (1300, 850), left_margin = 25px, bottom_margin = 25px, top_margin = 10px, right_margin = 20px);
+
+ savefig(a, "cpr\\output\\full.pdf")
+
+
+
 
 
 ############################################################################## 

@@ -2,7 +2,7 @@ using Plots.PlotMeasures
 ####################################
 ############ WEALTH ################
 
-test=cpr_abm()
+test=cpr_abm(rec_history = true)
 
 using(Plots)
 
@@ -83,7 +83,7 @@ gif(anim, string("test.gif")
 
 histogram(test[:wealth][:,1:1])
 
-test=cpr_abm()
+test=cpr_abm(rec_history = true, learn_strat = "wealth")
 
 using(Plots)
 
@@ -150,9 +150,6 @@ anim = @animate for i = 1:500
              xticks = collect(0:50:500),
               yticks = ([10], ("")),
               size = (1000, 200))
-
-
-
               set1 = plot(h, age, layout = (1,2), size = (1000, 400))
 
             l = @layout[a;b{.2h};c{.05h}]
@@ -175,7 +172,7 @@ gif(anim, string("test.gif")
 ##########################################
 #########################################
 
-test=cpr_abm(inher = true, wages = .05)
+test=cpr_abm(inher = true, wages = .05, rec_history = true, )
 
 using(Plots)
 
