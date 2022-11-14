@@ -53,7 +53,7 @@ using Distributed
 @everywhere include("cpr/code/abm/submodules/RWLearn.jl")
 
 @everywhere include("functions/utility.jl")
-@everywhere include("cpr/code/abm/abm_group_policy.jl")
+#@everywhere include("cpr/code/abm/abm_group_policy.jl")
 
 
 using Distributed
@@ -86,6 +86,6 @@ using Distributed
 @everywhere include("submodules/RWLearn.jl")
 
 @everywhere include("C:/Users/jeffr/OneDrive/Documents/functions/utility.jl")
-@everywhere include("abm_group_policy.jl")
-@everywhere include("cpr/code/abm/abm_special_leakage.jl")
+#@everywhere include("abm_group_policy.jl")
+#@everywhere include("cpr/code/abm/abm_special_leakage.jl")
 @everywhere include("cpr/code/abm/abm_popgrowth.jl")
