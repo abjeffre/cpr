@@ -6,7 +6,9 @@
     for i in 1:ngroups
       b[i]=cdf.(Beta(degrade[1], degrade[2]), K[i]/maximum(kmax))
     end
-    tech.*((1 .+ effort.^labor) .- 1).*b[loc] .- necessity
+    #tech.*((1 .+ effort.^labor) .- 1).*b[loc] .- necessity
+    tech.*((effort.^labor) ).*b[loc] .- necessity
+
    end
 
 

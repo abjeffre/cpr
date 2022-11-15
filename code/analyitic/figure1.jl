@@ -1,15 +1,34 @@
 include("Y:/eco_andrews/Projects/CPR/code/analyitic/analyitic.jl")
 using LaTeXStrings
+using Plots
 
-a=cpr_abm(tech = 1.1, n = 1000, price = .01, nrounds = 1000, leak = false, pun1_on = false,
- pun2_on = false, population_growth = true )
+a=cpr_abm(tech = 1, n=150, max_forest = 1000, price = .01, genetic_evolution = false, inspect_timing = "after", learn_type = "income", nrounds = 1000, leak = false, mortality_rate = .5, pun1_on = false, nmodels = 40, fidelity = .25, regrow =.01,
+ pun2_on = false, mutation = .2)
 
- b=cpr_abm(tech = 1.1, n = 2000, price = .01, nrounds = 1000, leak = false, pun1_on = false,
- pun2_on = false, population_growth = true )
+b=cpr_abm(tech = 1, n = 150*9, lattice = [1,9], ngroups = 9, max_forest = 1000*4.5, price = .01, genetic_evolution = false, inspect_timing = "after", learn_type = "income", nrounds = 1000, leak = false, pun1_on = false, mortality_rate = .5, nmodels = 40, fidelity = .25, regrow =.01,
+ pun2_on = false, mutation = .2)
+
+ plot(a[:stock][:,:,:1], ylim = (0,1), w = 4)
+ plot!(b[:stock][:,:,:1], w = 4)
+
+ plot(a[:payoffR][:,:,:1], w = 4)
+ plot!(b[:payoffR][:,:,:1], w = 4)
+
+ plot(a[:effort][:,:,:1], w = 4)
+ plot!(b[:effort][:,:,:1], w = 4)
+
+
+a[:harvest][42,:,1]
+b[:harvest][20,:,1]
+a[:payoffR][42,:,1]
+b[:payoffR][20,:,1]
+a[:effort][42,:,1]
+b[:effort][20,:,1]
+a[:stock][42,:,1]
+b[:stock][20,:,1]
+
 
 using Plots
-payoff=plot(a[:stock][:,2,:1], ylim = (0,1), w = 4)
-plot!(b[:stock][:,2,:1], w = 4)
 
 
 effort=plot(b[:effort][:,2,:1], label = latexstring("E_U"), w = 4)
