@@ -71,18 +71,20 @@ function cpr_projection(;
     )
     HistoryBⁿ = []
     Historyℜⁿ = []
+    HistoryHⁿ = []
+    Bⁿ = copy(B)
     for i in 1:T
-        H₁ = harvest(q, e₁, α, B, β)
-        H₂ = harvest(q, e₂, α, B, β)
-        ℜⁿ = payoff(p, H₁, c, e)
-        Bⁿ = regrow(B, r, K, H₁, H₂)
+        H₁ = harvest(q, e₁, α, Bⁿ, β)
+        H₂ = harvest(q, e₂, α, Bⁿ, β)
+        ℜⁿ = payoff(p, H₁, c, e₁)
+        Bⁿ = regrow(Bⁿ, r, K, H₁, H₂)
         Bⁿ = Bⁿ < 0 ? 0 : Bⁿ
         push!(HistoryBⁿ, Bⁿ)
         push!(Historyℜⁿ, ℜⁿ)
+        push!(HistoryHⁿ, H₁)
     end
-    return HistoryBⁿ, Historyℜⁿ
+    return HistoryBⁿ, Historyℜⁿ, HistoryHⁿ
 end
-
 
 
 #####################################
@@ -90,7 +92,7 @@ end
 
 
 function profitMax(;
-    eRange = 0.01:0.01:1,
+    eRange = 0.00:0.01:1,
     p = 1,       # price
     c = .001,      # harvesting Cost
     ρ = .1,      # Discount factor
@@ -102,19 +104,27 @@ function profitMax(;
     K = 1,       # Carrying Capacity
     e₂ = .01,    # Effort from the other group
     T = 100,
+    full_output = false
     )
     profitᴾ = []
+    stock = []
+    harvestᴾ  = []
+    profitᶠ = [] 
     for eᵖ in collect(eRange)
         eₜ=fill(eᵖ, T)
         t = collect(1:T)
-        Bₜ, R=cpr_projection( p = p, c = c, α = α, β = β, q = q, r = r, B = B, K = K, e₁ = eᵖ, e₂ = e₂, T = T) 
+        Bₜ, R, Hᴾ=cpr_projection( p = p, c = c, α = α, β = β, q = q, r = r, B = B, K = K, e₁ = eᵖ, e₂ = e₂, T = T) 
         ℜᵖ=sum(ρ.^t.*(p*harvest.(q, eₜ, α, Bₜ, β) .- c.*eₜ))
         push!(profitᴾ, ℜᵖ)
+        push!(stock, Bₜ[T])
+        push!(harvestᴾ, Hᴾ[T])
+        push!(profitᶠ, R[T])
     end
     eₘₐₓ=eRange[findmax(profitᴾ)[2]]    
     #Bₘₐₓ, R=cpr(p = p, c = c, ρ = ρ, α = α, β = β, q = q,  
     # r = r,   B = B,  K = K,  e = eₘₐₓ, T=T)
-    return eₘₐₓ #Bₘₐₓ
+    if full_output == false return eₘₐₓ end #Bₘₐₓ
+    if full_output == true  return  stock,  harvestᴾ, profitᴾ, profitᶠ end
 end
 
 
@@ -140,7 +150,7 @@ function cpr_adaptive_updating(;
     HistoryH₁    = []
     HistoryH₂    = []
     for i in 1:T
-        e₁ = profitMax(p = p[1], c = c, ρ = ρ, α = α,  β = β, q =  q, r = r, B = B, K = K, e₂ = e₂,  T = 100,  eRange = eRange[1])
+        e₁,  = profitMax(p = p[1], c = c, ρ = ρ, α = α,  β = β, q =  q, r = r, B = B, K = K, e₂ = e₂,  T = 100,  eRange = eRange[1])
         e₂ = profitMax(p = p[2], c = c, ρ = ρ, α = α,  β = β, q =  q, r = r, B = B, K = K, e₂ = e₁,  T = 100,  eRange  = eRange[2]) 
         H₁ = harvest(q, e₁, α, B, β)
         H₂ = harvest(q, e₂, α, B, β)
@@ -157,6 +167,17 @@ function cpr_adaptive_updating(;
     return HistoryB, Historyℜ, Historye₁, Historye₂,  HistoryH₁, HistoryH₂
 end
 
+######################################
+############# PLOTTING ###############
 
+c = .002
+p =1
+q = 0.005
+s, h, r0, rt =profitMax(full_output = true, q =q, c =c,  p =p, T = 1000, e₂ = 0)
+plot(h*p)
+plot!(c*collect(0:.01:1))
+plot!(rt)
 
-cpr_adaptive_updating()
+plot(s, ylim = (0, 1))
+
+s, h, r0, rt =profitMax(full_output = true, q =.005, p =.01, T = 1000, e₂ = 0)

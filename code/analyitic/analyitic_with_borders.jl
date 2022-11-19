@@ -149,11 +149,12 @@ function cpr_projection(;
     )
     HistoryBⁿ = []
     Historyℜⁿ = []
+    Bⁿ=copy(B)
     for i in 1:T
-        H₁ = harvest(q, e₁, α, B, β)
-        H₂ = harvest(q, e₂, α, B, β)
+        H₁ = harvest(q, e₁, α, Bⁿ, β)
+        H₂ = harvest(q, e₂, α, Bⁿ, β)
         ℜⁿ = payoff(p, H₁, c, e₁)
-        Bⁿ = regrow(B, r, K, H₁, H₂)
+        Bⁿ = regrow(Bⁿ, r, K, H₁, H₂)
         Bⁿ = Bⁿ < 0 ? 0 : Bⁿ
         push!(HistoryBⁿ, Bⁿ)
         push!(Historyℜⁿ, ℜⁿ)
