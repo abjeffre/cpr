@@ -492,7 +492,7 @@ function cpr_abm(
 
 
       #Wage Labor Market
-      WL = wages*effort[:,1] #*tech
+      WL = wages*effort[:,1]*tech
       
       if indvLearn == true
         if year == 1
