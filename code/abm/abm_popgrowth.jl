@@ -119,7 +119,8 @@ function cpr_abm(
   begin_leakage_experiment = 200000, # this is set so large that it doesnt ping unless changed.
   population_growth = false,
   pgrowth_data = nothing,
-  unitTest = false 
+  unitTest = false,
+ special_experiment_leak = nothing
 )
   ################################################
   ##### The multiverse will be recorded  #########
@@ -196,16 +197,18 @@ function cpr_abm(
     #############################
     #### EXPERIMENT SETUP #######
     temp=[experiment_effort, experiment_limit, experiment_leak, experiment_punish1,
-     experiment_punish2, experiment_price]
+    experiment_punish2, experiment_price]
     experiment =  any(temp .!= false) ?  true : false
 
+    # THIS COULD BE TURNED ON TO CONTOROL LEARNING GROUPS    
     # Setup special leakage control learning group
     if special_leakage_group != nothing
-        experiment_learning_groups = experiment_group[findall(x->x ∉ special_leakage_group, experiment_group ) ]
-        exclude_patches = special_leakage_group
+      exclude_patches = experiment_group[experiment_group .∉  special_leakage_group]
+      experiment_learning_groups = experiment_group[findall(x->x ∉ special_leakage_group, experiment_group ) ]
+    #    exclude_patches = special_leakage_group
     else
-        experiment_learning_groups = experiment_group
-        exclude_patches = experiment_group
+      experiment_learning_groups = experiment_group
+      exclude_patches = experiment_group
     end
     # This determines whether agents learn from experimentally controled groups or not
     # This is always true, unless experiment is true and control learning is false 
@@ -366,13 +369,7 @@ function cpr_abm(
       for i = 1:length(experiment_group)
         if experiment_leak != 0
             if t >= begin_leakage_experiment 
-                if special_leakage_group == nothing
-                    traits.leakage_type[agents.gid .== experiment_group[i]] = rbinom(sum(agents.gid.==experiment_group[i]),1, experiment_leak)
-                else
-                    for j in 1:length(special_leakage_group)
-                        traits.leakage_type[agents.gid .== special_leakage_group[j]] = rbinom(sum(agents.gid.==special_leakage_group[j]),1, experiment_leak)
-                    end
-                end
+                    traits.leakage_type[agents.gid .== experiment_group[i]] = rand(Binomial(1, experiment_leak), sum(agents.gid.==experiment_group[i]))
             end
         end
         if experiment_punish1 != 0
@@ -392,11 +389,15 @@ function cpr_abm(
           price=Float64.(fill(price_copy, n))
           price[agents.gid.==experiment_group[i]] .= experiment_price
         end
+        if special_leakage_group != nothing
+          for j in 1:length(special_leakage_group)
+            traits.leakage_type[agents.gid .== special_leakage_group[j]] = rbinom(sum(agents.gid.==special_leakage_group[j]),1, special_experiment_leak)
+          end
+        end
       end
-      if verbose== true print(string("Experiment: COMPLETED"))
-      end
-     
+      if verbose== true print(string("Experiment: COMPLETED"))end
 
+      
       #Politics
       groups.limit=GetPolicy(traits.harv_limit, policy_weight, agents.payoff, ngroups, agents.gid, groups.group_status, t)
       if fines_evolve == true

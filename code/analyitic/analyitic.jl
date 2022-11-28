@@ -1,3 +1,4 @@
+
 # Parameters
 p = 1       # price
 c = .001      # harvesting Cost
@@ -21,8 +22,25 @@ function regrow(B, r, K, H₁, H₂)
 end
 
 function payoff(p, H, c, e)
+    #println(p)
+    #println(H)
+    #println(c)
+    #println(e)
     p*H-c*e
 end
+
+
+# Get open access equilibrium
+# This only uses model output for h
+function getOAE(h, p, c)
+    effort=collect(0:.01:1)
+    revenue=h*p
+    cost = c*effort
+    oae=findfirst((revenue - cost) .< 0)
+    return oae
+end
+
+
 
 function cpr(;
     p = 1,       # price
@@ -121,10 +139,10 @@ function profitMax(;
         push!(profitᶠ, R[T])
     end
     eₘₐₓ=eRange[findmax(profitᴾ)[2]]    
-    #Bₘₐₓ, R=cpr(p = p, c = c, ρ = ρ, α = α, β = β, q = q,  
+    Bₘₐₓ=stock[findmax(profitᴾ)[2]]   
     # r = r,   B = B,  K = K,  e = eₘₐₓ, T=T)
     if full_output == false return eₘₐₓ end #Bₘₐₓ
-    if full_output == true  return  stock,  harvestᴾ, profitᴾ, profitᶠ end
+    if full_output == true  return  stock,  harvestᴾ, profitᴾ, profitᶠ, eₘₐₓ, Bₘₐₓ end
 end
 
 
@@ -141,7 +159,8 @@ function cpr_adaptive_updating(;
     K = 1,       # Carrying Capacity
     T = 1000,
     e₂ = 1,
-    eRange = [0.01:0.01:1, 0.01:0.01:1]  # the upper limit acts as the constriant on labor
+    pmaxT = 100,
+    eRange = [0.00:0.01:1, 0.00:0.01:1]  # the upper limit acts as the constriant on labor
     )
     HistoryB    = []
     Historyℜ    = []
@@ -150,8 +169,8 @@ function cpr_adaptive_updating(;
     HistoryH₁    = []
     HistoryH₂    = []
     for i in 1:T
-        e₁,  = profitMax(p = p[1], c = c, ρ = ρ, α = α,  β = β, q =  q, r = r, B = B, K = K, e₂ = e₂,  T = 100,  eRange = eRange[1])
-        e₂ = profitMax(p = p[2], c = c, ρ = ρ, α = α,  β = β, q =  q, r = r, B = B, K = K, e₂ = e₁,  T = 100,  eRange  = eRange[2]) 
+        e₁,  = profitMax(p = p[1], c = c, ρ = ρ, α = α,  β = β, q =  q, r = r, B = B, K = K, e₂ = e₂,  T = pmaxT,  eRange = eRange[1])
+        e₂ = profitMax(p = p[2], c = c, ρ = ρ, α = α,  β = β, q =  q, r = r, B = B, K = K, e₂ = e₁,  T = pmaxT,  eRange  = eRange[2]) 
         H₁ = harvest(q, e₁, α, B, β)
         H₂ = harvest(q, e₂, α, B, β)
         ℜ = payoff(p[1], H₁, c, e₁)
@@ -167,17 +186,3 @@ function cpr_adaptive_updating(;
     return HistoryB, Historyℜ, Historye₁, Historye₂,  HistoryH₁, HistoryH₂
 end
 
-######################################
-############# PLOTTING ###############
-
-c = .002
-p =1
-q = 0.005
-s, h, r0, rt =profitMax(full_output = true, q =q, c =c,  p =p, T = 1000, e₂ = 0)
-plot(h*p)
-plot!(c*collect(0:.01:1))
-plot!(rt)
-
-plot(s, ylim = (0, 1))
-
-s, h, r0, rt =profitMax(full_output = true, q =.005, p =.01, T = 1000, e₂ = 0)
