@@ -1,7 +1,7 @@
 #################################
 ########## 
-setwd("C:/Users/jeffr/OneDrive/Documents/")
-source("C:/Users/jeffr/OneDrive/Documents/forests/data/dataframes/load_df.R")
+setwd("C:/Users/jeffrey_andrews/OneDrive/Documents/")
+source("C:/Users/jeffrey_andrews/OneDrive/Documents/forests/data/dataframes/load_df.R")
 
 
 ##########################################
@@ -143,9 +143,7 @@ names(df_temp)[8] <- "player_name"
 
 cpr_game <- df_temp[,-7]
 
-
-plot(NULL)
-
+cpr_game$harvest <- as.numeric(cpr_game$harvest)
 
 
 
