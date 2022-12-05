@@ -7,6 +7,7 @@
 .rds
 .RDS
 *.jld2
+*.JLD2
 *.gif
 *.pdf
 *.docx

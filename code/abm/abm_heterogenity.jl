@@ -38,7 +38,7 @@ function cpr_abm(
   wages = .1,                     # Wage rate in other sectors - opportunity costs
   max_forest = 350000,            # Average max stock
   var_forest = 0,                 # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = 1,                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                   # The regrowth rate
   volatility = 0,                 # The volatility of the resource each round - set as variance on a normal
   pollution = false,              # Pollution provides a public cost based on 
@@ -121,8 +121,17 @@ function cpr_abm(
   pgrowth_data = nothing,
   unitTest = false,
  special_experiment_leak = nothing,
- α = .01
+ α = .01,
+ population_data = nothing
 )
+  population_data = convert.(Int64, population_data)
+  # Establish group population sizes
+  if population_data != nothing
+      n = convert(Int64, sum(population_data))
+      gs_init = convert.(Int64, population_data)
+  else
+    gs_init = fill(convert(Int64, n/ngroups), ngroups)
+  end
   ################################################
   ##### The multiverse will be recorded  #########
     pgrowth_data == nothing ? pgrowth_data = fill(0, nrounds) : nothing
@@ -242,11 +251,16 @@ function cpr_abm(
     ################################
     ### Give birth to humanity #####
 
-    gs_init = convert(Int64, n/ngroups)
+    # Generate group ID
+    if population_data == nothing
+      tempID=repeat(1:ngroups, gs_init[1])
+    else
+      tempID=reduce(vcat, [fill(i, population_data[i]) for i in 1:length(population_data)])
+    end
     # agent values
     agents = DataFrame(
       id = collect(1:n),
-      gid = repeat(1:ngroups, gs_init),
+      gid = tempID,
       payoff = zeros(n),
       payoff_round = zeros(n),
       age = sample(1:2, n, replace=true) #notice a small variation in age is necessary for our motrality risk measure
@@ -282,26 +296,26 @@ function cpr_abm(
           effort=DataFrame(Matrix(effort), :auto)
       end
     # Setup leakage
-          leak_temp =zeros(gs_init)
-          leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
-          if zero  leak_temp[1:asInt(ceil(gs_init/(gs_init*.9)))].=1 end #10% START AS LEAKERS
           for i = 1:ngroups
-          Random.seed!(seed+i+2+ngroups)
-            traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
+            leak_temp =zeros(gs_init[i])
+            leak_temp[1:asInt(ceil(gs_init[i]/2))].=1 #50% START AS LEAKERS
+            if zero  leak_temp[1:asInt(ceil(gs_init[i]/(gs_init[i]*.9)))].=1 end #10% START AS LEAKERS
+            Random.seed!(seed+i+2+ngroups)
+            traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init[i])
           end
     # Setup punishment
     for i = 1:ngroups
       Random.seed!(seed+(i)+2+(ngroups*2))
-      traits.punish_type2[agents.gid.==i] = rand(Beta(1, (1/.1-1)), gs_init) # the denominator in the beta term determines the mean
+      traits.punish_type2[agents.gid.==i] = rand(Beta(1, (1/.1-1)), gs_init[i]) # the denominator in the beta term determines the mean
       Random.seed!(seed+(i*2)+2+(ngroups*2))
-      traits.punish_type[agents.gid.==i] = rand(Beta(1, (1/.1-1)), gs_init) # the denominator in the beta term determines the mean
+      traits.punish_type[agents.gid.==i] = rand(Beta(1, (1/.1-1)), gs_init[i]) # the denominator in the beta term determines the mean
     end
     #Setup Harvest Limit
     Random.seed!(seed+2)
     temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
     for i in 1:ngroups
       Random.seed!(seed+i+2)
-      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], harvest_var_ind), gs_init))
+      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], harvest_var_ind), gs_init[i]))
     end
     # Fines
     if fine_start != nothing
@@ -309,13 +323,13 @@ function cpr_abm(
       temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
       for i in 1:ngroups
         Random.seed!(seed+i+20)
-        traits.fines1[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
+        traits.fines1[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init[i]))
       end
       Random.seed!(seed+21)
       temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
       for i in 1:ngroups
         Random.seed!(seed+i+21)
-        traits.fines2[agents.gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
+        traits.fines2[agents.gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init[i]))
       end
     end
     # Outgroup learn
@@ -342,11 +356,20 @@ function cpr_abm(
       def = zeros(ngroups)
       for i in 1:ngroups
          if def_perc==true
-            groups.def[i] = gs_init/defensibility
+            groups.def[i] = gs_init[i]/defensibility
           else
             groups.def[i] =defensibility
           end
         end
+    # Build in heterogentiy - fed in through data - 
+    if nsim == 1
+      if length(labor) == 1 labor = fill(labor, ngroups) end
+      if length(tech) == 1 tech = fill(tech, ngroups) end
+      if length(degrade) == 1 degrade = fill(degrade, ngroups) end
+      if length(wages) == 1 wages = fill(wages, ngroups) end
+      if length(labor) == ngroups labor= labor[agents.gid] end
+      if length(wages) == ngroups wages= wages[agents.gid] end
+    end
 
     if verbose ==true println(string("Sim: ", sim, ", Initiation: COMPLETED ")) end
 
@@ -432,7 +455,7 @@ function cpr_abm(
           GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
           HG=GetIndvHarvest(GH, temp_effort, loc, necessity, ngroups)
         else
-          HG=GetHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups)
+          HG=GetHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups, agents)
           GH=reportSum(HG, loc, ngroups)
         end
       else
@@ -440,7 +463,7 @@ function cpr_abm(
           GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
           HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
         else
-          HG=GetHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, necessity, ngroups)
+          HG=GetHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, necessity, ngroups, agents)
           GH=reportSum(HG, loc, ngroups)
         end
       end
@@ -494,7 +517,7 @@ function cpr_abm(
 
 
       #Wage Labor Market
-      WL = wages*effort[:,1] #*tech
+      WL = wages[agents.gid].*effort[:,1] #*tech
       
       if indvLearn == true
         if year == 1
