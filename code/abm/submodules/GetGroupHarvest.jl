@@ -3,10 +3,7 @@
        b = zeros(ngroups)
        X =zeros(ngroups)
        for i in 1:ngroups
-         b[i]=cdf.(Beta(degrade[1], degrade[2]), K[i]/maximum(kmax))
-       end
-       for i in 1:ngroups
-         X[i] =tech*((sum(effort[loc .== i])^labor)*b[i])
+         X[i] =tech[i]*((sum(effort[loc .== i])^labor[i])*K[i]^degrade[i])
        end
        return(X)
       end
