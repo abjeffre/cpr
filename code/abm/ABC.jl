@@ -45,9 +45,12 @@ ALPHA=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_alph
 BETA=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_beta.csv"))[:,2:end]
 TECH=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_tech.csv"))[:,2:end]
 WAGE =DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_wage.csv"))[:,2:end]
-FOREST = DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_forest_2017.csv"))[:,2]
-LAND = DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_land_total.csv"))[:,2]
+FOREST = DataFrame(CSV.File("cpr/data/abc_priors_forest_2017.csv"))[:,2]
+LAND = DataFrame(CSV.File("cpr/data/abc_priors_land_total.csv"))[:,2]
 POP = DataFrame(CSV.File("C:/users/jeffr/OneDrive/Documents/forests/data/raw/wards_households2.csv"))
+
+
+
 
 
 # Rearrange Pop
@@ -55,45 +58,45 @@ POP[:,1]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:2
 POP[:,2]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:24]),2];
 
 
-nsamples = 1000
+nsample = 1000
 # Derive appropiate scales
 GSIZE=Int.(round.(POP[:,2]/10))
 # Using Population for each group - sample an appropiate number of ALPHA, WAGE priors
 labor_data=reduce(vcat, [sample(ALPHA[:,i], GSIZE[i])  for i in 1:24])
 # Labor  means
 # Note that Wage just has a single prior for the whole model as we are doing a first pass calibration
-# wage_prior=sample( reduce(vcat, Vector.(eachrow(WAGE))) , nsamples) 
+# wage_prior=sample( reduce(vcat, Vector.(eachrow(WAGE))) , nsample) 
 # wage_prior=reduce(vcat, [sample(WAGE[:,i], GSIZE[i])  for i in 1:24])
-# wage_prior = [reduce(vcat, WAGE[sample(1:nrow(WAGE)),:]) for i in 1:nsamples]
-# fill(median.(eachcol(WAGE)), nsamples)
+# wage_prior = [reduce(vcat, WAGE[sample(1:nrow(WAGE)),:]) for i in 1:nsample]
+# fill(median.(eachcol(WAGE)), nsample)
 
-#  wage_prior = [reduce(vcat, wage_prior[i,:]) for i in 1:nsamples]
-# wage_prior=rand(Gamma(3,.3), nsamples) 
+#  wage_prior = [reduce(vcat, wage_prior[i,:]) for i in 1:nsample]
+# wage_prior=rand(Gamma(3,.3), nsample) 
 
  # EACH SHEHIA WITH ITS OWN UNIQUE WAGE
 density(wage_prior)
-# wage_prior=WAGE[sample(1:nrow(WAGE), nsamples),:]
+# wage_prior=WAGE[sample(1:nrow(WAGE), nsample),:]
 LAND_prior=LAND./mean(LAND)
 
 # Parameters to Estimate
-regrow_prior = rand(Gamma(3, .0075), nsamples)
-density(regrow_prior)
-α_prior = rand(Gamma(5, .06), nsamples)
-density(α_prior)
-travel_cost_prior  = rand(Gamma(5, .007), nsamples)
-density(travel_cost_prior)
+regrow_prior = rand(Gamma(3, .0075), nsample)
+# density(regrow_prior)
+α_prior = rand(Gamma(5, .06), nsample)
+# density(α_prior)
+travel_cost_prior  = rand(Gamma(5, .007), nsample)
+# density(travel_cost_prior)
 
 
-S=Matrix(undef, nsamples, 9)
+S=Matrix(undef, nsample, 9)
 S[:,1] = regrow_prior
 S[:,2] = α_prior 
 S[:,3] = travel_cost_prior
 S[:,4] = wage_prior
-S[:,5] = fill(LAND_prior, nsamples)
-S[:,6] = fill(GSIZE, nsamples)
-S[:,7] =  fill(median.(eachcol(BETA)), nsamples)
-S[:,8] =  fill(median.(eachcol(TECH)), nsamples)
-S[:,9] = fill(median.(eachcol(ALPHA)), nsamples)
+S[:,5] = fill(LAND_prior, nsample)
+S[:,6] = fill(GSIZE, nsample)
+S[:,7] =  fill(median.(eachcol(BETA)), nsample)
+S[:,8] =  fill(median.(eachcol(TECH)), nsample)
+S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
 
 @everywhere function g(
     regrow_prior, 
@@ -139,27 +142,30 @@ using JLD2
 # Save the output
 jldsave("test_ABC.JDL2"; a)
 
+
+# a=load("cpr/data/abm/test_ABC.JDL2")
+a=a["a"]
 # Load in data for KL divergence tests
-e=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_data_effort_firewood.csv"))[:,2:end]
-deforest_data =DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_data_deforesation.csv"))[:,2:end]
-ward_id =DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/ward_id.csv"))[:,2:end]
+e=DataFrame(CSV.File("cpr/data/abc_data_effort_firewood.csv"))[:,2:end]
+deforest_data =DataFrame(CSV.File("cpr/data/abc_data_deforesation.csv"))[:,2:end]
+ward_id =DataFrame(CSV.File("cpr/data/ward_id.csv"))[:,2:end]
 
 
 # Calculate Deforesation rate for all sets
-deforesation_rate=[[(a[i][:stock][k,:,1].+.0001 .-a[i][:stock][k-1,:,1].+ .0001)./(a[i][:stock][k-1,:,1].+.0001) for k in 2:400 ] for i in 1:nsamples]
+deforesation_rate=[[(a[i][:stock][k,:,1].+.0001 .-a[i][:stock][k-1,:,1].+ .0001)./(a[i][:stock][k-1,:,1].+.0001) for k in 2:400 ] for i in 1:nsample]
 # Identify cluster of points when the average stock intersects with .16
-closest_stock_match=[findmin([abs(mean(a[i][:stock][k,:,1]).-.16) for k in 2:400 ])[2] for i in 1:nsamples]
+closest_stock_match=[findmin([abs(mean(a[i][:stock][k,:,1]).-.16) for k in 2:400 ])[2] for i in 1:nsample]
 # Get KL of stock level
-KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,:,1]).+.001) for k in 2:400] for i in 1:nsamples]
+KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,:,1]).+.001) for k in 2:400] for i in 1:nsample]
 # Get KL of deforestation Rate
-KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k].+1.1) for k in 1:399] for i in 1:nsamples]
+KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k].+1.1) for k in 1:399] for i in 1:nsample]
 # get KL of effort
 # This one does not use the exact group information
- KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:400] for i in 1:nsamples]
+KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:400] for i in 1:nsample]
 # This one uses exactly the right information from each shehia!
 # BUT IT TAKES A DAMN LONG TIME!
 # KL_effort = []
-# for i in 1:nsamples 
+# for i in 1:nsample 
 #     temp = []
 #     for k in 2:400
 #         # We want to make a vector that matches up people to exactly the correct shehia
@@ -174,8 +180,11 @@ KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k
 # end
 
 # Construct Fronts for all simulations
-output = ones(nsamples, 3)
-for j in 1:nsamples
+moving_average(vs,n) = [sum(@view vs[i:(i+n-1)])/n for i in 1:(length(vs)-(n-1))]
+output = ones(nsample, 3)
+output_moving = ones(nsample, 3)
+output_plots = []
+for j in 1:nsample
     arr= [KL_effort[j] KL_deforest_rate[j] KL_stock_levels[j]]
     # Note that the best KL are those closes to zero!
     # Thus you need to reorder these
@@ -187,14 +196,25 @@ for j in 1:nsamples
     n = size(arr)[1]
     fronts=nds4(arr);
     frontrank =zeros(n);
+    frontrank_moving =zeros(n);
     for i in 1:length(fronts)
         frontrank[fronts[i]] .= i
+        frontrank_moving=moving_average(frontrank, 1)
     end
     output[j,:] =mean(arr[fronts[1], :], dims = 1)
+    output_moving[j,:] =mean(arr[frontrank_moving .>2, :], dims = 1)
+    push!(output_plots, plot(frontrank))
 end
 
-
 best=nds4(output)[1]
+best=nds4(output_moving)[1]
+
+
+using Dates
+time_stamp = now()
+time_stamp=replace(string(time_stamp), "." => "_")
+string("best_", time_stamp, ".JLD2")
+sa
 
 # Plot 
 regrowth=density(S[best,1])
