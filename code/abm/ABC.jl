@@ -11,6 +11,9 @@ using StaticArrays
 using CategoricalArrays
 using Distributions
 using StatsPlots
+using Dates
+using GLM
+using OnlineStats
 # Non-dominance sorting algorthim
 
 
@@ -38,54 +41,59 @@ function nds4(arr)
     return fronts
 end
 
+function normalize(X)
+    dt = fit(UnitRangeTransform, X)
+    StatsBase.transform(dt, X)
+end
 
+########################################
+############ LOAD DATA #################
    
-SHEHIA=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_shehia.csv"))[:,2]
-ALPHA=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_alpha.csv"))[:,2:end]
-BETA=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_beta.csv"))[:,2:end]
-TECH=DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_tech.csv"))[:,2:end]
-WAGE =DataFrame(CSV.File("C:/users/jeffr/Documents/work/cpr/data/abc_priors_wage.csv"))[:,2:end]
+SHEHIA=DataFrame(CSV.File("cpr/data/abc_priors_shehia.csv"))[:,2]
+ALPHA=DataFrame(CSV.File("cpr/data/abc_priors_alpha.csv"))[:,2:end]
+BETA=DataFrame(CSV.File("cpr/data/abc_priors_beta.csv"))[:,2:end]
+TECH=DataFrame(CSV.File("cpr/data/abc_priors_tech.csv"))[:,2:end]
+WAGE =DataFrame(CSV.File("cpr/data/abc_priors_wage.csv"))[:,2:end]
 FOREST = DataFrame(CSV.File("cpr/data/abc_priors_forest_2017.csv"))[:,2]
 LAND = DataFrame(CSV.File("cpr/data/abc_priors_land_total.csv"))[:,2]
-POP = DataFrame(CSV.File("C:/users/jeffr/OneDrive/Documents/forests/data/raw/wards_households2.csv"))
+POP = DataFrame(CSV.File("cpr/data/wards_households2.csv"))
+e=DataFrame(CSV.File("cpr/data/abc_data_effort_firewood.csv"))[:,2:end]
+deforest_data =DataFrame(CSV.File("cpr/data/abc_data_deforesation.csv"))[:,2:end]
+ward_id =DataFrame(CSV.File("cpr/data/ward_id.csv"))[:,2:end]
 
-
-
-
+######################################
+############ GENERATE PRIORS #########
+nsample = 4000
 
 # Rearrange Pop
 POP[:,1]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:24]),1];
 POP[:,2]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:24]),2];
-
-
-nsample = 1000
 # Derive appropiate scales
 GSIZE=Int.(round.(POP[:,2]/10))
 # Using Population for each group - sample an appropiate number of ALPHA, WAGE priors
 labor_data=reduce(vcat, [sample(ALPHA[:,i], GSIZE[i])  for i in 1:24])
 # Labor  means
 # Note that Wage just has a single prior for the whole model as we are doing a first pass calibration
-# wage_prior=sample( reduce(vcat, Vector.(eachrow(WAGE))) , nsample) 
+wage_prior=sample( reduce(vcat, Vector.(eachrow(WAGE))) , nsample) 
 # wage_prior=reduce(vcat, [sample(WAGE[:,i], GSIZE[i])  for i in 1:24])
 # wage_prior = [reduce(vcat, WAGE[sample(1:nrow(WAGE)),:]) for i in 1:nsample]
 # fill(median.(eachcol(WAGE)), nsample)
-
 #  wage_prior = [reduce(vcat, wage_prior[i,:]) for i in 1:nsample]
 # wage_prior=rand(Gamma(3,.3), nsample) 
-
  # EACH SHEHIA WITH ITS OWN UNIQUE WAGE
 density(wage_prior)
 # wage_prior=WAGE[sample(1:nrow(WAGE), nsample),:]
 LAND_prior=LAND./mean(LAND)
-
 # Parameters to Estimate
 regrow_prior = rand(Gamma(3, .0075), nsample)
 # density(regrow_prior)
 α_prior = rand(Gamma(5, .06), nsample)
 # density(α_prior)
-travel_cost_prior  = rand(Gamma(5, .007), nsample)
+travel_cost_prior  = rand(Gamma(4, .02), nsample)
 # density(travel_cost_prior)
 
+#############################################################
+######### COMPILE MATRIX FOR DISTRIBUTED PROCESSSING ########
 
 S=Matrix(undef, nsample, 9)
 S[:,1] = regrow_prior
@@ -97,6 +105,9 @@ S[:,6] = fill(GSIZE, nsample)
 S[:,7] =  fill(median.(eachcol(BETA)), nsample)
 S[:,8] =  fill(median.(eachcol(TECH)), nsample)
 S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
+
+###########################################################
+################# DETERMINE FUNCTION ######################
 
 @everywhere function g(
     regrow_prior, 
@@ -140,21 +151,13 @@ end
 a=pmap(g, S[:,1],S[:,2],S[:,3],S[:,4],S[:,5],S[:,6],S[:,7],S[:,8],S[:,9])
 using JLD2
 # Save the output
-jldsave("test_ABC.JDL2"; a)
+# jldsave("test_ABC.JDL2"; a)
 
 
-# a=load("cpr/data/abm/test_ABC.JDL2")
-a=a["a"]
-# Load in data for KL divergence tests
-e=DataFrame(CSV.File("cpr/data/abc_data_effort_firewood.csv"))[:,2:end]
-deforest_data =DataFrame(CSV.File("cpr/data/abc_data_deforesation.csv"))[:,2:end]
-ward_id =DataFrame(CSV.File("cpr/data/ward_id.csv"))[:,2:end]
-
-
+#####################################################
+############## GENERATE KL divergences ##############
 # Calculate Deforesation rate for all sets
 deforesation_rate=[[(a[i][:stock][k,:,1].+.0001 .-a[i][:stock][k-1,:,1].+ .0001)./(a[i][:stock][k-1,:,1].+.0001) for k in 2:400 ] for i in 1:nsample]
-# Identify cluster of points when the average stock intersects with .16
-closest_stock_match=[findmin([abs(mean(a[i][:stock][k,:,1]).-.16) for k in 2:400 ])[2] for i in 1:nsample]
 # Get KL of stock level
 KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,:,1]).+.001) for k in 2:400] for i in 1:nsample]
 # Get KL of deforestation Rate
@@ -162,6 +165,16 @@ KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k
 # get KL of effort
 # This one does not use the exact group information
 KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:400] for i in 1:nsample]
+
+#####################################
+######## SAVE THE OUTPUT ############
+time_stamp = now()
+time_stamp=replace(string(time_stamp), "." => "_")
+time_stamp=replace(string(time_stamp), ":" => "_")
+time_stamp=replace(string(time_stamp), "-" => "_")
+filename=string("cpr/data/KL_", time_stamp, ".JLD2")
+jldsave(filename; KL_effort, KL_stock_levels, KL_deforest_rate, deforesation_rate, S)
+
 # This one uses exactly the right information from each shehia!
 # BUT IT TAKES A DAMN LONG TIME!
 # KL_effort = []
@@ -178,79 +191,3 @@ KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,
 #     end
 #     push!(KL_effort, temp)
 # end
-
-# Construct Fronts for all simulations
-moving_average(vs,n) = [sum(@view vs[i:(i+n-1)])/n for i in 1:(length(vs)-(n-1))]
-output = ones(nsample, 3)
-output_moving = ones(nsample, 3)
-output_plots = []
-for j in 1:nsample
-    arr= [KL_effort[j] KL_deforest_rate[j] KL_stock_levels[j]]
-    # Note that the best KL are those closes to zero!
-    # Thus you need to reorder these
-    for i in 1:size(arr)[2]
-        tempx=abs.(0 .-arr[:,i])
-        maxx = findmax(tempx)[1]
-        arr[:,i]= -(tempx) # Mpte that this just has to become postiive!
-    end
-    n = size(arr)[1]
-    fronts=nds4(arr);
-    frontrank =zeros(n);
-    frontrank_moving =zeros(n);
-    for i in 1:length(fronts)
-        frontrank[fronts[i]] .= i
-        frontrank_moving=moving_average(frontrank, 1)
-    end
-    output[j,:] =mean(arr[fronts[1], :], dims = 1)
-    output_moving[j,:] =mean(arr[frontrank_moving .>2, :], dims = 1)
-    push!(output_plots, plot(frontrank))
-end
-
-best=nds4(output)[1]
-best=nds4(output_moving)[1]
-
-
-using Dates
-time_stamp = now()
-time_stamp=replace(string(time_stamp), "." => "_")
-string("best_", time_stamp, ".JLD2")
-sa
-
-# Plot 
-regrowth=density(S[best,1])
-density!(S[:,1])
-value =density(S[best,2])
-density!(S[:,2])
-travel_cost=density(S[best,3])
-density!(S[:,3])
-wage = density(S[:,4], c = :orange, alpha = .01)
-density!(S[best,4], alpha  = 1, c =:blue)
-
-plot(regrowth, value, travel_cost, wage)
-
-
-# We know know that the way that leakage opperates is that it provides money to people 
-# in accord to how well preserved the environment is. 
-# thus we need to modify a the payoff-scheme to have a direct payoff function of XXX for 
-# best preserved forests. 
-# thus the payoff function needs + carbon_price * b
-
-
-# Now we need to score each model along a set of criteria.
-# First we can use the amount of remaining forested land from
-# the data to set a target around which we will grab data points
-# take the aggregate level of forest remaining for example 20% of the total.
-# Find the point at which the ABM data is approximately 20% of the total.
-
-# Check one 
-# Get the deforesation rates for each group around this point.
-# This then will become the first sythetic data which we compare with read data.
-
-# Check two 
-# Pull out the effort allocations and check these against the data. 
-
-# Check Three
-# Pull out the amount of leakage in each area.
-# Calculate the scores as to how much locals blame neightboors, and other pembans.
-
-# Calculate the KL divergence for each. 

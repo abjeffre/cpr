@@ -362,14 +362,14 @@ function cpr_abm(
           end
         end
     # Build in heterogentiy - fed in through data - 
-    if nsim == 1
+    # nsim == 1
       if length(labor) == 1 labor = fill(labor, ngroups) end
       if length(tech) == 1 tech = fill(tech, ngroups) end
       if length(degrade) == 1 degrade = fill(degrade, ngroups) end
       if length(wages) == 1 wages = fill(wages, ngroups) end
       if length(labor) == ngroups labor= labor[agents.gid] end
       if length(wages) == ngroups wages= wages[agents.gid] end
-    end
+    #end
 
     if verbose ==true println(string("Sim: ", sim, ", Initiation: COMPLETED ")) end
 
