@@ -63,7 +63,7 @@ ward_id =DataFrame(CSV.File("cpr/data/ward_id.csv"))[:,2:end]
 
 ######################################
 ############ GENERATE PRIORS #########
-nsample = 4000
+nsample = 1000
 
 # Rearrange Pop
 POP[:,1]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:24]),1];
@@ -132,7 +132,7 @@ S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
                 α = α_prior,                
                 # Model Settings                
                 n = 100*24,
-                nrounds = 400,
+                nrounds = 600,
                 ngroups = 24, 
                 lattice = [6, 4], 
                 pun1_on = false,
@@ -157,14 +157,14 @@ using JLD2
 #####################################################
 ############## GENERATE KL divergences ##############
 # Calculate Deforesation rate for all sets
-deforesation_rate=[[(a[i][:stock][k,:,1].+.0001 .-a[i][:stock][k-1,:,1].+ .0001)./(a[i][:stock][k-1,:,1].+.0001) for k in 2:400 ] for i in 1:nsample]
+deforesation_rate=[[(a[i][:stock][k,:,1].+.0001 .-a[i][:stock][k-1,:,1].+ .0001)./(a[i][:stock][k-1,:,1].+.0001) for k in 2:600 ] for i in 1:nsample]
 # Get KL of stock level
-KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,:,1]).+.001) for k in 2:400] for i in 1:nsample]
+KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,:,1]).+.001) for k in 2:600] for i in 1:nsample]
 # Get KL of deforestation Rate
-KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k].+1.1) for k in 1:399] for i in 1:nsample]
+KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k].+1.1) for k in 1:599] for i in 1:nsample]
 # get KL of effort
 # This one does not use the exact group information
-KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:400] for i in 1:nsample]
+KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:600] for i in 1:nsample]
 
 #####################################
 ######## SAVE THE OUTPUT ############
@@ -180,7 +180,7 @@ jldsave(filename; KL_effort, KL_stock_levels, KL_deforest_rate, deforesation_rat
 # KL_effort = []
 # for i in 1:nsample 
 #     temp = []
-#     for k in 2:400
+#     for k in 2:600
 #         # We want to make a vector that matches up people to exactly the correct shehia
 #         e_synth=ones(size(e)[1])
 #         for j in 1:24

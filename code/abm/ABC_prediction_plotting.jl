@@ -15,7 +15,8 @@ for k in 1:nsim
     for i in 1:400
         df=DataFrame(:effort => Float64.(a[:effortfull][i, :, k]),
                 :theft => theft[i][Int.(a[:gid][:,1])][:,1],
-                :stock => LAND[Int.(a[:gid][:,1])][:,1],
+                :stock => (LAND_prior.*a[:stock][i,:,k])[Int.(a[:gid][:,1])][:,1],
+                #:stock => LAND[Int.(a[:gid][:,1])][:,1],
                 :pop => POP[:, 2][Int.(a[:gid][:,1])][:,1])
         fm = @formula(effort ~ theft + stock + pop) 
 #       fm = @formula(effort ~ theft) 
@@ -46,10 +47,10 @@ for k in 1:nsim
     for i in 1:400
         df=DataFrame(:leak => Float64.(a[:leakfull][i, :, k]),
                 :theft => theft[i][Int.(a[:gid][:,1])][:,1],
-                :stock => LAND[Int.(a[:gid][:,1])][:,1],
+                :stock => (LAND_prior.*a[:stock][i,:,k])[Int.(a[:gid][:,1])][:,1],
                 :pop => POP[:, 2][Int.(a[:gid][:,1])][:,1])
         fm = @formula(leak ~ theft + stock + pop) 
-        m1=lm(fm, df)
+        m1=glm(fm, df, Binomial(), LogitLink())
         typeof(m1)
         coefs[i,:]=coef(m1)
     end

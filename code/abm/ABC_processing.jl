@@ -23,7 +23,7 @@ WAGE =DataFrame(CSV.File("cpr/data/abc_priors_wage.csv"))[:,2:end]
 FOREST = DataFrame(CSV.File("cpr/data/abc_priors_forest_2017.csv"))[:,2]
 LAND = DataFrame(CSV.File("cpr/data/abc_priors_land_total.csv"))[:,2]
 POP = DataFrame(CSV.File("cpr/data/wards_households2.csv"))
-KL=load("cpr/data/KL_2022_12_07T11_17_23_315.JLD2")
+KL=load("cpr/data//KL_2022_12_08T11_49_00_074.JLD2")
 #Assign Data
 KL_effort = KL["KL_effort"]
 KL_deforest_rate = KL["KL_deforest_rate"]
@@ -97,3 +97,4 @@ end
 best=nds4(output)[1]
 best_moving=nds4(output_moving)[1]
 
+savefig()
