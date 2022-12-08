@@ -12,9 +12,11 @@ using GLM
 using DataFrames
 using JLD2
 using StatsBase
-using StatisticalRethinking
+
 
 # Load data
+# pwd()
+
 SHEHIA=DataFrame(CSV.File("cpr/data/abc_priors_shehia.csv"))[:,2]
 ALPHA=DataFrame(CSV.File("cpr/data/abc_priors_alpha.csv"))[:,2:end]
 BETA=DataFrame(CSV.File("cpr/data/abc_priors_beta.csv"))[:,2:end]
@@ -97,4 +99,3 @@ end
 best=nds4(output)[1]
 best_moving=nds4(output_moving)[1]
 
-savefig()

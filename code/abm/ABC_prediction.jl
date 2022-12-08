@@ -8,59 +8,87 @@
 # The second predicts the relationship between the intesity of leakage in and leakage out given population size, and forest size.
 # The coefficents from these estimates are then plotted on a scatter plot, to show the range of expectations given the data generating PROCESS
 
+
+# Make parallel
+
+function cpr_par(nsim, priors = priors)
+    nprocs() == 1 ? addprocs(29) : printl("Please stop this should only be done when one core active before begining") 
+    include("C:/Users/jeffr/Documents/Work/cpr/code/abm/initalize_home.jl")
+    
+    function sims(priors)  
+        cpr_abm(    # Data
+        tech = priors[:tech],
+        degrade = priors[:beta],
+        kmax_data = 1000000 .*priors[:land],
+        population_data = priors[:gsize],
+        labor = priors[:labor], 
+        # Priors
+        regrow = priors[:regrow],
+        travel_cost = priors[:travel_cost],
+        wages = priors[:wage],
+        α = priors[:iota],                
+        # Model Settings                
+        n = 100*24,
+        nrounds = 600,
+        ngroups = 24, 
+        lattice = [6, 4], 
+        pun1_on = false,
+        pun2_on = false,
+        leak = true,
+        full_save = true,
+        social_learning = true,
+        fidelity = .2,        
+        distance_adj = .1,
+        groups_sampled = 23,
+        mutation = .03,
+        zero = true,
+        nsim = 1
+        )
+    end
+    S=fill(priors, nsim)
+    output=pmap(sims, S[:])
+    return(output)
+    rmprocs(29)
+end
+
+
 include("ABC_processing.jl")
 
-regrowth_prior_round2=median(S[best_moving, 1])
-alpha_prior_round2=median(S[best_moving, 2])
-travel_prior_round2=median(S[best_moving, 3])
-wage_prior_round2=median(S[best_moving, 4])
-S[:,6] = fill(GSIZE, nsample)
-S[:,7] =  fill(median.(eachcol(BETA)), nsample)
-S[:,8] =  fill(median.(eachcol(TECH)), nsample)
-S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
+###################################
+####### WRITE OUT PRIORS ##########
+
+priors = Dict(
+:regrow=>median(S[best_moving, 1]),
+:iota=>median(S[best_moving, 2]),
+:travel_cost=>median(S[best_moving, 3]),
+:wage => median(S[best_moving, 4]),
+:gsize=>Int.(round.(POP[:,2]/10)),
+:land => LAND./mean(LAND),
+:beta =>  median.(eachcol(BETA)),
+:tech =>  median.(eachcol(TECH)),
+:labor  => median.(eachcol(ALPHA))) 
 
 
-a=cpr_abm(    # Data
-tech = median.(eachcol(TECH)),
-degrade = median.(eachcol(BETA)),
-kmax_data = 1000000 .*LAND_prior,
-population_data = GSIZE,
-labor = median.(eachcol(ALPHA)), 
-# Priors
-regrow = regrowth_prior_round2,
-travel_cost = travel_prior_round2,
-wages = wage_prior_round2,
-α = alpha_prior_round2,                
-# Model Settings                
-n = 100*24,
-nrounds = 400,
-ngroups = 24, 
-lattice = [6, 4], 
-pun1_on = false,
-pun2_on = false,
-leak = true,
-full_save = true,
-social_learning = true,
-fidelity = .2,        
-distance_adj = .1,
-groups_sampled = 8,
-mutation = .03,
-zero = true,
-nsim = 100
-)
+a=cpr_par(nsim, priors)
+
+
+
+
 
 jldsave("post_abc_predictive_sims.JLD2"; a)
 loaded=load("post_abc_predictive_sims.JLD2")
 a=loaded["a"]
+deforest_data =DataFrame(CSV.File("cpr/data/abc_data_deforesation.csv"))[:,2:end]
+e=DataFrame(CSV.File("cpr/data/abc_data_effort_firewood.csv"))[:,2:end]
 
-deforesation_rate=[[(a[:stock][k,:,i].+.0001 .-a[:stock][k-1,:,i].+ .0001)./(a[:stock][k-1,:,i].+.0001) for k in 2:400 ] for i in 1:100]
+deforesation_rate=[[(a[i][:stock][k,:,1].+.0001 .-a[i][:stock][k-1,:,1].+ .0001)./(a[i][:stock][k-1,:,1].+.0001) for k in 2:600 ] for i in 1:100]
 # Get KL of stock level
-KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[:stock][k,:,i]).+.001) for k in 2:400] for i in 1:100]
+KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,:,1]).+.001) for k in 2:600] for i in 1:100]
 # Get KL of deforestation Rate
-KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k].+1.1) for k in 1:399] for i in 1:100]
+KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k].+1.1) for k in 1:599] for i in 1:100]
 # get KL of effort
 # This one does not use the exact group information
-KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[:effortfull][k,:,i], size(e)[1])).+ .0001) for k in 2:400] for i in 1:100]
+KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:600] for i in 1:100]
 
 
 font_out = []

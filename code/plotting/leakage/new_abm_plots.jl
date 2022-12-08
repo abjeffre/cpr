@@ -30,7 +30,7 @@ for i in 1:50
     out2[i]=mean(mean(out[i][:punish][800:1000,2,:], dims =2))
 end
 out2
-borders2 =plot(out2, ylim = (-0.02, 1), label = false, c = :black, ylab = "Borders", xlab = "Leakage", axis = nothing, left_margin = 5mm)
+borders2 =plot(out2, ylim = (-0.02, 1), label = false, c = :black, ylab = "Borders", xlab = "Primary Leakage", axis = nothing, left_margin = 5mm)
 
 ###################################
 ######## BORDERS CYLICAL ##########
@@ -50,7 +50,7 @@ function smooth(x, α = .5)
 end
 
 
-borders_cylical=plot(smooth(a[:leakage][10000:20000,2,1], .997), axis = nothing, ylab = "Trait value", xlab = "Time", 
+borders_cyclical=plot(smooth(a[:leakage][10000:20000,2,1], .997), axis = nothing, ylab = "Trait value", xlab = "Time", 
 left_margin = 5mm, c= :black, w =1, label = "")
 annotate!(9000, .33, text("x", :red, :left, 10))
 
@@ -77,7 +77,7 @@ out3 = zeros(50)
 for i in 1:50
     out3[i]=mean(mean(fun[i][:punish2][800:1000,2,:], dims =2))
 end
-self_regulation2 =plot(out3, ylim = (0, 1), label = false, c = :black, xlab = "Leakage", ylab = "Self-Regulation", axis = nothing, left_margin = 5mm)
+self_regulation2 =plot(out3, ylim = (0, 1), label = false, c = :black, xlab = "Primary Leakage", ylab = "Self-Regulation", axis = nothing, left_margin = 5mm)
 #save("example.jld2", a)
 
 # to do 

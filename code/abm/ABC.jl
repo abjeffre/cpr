@@ -63,7 +63,7 @@ ward_id =DataFrame(CSV.File("cpr/data/ward_id.csv"))[:,2:end]
 
 ######################################
 ############ GENERATE PRIORS #########
-nsample = 1000
+nsample = 3000
 
 # Rearrange Pop
 POP[:,1]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:24]),1];
@@ -89,7 +89,7 @@ regrow_prior = rand(Gamma(3, .0075), nsample)
 # density(regrow_prior)
 α_prior = rand(Gamma(5, .06), nsample)
 # density(α_prior)
-travel_cost_prior  = rand(Gamma(4, .02), nsample)
+travel_cost_prior  = rand(Gamma(4, .01), nsample)
 # density(travel_cost_prior)
 
 #############################################################
@@ -142,7 +142,7 @@ S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
                 social_learning = true,
                 fidelity = .2,        
                 distance_adj = .1,
-                groups_sampled = 8,
+                groups_sampled = 23,
                 mutation = .03,
                 zero = true,
                 )
