@@ -52,7 +52,7 @@ function cpr_abm(
   price = 1.0,                      # This sets the price of the resource on the market
   ngoods = 2,                     # Specifiies the number of sectors
   necessity = 0,                  # This sets the minimum amount of the good the household requires
-  monitor_tech = [1,1],           # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
+  monitor_tech = 1,           # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
   defensibility = 1,              # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
   def_perc = true,                # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
   punish_cost = 0.1,              # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
@@ -533,8 +533,8 @@ function cpr_abm(
       end
 
       #Calculate agents.payoffs
-      agents.payoff_round = (HG .*(1 .- caught_sum).*price).^α +
-       WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
+      agents.payoff_round = (HG .*(1 .- caught_sum).*price + SP1.*price + SP2.*price + FP1.*price + FP2.*price).^α +
+       WL -
       MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
       ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) -
        HG .*(caught2).*groups.fine2[agents.gid]

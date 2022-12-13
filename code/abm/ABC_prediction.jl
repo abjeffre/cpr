@@ -11,11 +11,14 @@
 
 # Make parallel
 
-function cpr_par(nsim, priors = priors)
-    nprocs() == 1 ? addprocs(29) : printl("Please stop this should only be done when one core active before begining") 
-    include("C:/Users/jeffr/Documents/Work/cpr/code/abm/initalize_home.jl")
+function cpr_par(nsim, ncores, priors = priors)
+    cores_current = nprocs()
+    cores_current >= ncores ? nothing : addprocs(ncores - current_cores)
+    # nprocs() == 1 ? addprocs(ncores) : println("Please stop this should only be done when one core active before begining") 
+    # include("C:/Users/jeffr/Documents/Work/cpr/code/abm/initalize_home.jl")
+    @everywhere include("cpr/code/abm/initalize_work.jl")
     
-    function sims(priors)  
+    @everywhere function sims(priors)  
         cpr_abm(    # Data
         tech = priors[:tech],
         degrade = priors[:beta],
@@ -48,20 +51,20 @@ function cpr_par(nsim, priors = priors)
     S=fill(priors, nsim)
     output=pmap(sims, S[:])
     return(output)
-    rmprocs(29)
+    rmprocs(1:(ncores - current_cores))
 end
 
 
-include("ABC_processing.jl")
+include("cpr/code/abm/ABC_processing.jl")
 
 ###################################
 ####### WRITE OUT PRIORS ##########
 
 priors = Dict(
-:regrow=>median(S[best_moving, 1]),
-:iota=>median(S[best_moving, 2]),
-:travel_cost=>median(S[best_moving, 3]),
-:wage => median(S[best_moving, 4]),
+:regrow=>median(S[best, 1]),
+:iota=>median(S[best, 2]),
+:travel_cost=>median(S[best, 3]),
+:wage => median(S[best, 4]),
 :gsize=>Int.(round.(POP[:,2]/10)),
 :land => LAND./mean(LAND),
 :beta =>  median.(eachcol(BETA)),
@@ -69,18 +72,16 @@ priors = Dict(
 :labor  => median.(eachcol(ALPHA))) 
 
 
-a=cpr_par(nsim, priors)
+a=cpr_par(100, 81, priors)
 
-
-
-
-
-jldsave("post_abc_predictive_sims.JLD2"; a)
+# Save output or load depending on where it was run!
+jldsave("post_abc_predictive_sims_punish.JLD2"; a)
 loaded=load("post_abc_predictive_sims.JLD2")
 a=loaded["a"]
 deforest_data =DataFrame(CSV.File("cpr/data/abc_data_deforesation.csv"))[:,2:end]
 e=DataFrame(CSV.File("cpr/data/abc_data_effort_firewood.csv"))[:,2:end]
 
+# Get new KL divergence scores!
 deforesation_rate=[[(a[i][:stock][k,:,1].+.0001 .-a[i][:stock][k-1,:,1].+ .0001)./(a[i][:stock][k-1,:,1].+.0001) for k in 2:600 ] for i in 1:100]
 # Get KL of stock level
 KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,:,1]).+.001) for k in 2:600] for i in 1:100]
@@ -90,6 +91,9 @@ KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k
 # This one does not use the exact group information
 KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:600] for i in 1:100]
 
+
+##################################################################
+########## THIS IS USED TO IDENTIFY THE BEST TIME STEPS ##########
 
 font_out = []
 for j in 1:100
@@ -102,7 +106,8 @@ for j in 1:100
         arr[:,i]= -(tempx) # Mpte that this just has to become postiive!
     end
     n = size(arr)[1]
-    fronts=nds4(arr);
+    # Remember here we only investigate stock levels
+    fronts=nds4(arr[:,2:3]);
     frontrank =zeros(n);
     frontrank_moving =zeros(n);
     for i in 1:length(fronts)
@@ -115,5 +120,5 @@ end
 
 out=reduce(vcat, font_out)
 out=out[out .> 50]
-hpdi_bounds=hpdi(out, alpha = .50)
+hpdi_bounds=hpdi(out, alpha = .05)
 

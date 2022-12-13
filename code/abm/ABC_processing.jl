@@ -25,7 +25,7 @@ WAGE =DataFrame(CSV.File("cpr/data/abc_priors_wage.csv"))[:,2:end]
 FOREST = DataFrame(CSV.File("cpr/data/abc_priors_forest_2017.csv"))[:,2]
 LAND = DataFrame(CSV.File("cpr/data/abc_priors_land_total.csv"))[:,2]
 POP = DataFrame(CSV.File("cpr/data/wards_households2.csv"))
-KL=load("cpr/data//KL_2022_12_08T11_49_00_074.JLD2")
+KL=load("cpr/data//KL_2022_12_08T19_58_33_911.JLD2")
 #Assign Data
 KL_effort = KL["KL_effort"]
 KL_deforest_rate = KL["KL_deforest_rate"]
@@ -73,6 +73,7 @@ end
 moving_average(vs,n) = [sum(@view vs[i:(i+n-1)])/n for i in 1:(length(vs)-(n-1))]
 output = ones(nsample, 3)
 output_moving = ones(nsample, 3)
+use_effort = false # For the time-step by time-step evaluation only score on deforesation and stock
 #output_plots = []
 for j in 1:nsample
     arr= [KL_effort[j] KL_deforest_rate[j] KL_stock_levels[j]]
@@ -84,7 +85,11 @@ for j in 1:nsample
         arr[:,i]= -(tempx) # Mpte that this just has to become postiive!
     end
     n = size(arr)[1]
-    fronts=nds4(arr);
+    if use_effort
+        fronts=nds4(arr);
+    else
+        fronts=nds4(arr[:,2:3])
+    end
     frontrank =zeros(n);
     frontrank_moving =zeros(n);
     for i in 1:length(fronts)

@@ -7,18 +7,18 @@ using Plots.PlotMeasures
 # Plot 
 regrowth=density(S[best,1], xlab = "r", label = nothing, yaxis = nothing, ylab = "Density");
 density!(S[:,1],label = nothing);
-vline!([median(S[best,1])], l = :dash, c = :red, label = nothing)
+vline!([median(S[best,1])], l = :dash, c = :red, label = nothing);
 value =density(S[best,2], xlab = "ι", label = nothing, yaxis = nothing);
 density!(S[:,2], label = nothing) ;
-vline!([median(S[best,2])], l = :dash, c = :red, label = nothing)
-travel_cost=density(S[best,3], xlab = "cₜ", label = nothing, yaxis = nothing, ylab = "Density");
+vline!([median(S[best,2])], l = :dash, c = :red, label = nothing);
+travel_cost=density(S[best,3], xlab = "cₜ", label = nothing, yaxis = nothing, ylab = nothing);
 density!(S[:,3], label = nothing);
-vline!([median(S[best,3])], l = :dash, c = :red, label = nothing)
-wage = density(S[best,4], alpha = 1, xlab = "w", label = nothing, yaxis = nothing) ;
+vline!([median(S[best,3])], l = :dash, c = :red, label = nothing);
+wage = density(S[best,4], alpha = 1, xlab = "w", label = nothing, yaxis = nothing);
 density!(S[:,4], alpha  = 1,  label = nothing);
-vline!([median(S[best,4])], l = :dash, c = :red, label = nothing)
+vline!([median(S[best,4])], l = :dash, c = :red, label = nothing);
 
-Plots.plot(regrowth, value, travel_cost, wage, left_margin = 15px)
+densities=Plots.plot(regrowth, value, travel_cost, wage, left_margin = 15px)
 savefig("cpr/Plots/ABC_densities.pdf")
 
 # GET 3d PLOTS
@@ -38,7 +38,8 @@ df.deforest=1 .-normalize(df.deforest)
 df.rankbin = ifelse.(frontrank.==1, :red, :blue)
 df.opacity = ifelse.(frontrank.==1, 1, .1)
 
-plot(df.effort, df.stock, df.deforest, seriestype = "scatter", label = nothing, camera = (50, 30), c = df.rankbin, alpha = df.opacity, ylab = "KL Stock", xlab = "KL effort", zlab = "KL Deforestatio Rate")
+nds = plot(df.effort, df.stock, df.deforest, seriestype = "scatter", 
+label = nothing, camera = (60, 20), c = df.rankbin, alpha = df.opacity, ylab = "KL Stock", xlab = "KL effort", zlab = "KL Deforestatio Rate")
 
 savefig("cpr/Plots/ABC_NDS.pdf")
 
