@@ -11,7 +11,7 @@ vline!([median(S[best,1])], l = :dash, c = :red, label = nothing);
 value =density(S[best,2], xlab = "ι", label = nothing, yaxis = nothing);
 density!(S[:,2], label = nothing) ;
 vline!([median(S[best,2])], l = :dash, c = :red, label = nothing);
-travel_cost=density(S[best,3], xlab = "cₜ", label = nothing, yaxis = nothing, ylab = nothing);
+travel_cost=density(S[best,3], xlab = "cₜ", label = nothing, yaxis = nothing, ylab = "");
 density!(S[:,3], label = nothing);
 vline!([median(S[best,3])], l = :dash, c = :red, label = nothing);
 wage = density(S[best,4], alpha = 1, xlab = "w", label = nothing, yaxis = nothing);

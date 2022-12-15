@@ -8,7 +8,7 @@ LAND_prior=LAND./mean(LAND)
 # get average leakage into a group at each time step 
 # Scatter that against effort
 nsim = 100
-nround = 600
+nround = 400
 output = zeros(nsim, nround)
 for k in 1:nsim 
     theft=[[mean((a[k][:loc][i,:,1].==j) .& (a[k][:gid][:,1].!=j)  ) for j in 1:24] for i in 1:nround] 
@@ -71,13 +71,29 @@ hline!([0], c=:grey, lw = 2, label = nothing)
 vspan!(leakage_plot, [hpdi_bounds], label = nothing, color = :grey, alpha = .3)
 
 
+
+
+
 ###########################################################
 ############## GENERATE STOCK PICTURE #####################
 stock_plot=plot()
 for i in 1:100
-    plot!(a[i][:stock][:,:,1], label = nothing, alpha =.01, color = :black)
+    plot!(a[i][:stock][1:400,:,1], label = nothing, alpha =.01, color = :black)
 end
 vspan!(stock_plot, [hpdi_bounds], label = nothing, color = :grey, alpha = .3, xlab = "Time step", ylab = "Prop Forest Remaining")
 
 plot(regrowth, value, travel_cost, wage, nds, stock_plot, effort_plot, leakage_plot, size = (1200, 600), titlelocation = :left, titlefontsize = 8, layout = grid(2,4), bottom_margin = 15px, left_margin = 15px, title = ["a." "b." "c." "d." "e." "f." "g." "h."])
 savefig("cpr/Plots/ABC.pdf")
+
+
+
+# LEAKAGE BY GROUP
+
+theft=[[mean((a[1][:loc][i,:,1].==j) .& (a[k][:gid][:,1].!=j)) for j in 1:24] for i in 1:nround] 
+
+output = zeros(24, nround)
+for i in 1:600
+    output[:,i] = theft[i]
+end
+
+mean(output, dims = 2)

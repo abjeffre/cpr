@@ -73,7 +73,7 @@ end
 moving_average(vs,n) = [sum(@view vs[i:(i+n-1)])/n for i in 1:(length(vs)-(n-1))]
 output = ones(nsample, 3)
 output_moving = ones(nsample, 3)
-use_effort = false # For the time-step by time-step evaluation only score on deforesation and stock
+use_effort = true # For the time-step by time-step evaluation only score on deforesation and stock
 #output_plots = []
 for j in 1:nsample
     arr= [KL_effort[j] KL_deforest_rate[j] KL_stock_levels[j]]
