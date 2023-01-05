@@ -1,8 +1,9 @@
 #################################
 ########## 
-setwd("C:/Users/jeff/OneDrive/Documents/")
-#setwd("C:/Users/jeffrey_andrews/OneDrive/Documents/")
-source("C:/Users/jeff/OneDrive/Documents/forests/data/dataframes/load_df.R")
+# setwd("C:/Users/jeff/OneDrive/Documents/")
+setwd("C:/Users/jeffrey_andrews/OneDrive/Documents/")
+# source("C:/Users/jeff/OneDrive/Documents/forests/data/dataframes/load_df.R")
+source("C:/Users/jeffrey_andrews/OneDrive/Documents/forests/data/dataframes/load_df.R")
 
 
 ##########################################
@@ -114,6 +115,7 @@ check <-c(21, 33, 149, 208, 228)
 df$pname[21] <- "ali abrahman ufunguo"
 df$pname[149] <- "mkubwa adnan abdalla"                  
 df$pname[208] <- "bizume khatib omar"                  
+df$pname[229] <- "khamis abdalla khamis"
 
 hhid = rep(NA, nrow(df))
 for(i in 1:nrow(df)){
@@ -121,6 +123,10 @@ for(i in 1:nrow(df)){
   hhid[i]=ind
   if(length(ind) >1) print(ind)
 }
+
+
+which(df$name == "khamis hassan khamis")
+which(df$pname == "khamis hassan khamis")
 
 # for the errors take the younger because one is father the other is son and we always chose the younger
  # or assa!
