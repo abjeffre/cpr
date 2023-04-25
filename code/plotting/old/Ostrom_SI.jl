@@ -17,14 +17,14 @@ using Distributed
 
 ######################## TRAVEL COSTS #########################################
 
-# Note here we increase the forest size to ensure it does collapse and is sustainaed at some non-zero equilibria
+# Note here we increase the forest size to ensure it does collapse and is sustainaed at some non-invasion equilibria
 out3 = []
 seq = collect(10:1:25)
 for i in seq
     b=cpr_abm(n = 75*2, max_forest = 2*201000, ngroups =2, nsim = 1, nrounds = 500,
     lattice = [1,2], harvest_limit = 7.5, regrow = .025, pun1_on = false, pun2_on = true, wages = 0.1,
     price = 1, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.1, labor = .7, zero = true, 
+    punish_cost = 0.1, labor = .7, invasion = true, 
     travel_cost = i, full_save = true, 
     learn_group_policy = true)
     push!(out3, b)
@@ -46,7 +46,7 @@ leakage3=[mean(out3[i][:leakage][250:500,2,1]) for i in 1:length(out3)]
 data_sharing =cpr_abm(n = 75*9, max_forest = 105000*9, ngroups = 9, nsim = 10, nrounds = 1000,
     lattice = [3,3], harvest_limit = 3.0, regrow = .01, pun1_on = true, pun2_on = true, wages = 0.1,
     price = 1, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.1, labor = .7, zero = true,
+    punish_cost = 0.1, labor = .7, invasion = true,
     travel_cost = 0.1, full_save = true, learn_group_policy = true, bsm = "collective")
 
 
@@ -58,7 +58,7 @@ sharing =plot(data_sharing[:punish][1:500,:,1], label = "", xlab = "Time", ylim 
 data_self =cpr_abm(n = 75*9, max_forest = 105000*9, ngroups = 9, nsim = 10, nrounds = 1000,
     lattice = [3,3], harvest_limit = 3.0, regrow = .01, pun1_on = true, pun2_on = true, wages = 0.1,
     price = 1, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.1, labor = .7, zero = true,
+    punish_cost = 0.1, labor = .7, invasion = true,
     travel_cost = 0.1, full_save = true, learn_group_policy = true, bsm = "individual")
 
 wages =plot(data_self[:punish][1:500,:,1], label = "", xlab = "Time", ylim = (0, 1), ylab = "Support for Borders", c = :black, alpha = .1, title = "(b)", titlelocation = :left, titlefontsize = 15)
@@ -108,7 +108,7 @@ savefig(SI2F2, "SI2f2.pdf")
 #     cpr_abm(n = n, max_forest = mf, ngroups = ng, nsim = 100, nrounds = 10000,
 #     lattice = l, harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, wages = 0.007742636826811269,
 #     price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-#     punish_cost = 0.00220525196229018395, labor = .7, zero = true, leak = false, harvest_var_ind = 1, learn_type = "wealth", 
+#     punish_cost = 0.00220525196229018395, labor = .7, invasion = true, leak = false, harvest_var_ind = 1, learn_type = "wealth", 
 #     travel_cost = 0.003, full_save = true, learn_group_policy = true, experiment_group = eg, experiment_punish2 =1, control_learning = true)
 # end
 

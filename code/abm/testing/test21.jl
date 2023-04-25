@@ -343,7 +343,7 @@ plot(a[:harvest][:,1,end], ylim = (4, 5))
 a=cpr_abm(n = 150*2, max_forest = 2*210000, ngroups =2, nsim = 1,
 lattice = [2,1], harvest_limit = 4.8, regrow = .025, pun1_on = true, 
 wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.0000, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.0000, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 experiment_group = [1, 2], experiment_punish1 = 1, experiment_punish2 = 0.0001, experiment_leak = 0, experiment_limit = 4.8,
 back_leak = false, control_learning = true, full_save = true)
 
@@ -418,7 +418,7 @@ a=cpr_abm(nrounds = 1000,
 a=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10,
 lattice = [3,3], harvest_limit = 4.8, regrow = .025, pun1_on = true, 
 wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.0000, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.0000, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 experiment_group = [1, 2], experiment_punish1 = 1, experiment_punish2 = 0.0001, experiment_leak = 0, experiment_limit = 4.8,
 back_leak = false, control_learning = true, full_save = true)
 
@@ -429,7 +429,7 @@ getOSY(labor = .7, n = 300, max_forest = 420000, regrow = 0.025, wages = 1, pric
 a=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 2000,
 lattice = [3,3], harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, 
 wages = 1, price = .2, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.01, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.01, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 full_save = true, socialLearnYear = collect(1:1:2000), learn_type = "income", policy_weight = "max", inher = true)
 
 using Plots
@@ -447,7 +447,7 @@ end
 b=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 2000,
 lattice = [3,3], harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, 
 wages = 1, price = .2, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.01, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.01, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 full_save = true, socialLearnYear = collect(1:1:2000), learn_type = "income", policy_weight = "max", inher = false)
 
 using Plots
@@ -465,7 +465,7 @@ end
 c=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 2000,
 lattice = [3,3], harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, 
 wages = 1, price = .2, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.01, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.01, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 full_save = true, socialLearnYear = collect(1:1:2000), learn_type = "wealth", policy_weight = "max", inher = false)
 
 using Plots
@@ -483,7 +483,7 @@ end
 d=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 2000,
 lattice = [3,3], harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, 
 wages = 1, price = .2, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.01, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.01, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 full_save = true, socialLearnYear = collect(1:1:2000), learn_type = "wealth", policy_weight = "max", inher = true)
 
 using Plots
@@ -501,7 +501,7 @@ end
 e=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 2000,
 lattice = [3,3], harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, 
 wages = 1, price = .2, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.01, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.01, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 full_save = true, socialLearnYear = collect(1:1:2000), learn_type = "income", policy_weight = "equal", inher = false)
 
 using Plots
@@ -522,7 +522,7 @@ end
 f=cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 10000,
 lattice = [3,3], harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, 
 wages = 1, price = .2, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.01, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+punish_cost = 0.01, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
 full_save = true, socialLearnYear = collect(1:1:2000), learn_type = "wealth", policy_weight = "equal", inher = true)
 
 using Plots
@@ -550,7 +550,7 @@ S =expand_grid( ["wealth", "income"],    # learn_type
     cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 5000,
     lattice = [3,3], harvest_limit = 9.75, regrow = .025, pun1_on = true, pun2_on = true, 
     wages = 1, price = .2, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.01, labor = .7, zero = true,  travel_cost = 0, seed = 1,
+    punish_cost = 0.01, labor = .7, invasion = true,  travel_cost = 0, seed = 1,
     full_save = true, socialLearnYear = collect(1:1:5000),
      learn_type = lt, policy_weight = pw, inher = in, glearn_strat = gl)
 end

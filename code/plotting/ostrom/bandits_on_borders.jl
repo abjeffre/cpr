@@ -10,7 +10,7 @@ if RUN  == true
         lattice = [1,2], harvest_limit = 1, harvest_var = .01, harvest_var_ind = .01,
         regrow = .01, pun2_on = true, leak=false,
         wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, experiment_effort =.7, experiment_punish2=1,
-         fines1_on = false, punish_cost = 0.075, labor = .7, zero = true, begin_leakage_experiment = 1)
+         fines1_on = false, punish_cost = 0.075, labor = .7, invasion = true, begin_leakage_experiment = 1)
     end
     dat=pmap(g, S)
     serialize("borders.dat", dat)

@@ -12,7 +12,7 @@ if RUN  == true
         wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, 
         experiment_effort =1, control_learning = false,
         fines1_on = false, punish_cost = 0.1, labor = .7, 
-        zero = true, begin_leakage_experiment = 1)
+        invasion = true, begin_leakage_experiment = 1)
     end
     dat=pmap(g, S)
     serialize("bandits_on_selfreg.dat", dat)

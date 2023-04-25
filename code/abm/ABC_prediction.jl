@@ -44,7 +44,7 @@ function cpr_par(nsim, ncores, priors = priors)
         distance_adj = .1,
         groups_sampled = 23,
         mutation = .03,
-        zero = true,
+        invasion = true,
         nsim = 1
         )
     end
@@ -98,7 +98,7 @@ KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,
 font_out = []
 for j in 1:100
     arr= [KL_effort[j] KL_deforest_rate[j] KL_stock_levels[j]]
-    # Note that the best KL are those closes to zero!
+    # Note that the best KL are those closes to invasion!
     # Thus you need to reorder these
     for i in 1:size(arr)[2]
         tempx=abs.(0 .-arr[:,i])

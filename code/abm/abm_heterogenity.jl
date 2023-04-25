@@ -38,7 +38,7 @@ function cpr_abm(
   wages = .1,                     # Wage rate in other sectors - opportunity costs
   max_forest = 350000,            # Average max stock
   var_forest = 0,                 # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = 1,                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = 1,                # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                   # The regrowth rate
   volatility = 0,                 # The volatility of the resource each round - set as variance on a normal
   pollution = false,              # Pollution provides a public cost based on 
@@ -89,7 +89,7 @@ function cpr_abm(
   experiment_price = false,      # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_group = 1,           # Determines the set of groups which the experiment will be run on
   cmls = false,                   # Determines whether cmls will operate
-  zero = false,                   # Checks invasion criteria by setting all trait start values to near zero
+  invasion = false,                   # Checks invasion criteria by setting all trait start values to near invasion
   glearn_strat = false,           # options: "wealth", "income", "env"
   split_method = "random",        # How groups split is CLMS is on
   kmax_data = nothing,            # This takes data for k
@@ -101,8 +101,8 @@ function cpr_abm(
   harvest_type = "individual",    # Individuals can pool labor before harvests 
   policy_weight = "equal",        # Typically takes wealth as a weight, but can take any-data that can be used to rank people.
   rec_history =  false,           # You can record the history of wealth but it is costly. 
-  resource_zero = false,          # Sets resource to zero to observe regrowth dynamics
-  harvest_zero = false,           # Automatically sets harvest to zero to observe simple regrowth dynamics
+  resource_zero = false,          # Sets resource to invasion to observe regrowth dynamics
+  harvest_zero = false,           # Automatically sets harvest to invasion to observe simple regrowth dynamics
   wealth_degrade = nothing,       # When wealth is passed on it degrades by some percent
   slearn_freq = 1,                # Not opperational - it defines the frequency of social learning 
   reset_stock = 100000,                 # Is the year in which resources are reset to max
@@ -121,12 +121,14 @@ function cpr_abm(
   pgrowth_data = nothing,
   unitTest = false,
  special_experiment_leak = nothing,
- α = .01,
- population_data = nothing
+ α = 1,
+ population_data = nothing,
+ new_leakage_experiment = nothing
 )
-  population_data = convert.(Int64, population_data)
+  
   # Establish group population sizes
   if population_data != nothing
+      population_data = convert.(Int64, population_data)
       n = convert(Int64, sum(population_data))
       gs_init = convert.(Int64, population_data)
   else
@@ -286,7 +288,7 @@ function cpr_abm(
     for i in 1:n push!(children, Vector{Int}[]) end
     #Effort as seperate DF
     temp = ones(ngoods)
-    if zero == true
+    if invasion == true
           temp[1] = 100-ngoods
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
@@ -299,7 +301,7 @@ function cpr_abm(
           for i = 1:ngroups
             leak_temp =zeros(gs_init[i])
             leak_temp[1:asInt(ceil(gs_init[i]/2))].=1 #50% START AS LEAKERS
-            if zero  leak_temp[1:asInt(ceil(gs_init[i]/(gs_init[i]*.9)))].=1 end #10% START AS LEAKERS
+            if invasion  leak_temp[1:asInt(ceil(gs_init[i]/(gs_init[i]*.9)))].=1 end #10% START AS LEAKERS
             Random.seed!(seed+i+2+ngroups)
             traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init[i])
           end
@@ -334,7 +336,7 @@ function cpr_abm(
     end
     # Outgroup learn
     Random.seed!(seed+56)
-    if zero == true
+    if invasion == true
         traits.og_type = rand(Beta(1,10), n)
       else
         traits.og_type  = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
@@ -375,7 +377,7 @@ function cpr_abm(
 
     ############################################
     ############# Begin years ##################
-
+    println(degrade)
     year = 1
     for t ∈ 1:nrounds
       agents.payoff_round = zeros(n)
@@ -563,10 +565,16 @@ function cpr_abm(
       ########### ECOSYSTEM DYNAMICS #################
 
       K=ResourceDynamics(GH, K, kmax, regrow, volatility, ngroups, harvest_zero)
+      if new_leakage_experiment!=nothing
+        K = K .- new_leakage_experiment
+        K=ifelse.(K .<=0, 1, K)
+      end
 
       if year ∈ reset_stock
          K = kmax 
       end
+
+
       #################################################
       ############# RECORD HISTORY ####################
         history[:stock][year,:,sim] .=round.(K./kmax, digits=3)

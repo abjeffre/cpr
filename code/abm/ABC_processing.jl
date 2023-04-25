@@ -25,7 +25,7 @@ WAGE =DataFrame(CSV.File("cpr/data/abc_priors_wage.csv"))[:,2:end]
 FOREST = DataFrame(CSV.File("cpr/data/abc_priors_forest_2017.csv"))[:,2]
 LAND = DataFrame(CSV.File("cpr/data/abc_priors_land_total.csv"))[:,2]
 POP = DataFrame(CSV.File("cpr/data/wards_households2.csv"))
-KL=load("cpr/data//KL_2022_12_08T19_58_33_911.JLD2")
+KL=load("cpr/data//KL_2023_01_13T14_33_49_739.JLD2")
 #Assign Data
 KL_effort = KL["KL_effort"]
 KL_deforest_rate = KL["KL_deforest_rate"]
@@ -77,7 +77,7 @@ use_effort = true # For the time-step by time-step evaluation only score on defo
 #output_plots = []
 for j in 1:nsample
     arr= [KL_effort[j] KL_deforest_rate[j] KL_stock_levels[j]]
-    # Note that the best KL are those closes to zero!
+    # Note that the best KL are those closes to invasion!
     # Thus you need to reorder these
     for i in 1:size(arr)[2]
         tempx=abs.(0 .-arr[:,i])

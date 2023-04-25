@@ -60,7 +60,6 @@ POP = DataFrame(CSV.File("cpr/data/wards_households2.csv"))
 e=DataFrame(CSV.File("cpr/data/abc_data_effort_firewood.csv"))[:,2:end]
 deforest_data =DataFrame(CSV.File("cpr/data/abc_data_deforesation.csv"))[:,2:end]
 ward_id =DataFrame(CSV.File("cpr/data/ward_id.csv"))[:,2:end]
-
 ######################################
 ############ GENERATE PRIORS #########
 nsample = 3000
@@ -69,7 +68,11 @@ nsample = 3000
 POP[:,1]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:24]),1];
 POP[:,2]=POP[reduce(vcat, [findall(unique(SHEHIA)[i] .== POP[:,1] ) for i in 1:24]),2];
 # Derive appropiate scales
+# Just divide everything by 10 to shrink it so that the ABC goes faster
 GSIZE=Int.(round.(POP[:,2]/10))
+FOREST = FOREST/10
+LAND = LAND/10
+
 # Using Population for each group - sample an appropiate number of ALPHA, WAGE priors
 labor_data=reduce(vcat, [sample(ALPHA[:,i], GSIZE[i])  for i in 1:24])
 # Labor  means
@@ -81,13 +84,12 @@ wage_prior=sample( reduce(vcat, Vector.(eachrow(WAGE))) , nsample)
 #  wage_prior = [reduce(vcat, wage_prior[i,:]) for i in 1:nsample]
 # wage_prior=rand(Gamma(3,.3), nsample) 
  # EACH SHEHIA WITH ITS OWN UNIQUE WAGE
-density(wage_prior)
+# density(wage_prior)
 # wage_prior=WAGE[sample(1:nrow(WAGE), nsample),:]
-LAND_prior=LAND./mean(LAND)
+LAND_prior=LAND
 # Parameters to Estimate
 regrow_prior = rand(Gamma(3, .0075), nsample)
-# density(regrow_prior)
-α_prior = rand(Gamma(5, .06), nsample)
+ι_prior = rand(Gamma(5, .06), nsample)
 # density(α_prior)
 travel_cost_prior  = rand(Gamma(4, .01), nsample)
 # density(travel_cost_prior)
@@ -97,7 +99,7 @@ travel_cost_prior  = rand(Gamma(4, .01), nsample)
 
 S=Matrix(undef, nsample, 9)
 S[:,1] = regrow_prior
-S[:,2] = α_prior 
+S[:,2] = ι_prior 
 S[:,3] = travel_cost_prior
 S[:,4] = wage_prior
 S[:,5] = fill(LAND_prior, nsample)
@@ -122,7 +124,7 @@ S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
     cpr_abm(    # Data
                 tech = tech_data,
                 degrade = degrade_data,
-                kmax_data = 1000000 .*land_data,
+                kmax_data = land_data,
                 population_data = population_data,
                 labor = labor_data, 
                 # Priors
@@ -132,7 +134,7 @@ S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
                 α = α_prior,                
                 # Model Settings                
                 n = 100*24,
-                nrounds = 600,
+                nrounds = 1000,
                 ngroups = 24, 
                 lattice = [6, 4], 
                 pun1_on = false,
@@ -144,7 +146,7 @@ S[:,9] = fill(median.(eachcol(ALPHA)), nsample)
                 distance_adj = .1,
                 groups_sampled = 23,
                 mutation = .03,
-                zero = true,
+                invasion = true,
                 )
 end
 
@@ -152,7 +154,6 @@ a=pmap(g, S[:,1],S[:,2],S[:,3],S[:,4],S[:,5],S[:,6],S[:,7],S[:,8],S[:,9])
 using JLD2
 # Save the output
 # jldsave("test_ABC.JDL2"; a)
-
 
 #####################################################
 ############## GENERATE KL divergences ##############
@@ -164,7 +165,7 @@ KL_stock_levels=[[kl_divergence(FOREST[:,1]./LAND[:,1], Float64.(a[i][:stock][k,
 KL_deforest_rate=[[kl_divergence(deforest_data[:,1].+1.1, deforesation_rate[i][k].+1.1) for k in 1:599] for i in 1:nsample]
 # get KL of effort
 # This one does not use the exact group information
-KL_effort=[[kl_divergence(e[:,1].+ .0001, Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001) for k in 2:600] for i in 1:nsample]
+KL_effort=[[kl_divergence(sort(e[:,1].+ .0001), sort(Float64.(sample(a[i][:effortfull][k,:,1], size(e)[1])).+ .0001)) for k in 2:600] for i in 1:nsample]
 
 #####################################
 ######## SAVE THE OUTPUT ############

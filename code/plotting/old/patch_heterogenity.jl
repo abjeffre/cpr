@@ -10,7 +10,7 @@ if RUN  == true
     for i in seq
         b=cpr_abm(n = 75*2, max_forest = 2*105000, ngroups =2, nsim = 1, nrounds = 500,
         lattice = [1,2], harvest_limit = 3.5, regrow = .01, pun1_on = false, pun2_on = false, wages = 0.007742636826811269,
-        price = 1, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true, labor = .7, zero = true,
+        price = 1, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true, labor = .7, invasion = true,
         travel_cost = 0.15, full_save = true, kmax_data = [i, 210000],
         learn_group_policy = true)
         push!(out, b)

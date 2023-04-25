@@ -715,7 +715,7 @@ for r in 1:length(pars)
                         defensibility = 1,
                         seized_on = true,
                         leak = true,
-                        zero = true,
+                        invasion = true,
                         og_on = true,
                         power = "wealth",
                         fines_on = true,
@@ -776,7 +776,7 @@ function getBaseline()
     pun1_on = false,
     pun2_on =false,
     leak = false,
-    zero = true,
+    invasion = true,
     og_on = false,
     fine_start = .1,
     fine_var = .2,
@@ -793,7 +793,7 @@ tech_data = collect(.0005:.0005:3)
 
 test=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 6000, leak = true, pun2_on = true,
- harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true, tech_data = tech_data, zero = true)
+ harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true, tech_data = tech_data, invasion = true)
 using Plots
 
 
@@ -808,7 +808,7 @@ plot(test[:payoffR][:,:,1])
 test=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 3000, leak = true, pun2_on = true,
  harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
-  tech_data = tech_data, zero = true, rec_history = true)
+  tech_data = tech_data, invasion = true, rec_history = true)
 using Plots
 
 v = Matrix{Float64}[]
@@ -848,7 +848,7 @@ tech_data = [ones(1000) *.5; collect(.501:.001:1.5); ones(1000)*1.5]
 test=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 3000, leak = true, pun2_on = true,
  harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
-  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+  tech_data = tech_data, invasion = true, rec_history = true, inher = true)
 
 plot(test[:stock][:,:,1])
 
@@ -857,7 +857,7 @@ plot(test[:stock][:,:,1])
 test1=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = false,
  harvest_limit = .1, fines_on = false, fines2_on = true, fines_evolve = true,
-  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+  tech_data = tech_data, invasion = true, rec_history = true, inher = true)
 
 plot(test1[:stock][:,:,1])
 plot(test1[:punish2][:,:,1])
@@ -872,7 +872,7 @@ plot(test1[:effort][:,:,1] , legend = false)
 test2=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = true,
  harvest_limit = .1, fines_on = false, fines2_on = true, fines_evolve = true,
-  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+  tech_data = tech_data, invasion = true, rec_history = true, inher = true)
 
 plot(test2[:stock][:,:,1])
 plot(test2[:punish2][:,:,1])
@@ -885,7 +885,7 @@ plot(test2[:effort][:,:,1] , legend = false)
 test3=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = true,
  harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
-  tech_data = tech_data, zero = true, rec_history = true, inher = true)
+  tech_data = tech_data, invasion = true, rec_history = true, inher = true)
 
 plot(test3[:stock][:,:,1])
 plot(test3[:punish2][:,:,1])
@@ -899,7 +899,7 @@ plot(test3[:fine2][:,:,1] , legend = false)
 test4=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 3000, leak = false, pun2_on = true,
  harvest_limit = .1, fines_on = true, fines2_on = true, fines_evolve = true,
-  tech_data = tech_data, zero = true, rec_history = true, inher = true, glearn_strat = "income")
+  tech_data = tech_data, invasion = true, rec_history = true, inher = true, glearn_strat = "income")
 
 plot(test4[:stock][:,:,1], legend = false)
 plot(test4[:punish2][:,:,1])
@@ -912,7 +912,7 @@ plot(test4[:fine2][:,:,1] , legend = false)
 test5=cpr_abm(max_forest = 10000*15, lattice = [3,5], wages = .2, ngroups = 15,
  n = 150*15, tech = .5, nrounds = 3000, leak = true, pun2_on = true,
  harvest_limit = .05, fines_on = true, fines2_on = true, fines_evolve = true,
- tech_data = tech_data, zero = true, rec_history = true, inher = true, glearn_strat = "income")
+ tech_data = tech_data, invasion = true, rec_history = true, inher = true, glearn_strat = "income")
 
 plot(test5[:stock][:,:,1], legend = false)
 plot(test5[:punish2][:,:,1])

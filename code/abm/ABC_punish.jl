@@ -167,7 +167,7 @@ S2[:, 11] = rand(Gamma(40, 1), nsample) # Limit cost
                 distance_adj = .1,
                 groups_sampled = 23,
                 mutation = .03,
-                zero = true,
+                invasion = true,
                 )
 end
 
@@ -267,7 +267,7 @@ use_effort = false # For the time-step by time-step evaluation only score on def
 #output_plots = []
 for j in 1:nsample
     arr= [KL_effort[j] KL_deforest_rate[j] KL_stock_levels[j]]
-    # Note that the best KL are those closes to zero!
+    # Note that the best KL are those closes to invasion!
     # Thus you need to reorder these
     for i in 1:size(arr)[2]
         tempx=abs.(0 .-arr[:,i])
@@ -343,7 +343,7 @@ cores_current >= ncores ? nothing : addprocs(ncores - current_cores)
     distance_adj = .1,
     groups_sampled = 23,
     mutation = .03,
-    zero = true,
+    invasion = true,
     nsim = 1
     )
 end
@@ -483,7 +483,7 @@ vspan!(leakage_plot, [hpdi_bounds], label = nothing, color = :grey, alpha = .3)
     distance_adj = .1,
     groups_sampled = 23,
     mutation = .03,
-    zero = true,
+    invasion = true,
     nsim = 1
     )
 end

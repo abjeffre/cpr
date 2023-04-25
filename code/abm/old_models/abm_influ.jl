@@ -82,7 +82,7 @@ function cpr_abm(
 
   max_forest = 16500,               # Average max stock
   var_forest = 1,                   # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = [1,1],                # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
   volatility = 0,                 #the volatility of the resource each round - set as variance on a normal
 
@@ -148,7 +148,7 @@ function cpr_abm(
   experiment_effort = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_group = 1,                 #determines the set of groups which the experiment will be run on
   cmls = false,                          #determines whether cmls will operate
-  zero = false,
+  invasion = false,
   power = false,
   glearn_strat = false,              # options: "wealth", "Income , "env""
   influence_on = false
@@ -284,7 +284,7 @@ function cpr_abm(
 
     #assign agent values
     Random.seed!(seed+1)
-    if zero == true
+    if invasion == true
         effort = rand(Beta(.1,10), n)
       else
         effort = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
@@ -292,14 +292,14 @@ function cpr_abm(
     #Setup harvest limit
 
     Random.seed!(seed+56)
-    if zero == true
+    if invasion == true
         og_type = rand(Beta(1,10), n)
       else
         og_type  = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
     end
 
     Random.seed!(seed+56)
-    if zero == true
+    if invasion == true
         influence = rand(Beta(1,10), n)
       else
         influence  = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%

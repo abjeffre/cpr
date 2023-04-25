@@ -26,8 +26,15 @@ using Distributed
 @everywhere include("cpr/code/abm/submodules/TransferWealth.jl")
 @everywhere include("cpr/code/abm/submodules/GetModelsn1.jl")
 @everywhere include("cpr/code/abm/submodules/RWLearn.jl")
+@everywhere include("cpr/code/abm/submodules/setupExperiments.jl")
+@everywhere include("cpr/code/abm/submodules/SetupExperiments.jl")
+@everywhere include("cpr/code/abm/submodules/RunExperiments.jl")
+@everywhere include("cpr/code/abm/submodules/SeedTraits.jl")
+@everywhere include("cpr/code/abm/submodules/getHistoryBook.jl")
+@everywhere include("cpr/code/abm/submodules/RecordHistory.jl")
 
 @everywhere include("functions/utility.jl")
-#@everywhere include("cpr/code/abm/abm_group_policy.jl")
+#@everywhere include("cpr/code/abm/abm_popgrowth.jl")
 @everywhere include("cpr/code/abm/abm_heterogenity.jl")
+@everywhere include("cpr/code/abm/abm_cleaned.jl")
 

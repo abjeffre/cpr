@@ -12,7 +12,7 @@ if run == true
     @everywhere function g2(ng) 
         cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
             lattice = [1,ng], harvest_limit = 2, harvest_var = .5, nrounds = 75000,
-            harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1,
+            harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), invasion = true, nsim = 1,
             experiment_punish2 = 1, leak = false, control_learning = true, back_leak= true)
     end
 

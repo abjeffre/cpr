@@ -1,6 +1,6 @@
   # Harvest
   #Note that this harvest function does not pool labor before applying the elastisicty
-  function GetHarvest(effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups, agents)
+function GetHarvest(effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups, agents)
     b = zeros(ngroups)
     effort=effort.*100
     for i in 1:ngroups
@@ -8,7 +8,7 @@
     end
     #tech.*((1 .+ effort.^labor) .- 1).*b[loc] .- necessity
     tech[agents.gid].*((effort.^labor[agents.id]) ).*b[loc]
-   end
+end
 
 
   # Harvest

@@ -12,7 +12,7 @@ if RUN  == true
                 pun2_on = true, wages = 0.1, harvest_var =.1,
                 price = 1, defensibility = 1, fines1_on = false,
                 fines2_on = false, seized_on = L, labor = .7,
-                zero = true, harvest_var_ind = 0.1,
+                invasion = true, harvest_var_ind = 0.1,
                 travel_cost = 0.1, full_save = true)
         end
         println("gothere")

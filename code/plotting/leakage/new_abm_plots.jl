@@ -6,7 +6,7 @@ using Plots
 using Plots.PlotMeasures
 using ColorSchemes
 
-
+run = false
 #################################################
 ############ BORDERS ############################
 
@@ -30,13 +30,13 @@ for i in 1:50
     out2[i]=mean(mean(out[i][:punish][800:1000,2,:], dims =2))
 end
 out2
-borders2 =plot(out2, ylim = (-0.02, 1), label = false, c = :black, ylab = "Borders", xlab = "Primary Leakage", axis = nothing, left_margin = 5mm)
+borders2 =plot(out2, ylim = (-0.02, 1), label = false, c = :black, ylab = "Borders(x)", xlab = "Primary Leakage", axis = nothing, left_margin = 5mm)
 
 ###################################
 ######## BORDERS CYLICAL ##########
 
 a=cpr_abm(pun2_on = false, n = 150, tech = .5, wages = .001, punish_cost = .95, social_learning = false, travel_cost = .001,
-kmax_data = [650000/2, 350000/2], nrounds = 20000, baseline = 1, nmodels = 2, nsim = 1, inspect_timing = "after", zero = true, mutation = .05)
+kmax_data = [650000/2, 350000/2], nrounds = 20000, baseline = 1, nmodels = 2, nsim = 1, inspect_timing = "after", invasion = true, mutation = .05)
 
 
 function smooth(x, α = .5)
@@ -77,7 +77,7 @@ out3 = zeros(50)
 for i in 1:50
     out3[i]=mean(mean(fun[i][:punish2][800:1000,2,:], dims =2))
 end
-self_regulation2 =plot(out3, ylim = (0, 1), label = false, c = :black, xlab = "Primary Leakage", ylab = "Self-Regulation", axis = nothing, left_margin = 5mm)
+self_regulation2 =plot(out3, ylim = (0, 1), label = false, c = :black, xlab = "Primary Leakage", ylab = "Internal Regulation (v)", axis = nothing, left_margin = 5mm)
 #save("example.jld2", a)
 
 # to do 

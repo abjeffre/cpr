@@ -40,7 +40,7 @@ function cpr_abm(
   market_size = 1,              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
   max_forest = 15000,               # Average max stock
   var_forest = 1,                   # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = [1,1],                # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
   volatility = 0,                 #the volatility of the resource each round - set as variance on a normal
   pollution = false,
@@ -96,7 +96,7 @@ function cpr_abm(
   experiment_effort = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_group = 1,                 #determines the set of groups which the experiment will be run on
   cmls = false,                          #determines whether cmls will operate
-  zero = false,
+  invasion = false,
   power = false,
   glearn_strat = false,              # options: "wealth", "Income"
   split_method = "random",            #POLITICAL DOES NOT WORK.
@@ -200,7 +200,7 @@ function cpr_abm(
     :experiment_limit => experiment_effort,
     :experiment_limit => experiment_limit,
     :cmls => cmls,
-    :zero => zero,
+    :invasion => invasion,
     :power => power,
     :glearn_strat => glearn_strat,
   )
@@ -276,7 +276,7 @@ function cpr_abm(
 
     #Effort as seperate DF
     temp = ones(ngoods)
-    if zero == true
+    if invasion == true
           temp[1] = 100-ngoods
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
@@ -323,7 +323,7 @@ function cpr_abm(
     end
     # Outgroup learn
     Random.seed!(seed+56)
-    if zero == true
+    if invasion == true
         traits.og_type = rand(Beta(1,10), n)
       else
         traits.og_type  = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%

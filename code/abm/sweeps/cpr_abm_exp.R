@@ -42,7 +42,7 @@ cpr_abm <- function(
   
   max_forest = 200,           # Average max stock
   var_forest = 50,            # Controls the heterogeneity in forest size across diffrent groups
-  degradability = 0,          # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degradability = 0,          # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .05,               # the regrowth rate
   tech = 0.05,                # Used for scaling Cobb Douglas production function
   labor = .5,                 # The elasticity of labor on harvesting production

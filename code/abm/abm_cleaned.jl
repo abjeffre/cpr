@@ -38,7 +38,7 @@ function cpr_abm(
   wages = .1,                     # Wage rate in other sectors - opportunity costs
   max_forest = 350000,            # Average max stock
   var_forest = 0,                 # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = [1,1],                # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = 1,                     # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                   # The regrowth rate
   volatility = 0,                 # The volatility of the resource each round - set as variance on a normal
   pollution = false,              # Pollution provides a public cost based on 
@@ -52,12 +52,12 @@ function cpr_abm(
   price = 1.0,                      # This sets the price of the resource on the market
   ngoods = 2,                     # Specifiies the number of sectors
   necessity = 0,                  # This sets the minimum amount of the good the household requires
-  monitor_tech = [1,1],           # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
+  monitor_tech = 1,           # This controls the efficacy of monitnoring, higher values increase the detection rate -  to understand the functio check plot(curve(pbeta(i, 1, x), 0, 5), where i is the proportion of monitors in a pop
   defensibility = 1,              # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
   def_perc = true,                # This sets the maximum possible insepction rate if all indiviudals participate in guarding it.
   punish_cost = 0.1,              # This is the cost that must be paid for individuals <0 to monitor their forests - For the default conditions this is about 10 percent of mean payoffs
   fine = 0.0,                     # This controls the size of the fine issued when caught, note that in a real world situation this could be recouped by the injured parties but it is not
-  harvest_limit = 5,              # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
+  limit_seed = [0, 5],              # This is the average harvest limit. If a person is a punisher it controls the max effort a person is allowed to allocate
   harvest_var = 1.5,              # Harvest limit group offset 
   harvest_var_ind = .5,           # Harvest limit individual offset
   pun2_on = true,                 # Turns punishment on or off. 
@@ -88,6 +88,7 @@ function cpr_abm(
   experiment_effort = false,      # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_price = false,      # THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_group = 1,           # Determines the set of groups which the experiment will be run on
+  experiment_stock = false,
   cmls = false,                   # Determines whether cmls will operate
   invasion = false,                   # Checks invasion criteria by setting all trait start values to near invasion
   glearn_strat = false,           # options: "wealth", "income", "env"
@@ -120,239 +121,105 @@ function cpr_abm(
   population_growth = false,
   pgrowth_data = nothing,
   unitTest = false,
- special_experiment_leak = nothing,
- α = .01
+  special_experiment_leak = nothing,
+  α = 1,
+  population_data = nothing,
+  new_leakage_experiment = nothing,
+  kseed = nothing,
+  limit_seed_override = nothing,
+  effort_seed = nothing
 )
-  ################################################
-  ##### The multiverse will be recorded  #########
-    pgrowth_data == nothing ? pgrowth_data = fill(0, nrounds) : nothing
-    history=Dict{Symbol, Any}(
-      :stock => zeros(nrounds, ngroups, nsim),
-      :effort => zeros(nrounds, ngroups, nsim),
-      :limit => zeros(nrounds, ngroups, nsim),
-      :leakage => zeros(nrounds, ngroups, nsim),
-      :og => zeros(nrounds, ngroups, nsim),
-      :harvest => zeros(nrounds, ngroups, nsim),
-      :punish => zeros(nrounds, ngroups, nsim),
-      :punish2 => zeros(nrounds, ngroups, nsim),
-      :cel =>  zeros(nrounds, ngroups, nsim),
-      :clp2 => zeros(nrounds, ngroups, nsim),
-      :cep2 => zeros(nrounds, ngroups, nsim),
-      :fine1 => zeros(nrounds, ngroups, nsim),
-      :fine2 =>zeros(nrounds, ngroups, nsim),
-      :loc => ifelse(population_growth == true, zeros(nrounds, convert(Int, sum(pgrowth_data)*ngroups + n), nsim), zeros(nrounds, n, nsim)),
-      :gid => ifelse(population_growth == true, zeros(convert(Int, sum(pgrowth_data)*ngroups + n), nsim), zeros(n, nsim)),
-      :payoffR => zeros(nrounds, ngroups, nsim))
-    if full_save == true 
-      history[:limitfull] = zeros(nrounds, n, nsim)
-      history[:effortfull] = zeros(nrounds, n, nsim)
-      history[:leakfull] = zeros(nrounds, n, nsim)
-      history[:limitfull] = zeros(nrounds, n, nsim)
-      history[:punishfull] = zeros(nrounds, n, nsim)
-      history[:punish2full] = zeros(nrounds, n, nsim)      
-      history[:effortLeak] = zeros(nrounds, ngroups, nsim)
-      history[:effortNoLeak] = zeros(nrounds, ngroups, nsim)
-      history[:harvestLeak] = zeros(nrounds, ngroups, nsim)
-      history[:harvestNoLeak] = zeros(nrounds, ngroups, nsim)
-      history[:age_max] = zeros(nrounds, ngroups, nsim)
-      history[:seized] = zeros(nrounds, ngroups, nsim)
-      history[:seized2] = zeros(nrounds, ngroups, nsim)
-      history[:seized2in] = zeros(nrounds, ngroups, nsim)
-      history[:forsize] =  zeros(ngroups, nsim)
-      history[:cel] =  zeros(nrounds, ngroups, nsim)
-      history[:clp2] = zeros(nrounds, ngroups, nsim)
-      history[:cep2] = zeros(nrounds, ngroups, nsim)
-      history[:ve] = zeros(nrounds, ngroups, nsim)
-      history[:vp2] = zeros(nrounds, ngroups, nsim)
-      history[:vl] = zeros(nrounds, ngroups, nsim)
-      history[:roi] = zeros(nrounds, ngroups, nsim)
-      #history[:fstEffort] = zeros(nrounds, nsim)
-      #history[:fstLimit] = zeros(nrounds, nsim)
-      #history[:fstLeakage] = zeros(nrounds, nsim)
-      #history[:fstPunish] = zeros(nrounds, nsim)
-      #history[:fstPunish2] = zeros(nrounds, nsim)
-      #history[:fstFine1] = zeros(nrounds, nsim)
-      #history[:fstFine2] = zeros(nrounds, nsim)
-      #history[:fstOg] = zeros(nrounds, nsim)
-      history[:wealth] = Float64[]
-      history[:wealthgroups] = Float64[]
-    end
-  
-     if rec_history == true
-      history[:wealth] = zeros(n, nrounds, nsim)
-      history[:wealthgroups] = zeros(n, nrounds, nsim)
-      history[:age] = zeros(n, nrounds, nsim)
-    end
-
-
-    # for price experiment
-    price_copy = copy(price)
-    #Ensure that n is the same 
-    nstart = copy(n)
-
+  # Establish group population sizes
+  if population_data != nothing
+      population_data = convert.(Int64, population_data)
+      n = convert(Int64, sum(population_data))
+      gs_init = convert.(Int64, population_data)
+  else
+    gs_init = fill(convert(Int64, n/ngroups), ngroups)
+  end
+  pgrowth_data == nothing ? pgrowth_data = fill(0, nrounds) : nothing # If no populationg growth data is supplied then simply fill in zeros
+  price_copy = copy(price) # Record inital price
+  nstart = copy(n) # Record inital n
+  history=getHistoryBook(n = n, nrounds = nrounds, ngroups = ngroups,
+  nsim = nsim, full_save = full_save, pgrowth_data = pgrowth_data,
+  rec_history = rec_history, population_growth = population_growth) # Make history books
+    
   ##############################
   ####Start Simulations #######
   for sim = 1:nsim
-      seed = seed + sim
-      n = nstart
+    seed = seed + sim # Set seed so that it is diffrent on each run for each simulation run
+    n = nstart        # Reset n to nstart
     #############################
     #### EXPERIMENT SETUP #######
     temp=[experiment_effort, experiment_limit, experiment_leak, experiment_punish1,
     experiment_punish2, experiment_price]
-    experiment =  any(temp .!= false) ?  true : false
-
-    # THIS COULD BE TURNED ON TO CONTOROL LEARNING GROUPS    
-    # Setup special leakage control learning group
-    if special_leakage_group != nothing
-      exclude_patches = experiment_group[experiment_group .∉  special_leakage_group]
-      experiment_learning_groups = experiment_group[findall(x->x ∉ special_leakage_group, experiment_group ) ]
-    #    exclude_patches = special_leakage_group
-    else
-      experiment_learning_groups = experiment_group
-      exclude_patches = experiment_group
-    end
-    # This determines whether agents learn from experimentally controled groups or not
-    # This is always true, unless experiment is true and control learning is false 
-    #- then this partitions the simulation into experimental and non-experimetnal groups for the purposes of updating
-    learnfromcontrol = (experiment == false) | (control_learning == true) ? true : false
-    normal_groups = deleteat!(collect(1:ngroups), experiment_group)
-
-    
+    experiment, exclude_patches, experiment_learning_groups, learnfromcontrol, normal_groups  = setupExperiments(temp = temp, special_leakage_group = special_leakage_group,
+    experiment_group = experiment_group, control_learning = control_learning, ngroups = ngroups)
     #############################
     ##### Create the world ######
-
     world =  A = reshape(collect(1:ngroups), lattice[1], lattice[2])
     distances = distance(world)
-
-    #make the forests and DIVIDE them amongst the groups
-    if kmax_data !== nothing
+    if kmax_data !== nothing     #make the forests and DIVIDE them amongst the groups
       kmax = kmax_data
       K = copy(kmax)
-
     else
-    #  Random.seed(seed)
       kmax = rand(Normal(max_forest, var_forest), ngroups)/ngroups
       kmax[kmax .< 0] .=max_forest/ngroups
       K = copy(kmax)
     end
-
     resource_zero == true ?  K = rand(ngroups).+1 : nothing
-    
 
     ################################
     ### Give birth to humanity #####
-
-    gs_init = convert(Int64, n/ngroups)
-    # agent values
-    agents = DataFrame(
+    if population_data == nothing    # Generate group ID
+      tempID=repeat(1:ngroups, gs_init[1])
+    else
+      tempID=reduce(vcat, [fill(i, population_data[i]) for i in 1:length(population_data)])
+    end
+    agents = DataFrame( # Create Agents
       id = collect(1:n),
-      gid = repeat(1:ngroups, gs_init),
+      gid = tempID,
       payoff = zeros(n),
       payoff_round = zeros(n),
       age = sample(1:2, n, replace=true) #notice a small variation in age is necessary for our motrality risk measure
       )
-    #All trait minus effort
-    traits = DataFrame(
-      leakage_type = zeros(n),
-      punish_type = zeros(n),
-      punish_type2 = zeros(n),
-      fines1 = zeros(n),
-      fines2 = zeros(n),
-      harv_limit = zeros(n),
-      og_type = zeros(n))
- 
-    traitTypes = ["binary" "prob" "prob" "positivecont" "positivecont" "positivecont" "prob"]
-    if learn_group_policy 
-        traitTypesGroup = ["binary" "prob" "prob" "positivecont" "positivecont" "grouppositivecont" "prob"]
-    else
-      traitTypesGroup = nothing
-    end
-    # Set up Array To contain Family history
-    children = Vector{Int}[]
-    for i in 1:n push!(children, Vector{Int}[]) end
-    #Effort as seperate DF
-    temp = ones(ngoods)
-    if invasion == true
-          temp[1] = 100-ngoods
-          effort = rand(Dirichlet(temp), n)'
-          effort=DataFrame(Matrix(effort), :auto)
-    else
-          temp=temp*2
-          effort = rand(Dirichlet(temp), n)'
-          effort=DataFrame(Matrix(effort), :auto)
-      end
-    # Setup leakage
-          leak_temp =zeros(gs_init)
-          leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
-          if invasion  leak_temp[1:asInt(ceil(gs_init/(gs_init*.9)))].=1 end #10% START AS LEAKERS
-          for i = 1:ngroups
-          Random.seed!(seed+i+2+ngroups)
-            traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
-          end
-    # Setup punishment
-    for i = 1:ngroups
-      Random.seed!(seed+(i)+2+(ngroups*2))
-      traits.punish_type2[agents.gid.==i] = rand(Beta(1, (1/.1-1)), gs_init) # the denominator in the beta term determines the mean
-      Random.seed!(seed+(i*2)+2+(ngroups*2))
-      traits.punish_type[agents.gid.==i] = rand(Beta(1, (1/.1-1)), gs_init) # the denominator in the beta term determines the mean
-    end
-    #Setup Harvest Limit
-    Random.seed!(seed+2)
-    temp=abs.(rand(Normal(harvest_limit, harvest_var), ngroups))
-    for i in 1:ngroups
-      Random.seed!(seed+i+2)
-      traits.harv_limit[agents.gid.==i] = abs.(rand(Normal(temp[i], harvest_var_ind), gs_init))
-    end
-    # Fines
-    if fine_start != nothing
-      Random.seed!(seed+20)
-      temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
-      for i in 1:ngroups
-        Random.seed!(seed+i+20)
-        traits.fines1[agents.gid.==i] = abs.(rand(Normal(temp[i], .3), gs_init))
-      end
-      Random.seed!(seed+21)
-      temp=abs.(rand(Normal(fine_start, fine_var), ngroups))
-      for i in 1:ngroups
-        Random.seed!(seed+i+21)
-        traits.fines2[agents.gid.==i] = abs.(rand(Normal(temp[i], .03), gs_init))
-      end
-    end
-    # Outgroup learn
-    Random.seed!(seed+56)
-    if invasion == true
-        traits.og_type = rand(Beta(1,10), n)
-      else
-        traits.og_type  = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%
-    end
-
-    #Define Groups
-    groups = DataFrame(gid = collect(1:ngroups),
+    effort, traits, traitTypes, traitTypesGroup = SeedTraits(n=n, ngroups=ngroups, agents = agents,  ngoods=ngoods,
+                                                            gs_init = gs_init, limit_seed = limit_seed, harvest_var = harvest_var,
+                                                            harvest_var_ind = harvest_var_ind, seed = seed, fine_start = fine_start,
+                                                             learn_group_policy = learn_group_policy, invasion = invasion, fine_var = fine_var,
+                                                              limit_seed_override = limit_seed_override, effort_seed = effort_seed)
+   
+    groups = DataFrame(gid = collect(1:ngroups), # Create Group tracking info
                         fine1 = zeros(ngroups),
                         fine2 = zeros(ngroups),
                         limit = zeros(ngroups),
                         group_status = ones(ngroups),
-                        def = zeros(ngroups))
-    #Define Memory 
-    mem = Dict(:id => collect(1:n),
-                 :effort => effort,
-                 :payoff_round => zeros(n))
-
+                        def = zeros(ngroups))                           
+    children = Vector{Int}[]  # Set up Array To contain Family history
+    for i in 1:n push!(children, Vector{Int}[]) end
+    # Build in heterogentiy - fed in through data - 
+    if length(labor) == 1 labor = fill(labor, ngroups) end
+    if length(tech) == 1 tech = fill(tech, ngroups) end
+    if length(degrade) == 1 degrade = fill(degrade, ngroups) end
+    if length(wages) == 1 wages = fill(wages, ngroups) end
+    if length(labor) == ngroups labor= labor[agents.gid] end
+    if length(wages) == ngroups wages= wages[agents.gid] end   
     #set defensibility
-      def = zeros(ngroups)
-      for i in 1:ngroups
-         if def_perc==true
-            groups.def[i] = gs_init/defensibility
-          else
-            groups.def[i] =defensibility
-          end
-        end
-
+    def = zeros(ngroups)
+    for i in 1:ngroups
+      if def_perc==true
+        groups.def[i] = gs_init[i]/defensibility
+      else
+        groups.def[i] =defensibility
+      end
+    end
+    # Implement K seed
+    if kseed !==nothing K = copy(kseed) end
+    
     if verbose ==true println(string("Sim: ", sim, ", Initiation: COMPLETED ")) end
 
     ############################################
     ############# Begin years ##################
-
     year = 1
     for t ∈ 1:nrounds
       agents.payoff_round = zeros(n)
@@ -367,39 +234,19 @@ function cpr_abm(
 
       ############################
       ### RUN EXPERIMENT #########
-      for i = 1:length(experiment_group)
-        if experiment_leak != 0
-            if t >= begin_leakage_experiment 
-                    traits.leakage_type[agents.gid .== experiment_group[i]] = rand(Binomial(1, experiment_leak), sum(agents.gid.==experiment_group[i]))
-            end
-        end
-        if experiment_punish1 != 0
-          traits.punish_type[agents.gid .==experiment_group[i]] .= experiment_punish1
-        end
-        if experiment_punish2 != 0
-          traits.punish_type2[agents.gid .==experiment_group[i]] .= experiment_punish2
-        end
-        if experiment_limit !=0
-          traits.harv_limit[agents.gid .==experiment_group[i]] .=experiment_limit
-        end
-        if experiment_effort != 0
-          effort[agents.gid.==experiment_group[i], 2] .= experiment_effort
-          effort[agents.gid.==experiment_group[i], 1] .= (1-experiment_effort)
-        end
-        if experiment_price != 0
-          price=Float64.(fill(price_copy, n))
-          price[agents.gid.==experiment_group[i]] .= experiment_price
-        end
-        if special_leakage_group != nothing
-          for j in 1:length(special_leakage_group)
-            traits.leakage_type[agents.gid .== special_leakage_group[j]] = rbinom(sum(agents.gid.==special_leakage_group[j]),1, special_experiment_leak)
-          end
-        end
-      end
-      if verbose== true print(string("Experiment: COMPLETED"))end
-
-      
-      #Politics
+      effort, traits = RunExperiment(;experiment = experiment, experiment_group = experiment_group, traits = traits,
+                                      effort = effort, agents = agents, t= t, begin_leakage_experiment = begin_leakage_experiment,
+                                      special_experiment_leak = special_experiment_leak, special_leakage_group = special_leakage_group,
+                                      experiment_effort =  experiment_effort,
+                                      experiment_limit =  experiment_limit,
+                                      experiment_punish1 =  experiment_punish1,
+                                      experiment_punish2 =  experiment_punish2,
+                                      experiment_leak =  experiment_leak,
+                                      experiment_price = experiment_price
+                                      )
+      if verbose== true print(string("Experiment: COMPLETED"))end      
+      ####################
+      #### Politics #######
       groups.limit=GetPolicy(traits.harv_limit, policy_weight, agents.payoff, ngroups, agents.gid, groups.group_status, t)
       if fines_evolve == true
         groups.fine1=GetPolicy(traits.fines1, policy_weight, agents.payoff, ngroups, agents.gid, groups.group_status, t)
@@ -407,32 +254,30 @@ function cpr_abm(
       else
         groups.fine1 = ones(ngroups).*fine 
         groups.fine2 = ones(ngroups).*fine 
-      end
-     
-      #Patch Selection
+      end     
+      ########################
+      #### Patch Selection ###
       loc=GetPatch(ngroups, agents.gid, groups.group_status, distances, distance_adj,
                 traits.leakage_type, K, groups_sampled, experiment, exclude_patches, back_leak)
       TC=travel_cost.*traits.leakage_type
-      #randomize each round
+      # Determine the timing of inspections
       if inspect_timing == nothing
-        catch_before = sample([true, false])
+        catch_before = sample([true, false]) # Randomize Whether people this round are caught before or after harvests
       else
-       if inspect_timing == "before" catch_before = true end
-       if inspect_timing == "after" catch_before = false end
-       end
-      
-      
-      #Harvesting
+        if inspect_timing == "before" catch_before = true end
+        if inspect_timing == "after" catch_before = false end
+      end
+      ###########################
+      #### Harvesting ###########
       if catch_before == true
         temp_hg = zeros(n)
         caught1=GetInspection(temp_hg, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal")
-       # println(sum(caught1))
         temp_effort = effort[:,2] .* (1 .-caught1)
         if harvest_type == "collective"
           GH=GetGroupHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, ngroups)
           HG=GetIndvHarvest(GH, temp_effort, loc, necessity, ngroups)
         else
-          HG=GetHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups)
+          HG=GetHarvest(temp_effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups, agents)
           GH=reportSum(HG, loc, ngroups)
         end
       else
@@ -440,34 +285,32 @@ function cpr_abm(
           GH=GetGroupHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, ngroups)
           HG=GetIndvHarvest(GH, effort[:,2], loc, necessity, ngroups)
         else
-          HG=GetHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, necessity, ngroups)
+          HG=GetHarvest(effort[:,2], loc, K, kmax, tech, labor, degrade, necessity, ngroups, agents)
           GH=reportSum(HG, loc, ngroups)
         end
       end
-
-
-      #Monitoring, Seizure and Fines
+      ########################################
+      #### Inspection, Seizure and Fines ######
       if catch_before == false  
         caught1=GetInspection(HG, traits.punish_type, loc, agents.gid, groups.limit, monitor_tech, groups.def, "nonlocal") 
       end
       caught2=GetInspection(HG, traits.punish_type2, loc, agents.gid, groups.limit, monitor_tech, groups.def, "local")
       pun1_on ? nothing : caught1 .= 0
       pun2_on ? nothing : caught2 .= 0
-      caught_sum = caught1 + caught2
+      caught_sum = ifelse.((caught1 + caught2) .> 0, 1, 0)
       if catch_before == true  
         seized1=GetGroupSeized(caught1, caught1, loc, ngroups) 
       else
         seized1=GetGroupSeized(HG, caught1, loc, ngroups) #REVERT
       end
       seized2=GetGroupSeized(HG, caught2, loc, ngroups)
-      
       if bsm == "individual"
         SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
         SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
         FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
-      FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
+        
         FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
-      FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
+        
       end
       if bsm == "collective"
         group_size = convert(Int64, n/ngroups)
@@ -480,46 +323,28 @@ function cpr_abm(
         FP1 = FP1[agents.gid]
         FP2 = FP2[agents.gid]
       end
-      
       MC1 = punish_cost*traits.punish_type
       MC2 = punish_cost*traits.punish_type2
-      if seized_on == false SP2 = SP1 = zeros(n) end
+      if seized_on == false 
+        SP2 = SP1 = zeros(n)
+       end
       if fines_on == false FP2 = FP1 = zeros(n) end
       if catch_before == true SP1 .=0 end
-
-
-      #EcoSystem Public Goods
+      ##################################
+      ######## ECOSYSTEM SERVICES ######
       ecosys ? ECO =  GetEcoSysServ(ngroups, eco_slope, eco_C, K, kmax) :  ECO = zeros(n)
-      pollution ? POL =  GetPollution(effort[:,2], loc, ngroups, pol_slope, pol_C, K, kmax) : POL = zeros(n)
-
-
+      pollution ? POL =  GetPollution(effort[:,2], loc, ngroups, pol_slope, pol_C, K, kmax) : POL = zeros(n)     
+      ##################################
+      ###### PAYOFFS ###################
       #Wage Labor Market
-      WL = wages*effort[:,1] #*tech
-      
-      if indvLearn == true
-        if year == 1
-            nothing
-        elseif year == 2
-            ne = inv_logit.(ifelse.(effort[:,2].==1, 4.6, logit.(effort[:,2])) + rand(Normal(0, .2), n)) 
-            effort[:,2] = ne
-            effort[:,1] = 1 .- ne
-        elseif year > 2
-          #return(agents, effort, mem, αlearn)
-          effort=RWLearn2(agents, effort, mem, αlearn)
-        end
-      end
-
-      #Calculate agents.payoffs
-      agents.payoff_round = (HG .*(1 .- caught_sum).*price).^α +
-       WL + SP1.*price + SP2.*price + FP1.*price + FP2.*price -
-      MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
+      WL = wages[agents.gid].*effort[:,1] #tech
+      agents.payoff_round = (HG .*(1 .- caught_sum).*price + SP1.*price + SP2.*price + FP1.*price + FP2.*price).^α +
+       WL - MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
       ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) -
        HG .*(caught2).*groups.fine2[agents.gid]
-
       agents.payoff += agents.payoff_round .+ baseline
       agents.payoff_round[isnan.(agents.payoff_round)] .=0
       agents.payoff[isnan.(agents.payoff)] .=0
-
       if verbose == true
         println("harvest, ", sum(isnan.(HG.*(1 .- caught_sum))))
         println("sg_og, ", sum(isnan.(SP1)))
@@ -533,78 +358,35 @@ function cpr_abm(
         println("pol,", sum(isnan.(POL)))
         println("eco,", sum(isnan.(ECO)))
       end
-
-
-
       ################################################
       ########### ECOSYSTEM DYNAMICS #################
-
       K=ResourceDynamics(GH, K, kmax, regrow, volatility, ngroups, harvest_zero)
-
+      if new_leakage_experiment!==nothing
+        K = K .- new_leakage_experiment
+        K=ifelse.(K .<=0, 1, K)
+      end
       if year ∈ reset_stock
          K = kmax 
       end
+      if experiment_stock !== false
+        K.=experiment_stock
+      end
       #################################################
       ############# RECORD HISTORY ####################
-        history[:stock][year,:,sim] .=round.(K./kmax, digits=3)
-        history[:effort][year,:,sim] .=round.(report(effort[:,2], agents.gid, ngroups), digits=3)
-        history[:limit][year,:,sim] .= round.(reportMedian(traits.harv_limit, agents.gid, ngroups), digits=3)
-        history[:leakage][year,:,sim] .= round.(report(traits.leakage_type,agents.gid, ngroups), digits=3)
-        history[:og][year,:,sim] .= round.(report(traits.og_type,agents.gid, ngroups), digits=3)
-        history[:harvest][year,:,sim] .= round.(report(HG,agents.gid, ngroups), digits=3)
-        history[:punish][year,:,sim]  .= round.(report(traits.punish_type,agents.gid, ngroups), digits=3)
-        history[:punish2][year,:,sim]  .= round.(report(traits.punish_type2,agents.gid, ngroups), digits=3)
-        history[:fine1][year,:,sim] .= round.(reportMedian(traits.fines1, agents.gid, ngroups), digits=3)
-        history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fines2, agents.gid, ngroups), digits=3)
-        history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round,agents.gid, ngroups), digits=3)
-        history[:loc][year,1:n,sim] .= loc
-        history[:gid][1:n, sim] .= agents.gid
-        if full_save == true
-          history[:limitfull][year, :, sim] .= traits.harv_limit
-          history[:effortfull][year, :, sim] .= effort[:,2]
-          history[:leakfull][year, :, sim] .= traits.leakage_type
-          history[:punishfull][year, :, sim] .= traits.punish_type
-          history[:punish2full][year, :, sim] .= traits.punish_type2      
-          #history[:effortLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==1, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
-          #history[:effortNoLeak][year,:,sim] .= round.(report(effort[traits.leakage_type.==0, 2], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
-          #history[:harvestLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==1], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
-          #history[:harvestNoLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==0], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
-          history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
-          history[:seized][year,:,sim] .=  round.(reportSum(SP1, agents.gid, ngroups), digits =2)
-          history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
-          history[:seized2in][year,:,sim] .= seized2 
-          history[:forsize][:,sim] .= kmax
-          history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)
-          history[:clp2][year,:,sim] .= round.(reportCor(effort[:,2], traits.punish_type2,agents.gid, ngroups), digits=3)
-          history[:cep2][year,:,sim] .= round.(reportCor(traits.harv_limit, traits.punish_type2,agents.gid, ngroups), digits=3)
-          history[:ve][year,:,sim] .= round.(reportVar(effort[:,2],agents.gid, ngroups), digits=3)
-          history[:vp2][year,:,sim] .= round.(reportVar(traits.punish_type2,agents.gid, ngroups), digits=3)
-          history[:vl][year,:,sim] .= round.(reportVar(traits.harv_limit,agents.gid, ngroups), digits=3)
-        #  history[:fstEffort][year,sim] = GetFST(effort[:,2], agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstLimit][year,sim]  = GetFST(traits.harv_limit, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstLeakage][year,sim]   = GetFST(traits.leakage_type, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstPunish][year,sim]   = GetFST(traits.punish_type, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstPunish2][year,sim]  = GetFST(traits.punish_type2, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstFine1][year,sim]  = GetFST(traits.fines1, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstFine2][year,sim]  = GetFST(traits.fines2, agents.gid, ngroups, experiment_group, experiment)
-        #  history[:fstOg][year,sim]  = GetFST(traits.og_type, agents.gid, ngroups, experiment_group, experiment)
-        end
-        if rec_history == true 
-              history[:wealth][:,year,sim]  = agents.payoff
-              history[:wealthgroups][:,year,sim]  = agents.gid
-              history[:age][:,year,sim]  = agents.age 
-        end
+      history =RecordHistory(history = history, K = K, kmax = kmax, ngroups = ngroups, effort = effort,
+      traits = traits, agents = agents, seized2 = seized2, SP1 = SP1, SP2 = SP2,
+      rec_history = rec_history, full_save = full_save, HG = HG, loc = loc,
+       n = n, sim=sim, year = year)
 
       ###############################################
       ##############UPDATE MEMORY ###################
-      mem[:effort] = effort
-      mem[:payoff_round] = agents.payoff_round
+      # mem[:effort] = effort
+      # mem[:payoff_round] = agents.payoff_round
       #################################################
       ########### SOCIAL LEARNING #####################
 
 
     if social_learning == true
-
       #Set Up group rankings
       if glearn_strat == "income" gmean=AnalyticWeights(report(agents.payoff_round, agents.gid, ngroups)) end
       if glearn_strat == "wealth" gmean=AnalyticWeights(report(agents.payoff, agents.gid, ngroups)) end
@@ -668,8 +450,9 @@ function cpr_abm(
                   traits=SocialTransmission(traits, models, fidelity, traitTypes)
                 end                    
                 effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
+                history[:models][year,:,sim] .= models 
               end # End ngroup = n check
-            end#end social learning year
+            end#end social learning year 
     end # End Social Learning
 
     

@@ -10,7 +10,7 @@ if RUN  == true
         pun2_on = true, wages = 0.1, harvest_var = .01,
         price = 1, defensibility = 1, fines1_on = false,
         fines2_on = false, seized_on = true, labor = .7,
-        zero = true, 
+        invasion = true, 
         travel_cost = 0.1, full_save = true, 
         experiment_limit = i, experiment_punish2 = 1)
         push!(out, b)

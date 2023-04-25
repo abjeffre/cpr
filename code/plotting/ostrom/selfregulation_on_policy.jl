@@ -12,7 +12,7 @@ if RUN  == true
         lattice = [3,3], harvest_limit = 4, harvest_var = .7, harvest_var_ind = .1,
         regrow = .01, pun2_on = true, leak=true, nrounds = 1000,
         wages = 0.1, price = 1, experiment_punish1=L, experiment_group = collect(1:1:9), back_leak = true,
-        fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, learn_group_policy = true, control_learning = true)
+        fines1_on = false, punish_cost = 0.1, labor = .7, invasion = true, learn_group_policy = true, control_learning = true)
     end
     dat=pmap(g, S)
     dat=serialize("CPR\\data\\abm\\regulation.dat", dat)
@@ -21,15 +21,15 @@ end
 
 dat = deserialize("cpr\\data\\abm\\regulation.dat")
 
-y1 = [mean(mean(dat[i][:punish2][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+y1 = [mean(mean(dat[i][:punish2][900:1000,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
 a=reduce(vcat, y1)
 μ = mean(a, dims = 2)
 a=reduce(vcat, y1)
 a=reduce(vcat, a)
 
-y2 = [mean(mean(dat[i][:limit][400:500,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
-a2=reduce(vcat, y1)
-μ = mean(a2, dims = 2)
+y2 = [mean(mean(dat[i][:limit][900:1000,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+# a2=reduce(vcat, y1)
+# μ = mean(a2, dims = 2)
 a2=reduce(vcat, y2)
 a2=reduce(vcat, a2)
 

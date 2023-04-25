@@ -286,7 +286,7 @@ for(i in 1:length(leakb)){
 }
 
 
-for(i in 1:length(l))  if(!all(is.na(l[[i]][,3])))  dens(l[[i]][,3], main =i, show.zero =TRUE, show.HPDI = .89 )
+for(i in 1:length(l))  if(!all(is.na(l[[i]][,3])))  dens(l[[i]][,3], main =i, show.invasion =TRUE, show.HPDI = .89 )
 
 dat <- data.frame(l[[1]])
 for(i in 1:length(l)) dat <- rbind(dat, l[[i]])

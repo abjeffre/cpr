@@ -34,7 +34,7 @@ using StatsBase
   market_size = 1              # This controls the demand for labor in the population and is exogenous: Note that when set to 1 the wage rate equilibrates when half the population is in the labor force
   max_forest = 16500               # Average max stock
   var_forest = 1                   # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = [1, 1]                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly if negative it decreases the rate of degredation) degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = [1, 1]                # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly if negative it decreases the rate of degredation) degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01                     # the regrowth rate
   volatility = 0                 #the volatility of the resource each round - set as variance on a normal
   pollution = false
@@ -89,7 +89,7 @@ using StatsBase
   experiment_effort = false            #THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_group = 1                 #determines the set of groups which the experiment will be run on
   cmls = false                          #determines whether cmls will operate
-  zero = false
+  invasion = false
   power = false
   glearn_strat = false
 
@@ -121,7 +121,7 @@ test=    cpr_abm(
     defensibility = 1,
     seized_on = true,
     leak = true,
-    zero = true,
+    invasion = true,
     og_on = true,
     power = false,
     fines1_on = true,
@@ -171,7 +171,7 @@ test2=    cpr_abm(
     defensibility = 1,
     seized_on = true,
     leak = true,
-    zero = true,
+    invasion = true,
     og_on = true,
     power = false,
     fines1_on = true,
@@ -226,7 +226,7 @@ test3=    cpr_abm(
     def_perc = false,
     seized_on = true,
     leak = true,
-    zero = true,
+    invasion = true,
     og_on = true,
     power = "income",
     fines1_on = true,
@@ -396,7 +396,7 @@ test =cpr_abm(
     defensibility = 10,
     seized_on = true,
     leak = false,
-    zero = true,
+    invasion = true,
     og_on = true,
     power = false,
     fines1_on = true,
@@ -444,7 +444,7 @@ S =expand_grid([false, true],                   #pun2_on
     defensibility = 10,
     seized_on = s,
     leak = l,
-    zero = z,
+    invasion = z,
     og_on = og,
     power = false,
     fines1_on = true,
@@ -1093,12 +1093,12 @@ abm_dat = pmap(g, S[:,1], S[:,2], S[:,3], S[:,4], S[:,5], S[:,6], S[:,7],
 
 test = cpr_abm(n = 150*3, ngroups = 15, lattice = [1,15], var_forest=0, travel_cost = .0000001, max_forest = 7500*3, tech = 4, nrounds = 2000,
  leak = true, pun1_on = true, pun2_on = true, og_on = false, regrow = .01,
-  glearn_strat = "income", zero = true, outgroup =.01, cmls = false, back_leak = true)
+  glearn_strat = "income", invasion = true, outgroup =.01, cmls = false, back_leak = true)
 
 
 
 test2 = cpr_abm(n = 150*12, ngroups = 12, lattice = [1,12], var_forest=0, travel_cost = .0000001, max_forest = 7500*12, tech = 4,
-experiment_effort = 1, experiment_leak = 1, nrounds = 1000, leak = true, pun1_on = true, pun2_on = true, og_on = true, regrow = .01, glearn_strat = "income", zero = true)
+experiment_effort = 1, experiment_leak = 1, nrounds = 1000, leak = true, pun1_on = true, pun2_on = true, og_on = true, regrow = .01, glearn_strat = "income", invasion = true)
 
 
 test = cpr_abm(nsim = 5, n = 150*2, ngroups = 2, lattice = [1,2], var_forest=0, travel_cost = .0000001,
@@ -1396,7 +1396,7 @@ using Plots
 ng =2
 test =cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
 lattice = [1,2], harvest_limit = 2, harvest_var = .5, nrounds = 75000,
-harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 20,
+harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), invasion = true, nsim = 20,
 experiment_punish2 = 1, leak = false, control_learning = true, back_leak= true)
 
 
@@ -1405,7 +1405,7 @@ ng = fill(2, 80)
 @everywhere function g2(ng) 
     cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
         lattice = [1,ng], harvest_limit = 2, harvest_var = .5, nrounds = 75000,
-        harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1,
+        harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), invasion = true, nsim = 1,
         experiment_punish2 = 1, leak = false, control_learning = true, back_leak= true)
 end
 
@@ -1434,7 +1434,7 @@ using Plots
 ng =9
 test =cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
 lattice = [1,ng], harvest_limit = 2, harvest_var = .5, nrounds = 6000,
-harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 20,
+harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), invasion = true, nsim = 20,
 experiment_punish2 = 1, leak = false, control_learning = true, back_leak= true)
 
 
@@ -1517,7 +1517,7 @@ msy = ((forest*regrow)/4)/n
 
 a=cpr_abm(labor = .7, max_forest = 105000*9, n = 9*75, ngroups = 9, 
 lattice = [3,3], harvest_limit = 2, harvest_var = .2, nrounds = 5000, travel_cost = 0,
-harvest_var_ind = 0.5, experiment_group = collect(1:1:9), zero = true, nsim = 1, regrow = 0.01,
+harvest_var_ind = 0.5, experiment_group = collect(1:1:9), invasion = true, nsim = 1, regrow = 0.01,
 experiment_punish2 = 1, experiment_punish1 = 0.5,  experiment_leak = 1, special_leakage_group = 5,
 leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, genetic_evolution = true,
 seed = 2, seized_on = false)
@@ -1539,7 +1539,7 @@ S=collect(0.1:.05:1)
     lattice = [1,2], harvest_limit = 1, harvest_var = .1, harvest_var_ind = .1,
     regrow = .01, pun2_on = true, leak=false,
     wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, experiment_effort =.5, experiment_punish2=1,
-     fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, begin_leakage_experiment = 1)
+     fines1_on = false, punish_cost = 0.1, labor = .7, invasion = true, begin_leakage_experiment = 1)
 end
 dat=pmap(g, S)
 serialize("brutetest.dat", dat)
@@ -1570,7 +1570,7 @@ S=collect(0.1:.05:1)
     lattice = [3,3], harvest_limit = 4, harvest_var = .7, harvest_var_ind = .1,
     regrow = .01, pun2_on = true, leak=true, nrounds = 500,
     wages = 0.1, price = 1, experiment_punish1=L, experiment_group = collect(1:1:9), back_leak = true,
-    fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, learn_group_policy = true, control_learning = true)
+    fines1_on = false, punish_cost = 0.1, labor = .7, invasion = true, learn_group_policy = true, control_learning = true)
 end
 dat=pmap(g, S)
 serialize("cpr\\data\\abm\\regulation.dat", dat)
@@ -1620,7 +1620,7 @@ S=collect(0:.02:1)
     cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
     lattice = [3,3], harvest_limit = 8.259-2, regrow = .025, pun1_on = true, 
     wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    punish_cost = 0.00650525196229018395, labor = .7, invasion = true, experiment_punish1 = L,  travel_cost = 0,
     experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
 end
 dat=pmap(g, S)
@@ -1645,7 +1645,7 @@ if RUN  == true
         wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, 
         experiment_effort =1, control_learning = false,
         fines1_on = false, punish_cost = 0.1, labor = .7, 
-        zero = true, begin_leakage_experiment = 1)
+        invasion = true, begin_leakage_experiment = 1)
     end
     dat=pmap(g, S)
     serialize("test.dat", dat)
@@ -1690,7 +1690,7 @@ if RUN  == true
         lattice = [3,3], harvest_limit = 2, harvest_var = .01, harvest_var_ind = .1,
         regrow = .01, pun2_on = true, leak=true, nrounds = 1000,
         wages = 0.1, price = 1, experiment_punish1=L, experiment_group = collect(1:1:9), back_leak = true,
-        fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, learn_group_policy = true, control_learning = true)
+        fines1_on = false, punish_cost = 0.1, labor = .7, invasion = true, learn_group_policy = true, control_learning = true)
     end
     dat=pmap(g, S)
     serialize("borders_on_reg.dat", dat)

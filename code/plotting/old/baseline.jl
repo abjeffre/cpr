@@ -56,7 +56,7 @@ Beatutiful =cpr_abm(
     defensibility = 1,
     seized_on = true,
     leak = false,
-    zero = false
+    invasion = false
 )
 
 plot(Beatutiful["stock"][:,:,1], legend = false, ylim=(0,1), color = :forestgreen)
@@ -99,7 +99,7 @@ death =cpr_abm(
     defensibility = 1,
     seized_on = true,
     leak = false,
-    zero = true,
+    invasion = true,
     og_on = true
 )
 
@@ -145,7 +145,7 @@ death =cpr_abm(
     defensibility = 1,
     seized_on = true,
     leak = true,
-    zero = true,
+    invasion = true,
     og_on = true
 )
 plot(death["stock"][:,:,1], legend = false, ylim=(0,1), color = :forestgreen)

@@ -40,7 +40,7 @@ function cpr_abm(
   labor_market = false,         # This controls labor market competition
   max_forest = 350000,               # Average max stock
   var_forest = 0,                   # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = [1,1],                # This measures how degradable a resource is(when zero the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = [1,1],                # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                     # the regrowth rate
   volatility = 0,                 #the volatility of the resource each round - set as variance on a normal
   pollution = false,
@@ -94,7 +94,7 @@ function cpr_abm(
   experiment_effort = false,            #THIS SETS THE VALUE OF THE OTHER GROUPS LIMIT
   experiment_group = 1,                 #determines the set of groups which the experiment will be run on
   cmls = false,                          #determines whether cmls will operate
-  zero = false,
+  invasion = false,
   glearn_strat = false,              # options: "wealth", "income", "env"
   split_method = "random",
   kmax_data = nothing,
@@ -241,7 +241,7 @@ function cpr_abm(
     for i in 1:n push!(children, Vector{Int}[]) end
     #Effort as seperate DF
     temp = ones(ngoods)
-    if zero == true
+    if invasion == true
           temp[1] = 100-ngoods
           effort = rand(Dirichlet(temp), n)'
           effort=DataFrame(Matrix(effort), :auto)
@@ -253,7 +253,7 @@ function cpr_abm(
     # Setup leakage
           leak_temp =zeros(gs_init)
           leak_temp[1:asInt(ceil(gs_init/2))].=1 #50% START AS LEAKERS
-          if zero  leak_temp[1:asInt(ceil(gs_init/(gs_init*.9)))].=1 end #10% START AS LEAKERS
+          if invasion  leak_temp[1:asInt(ceil(gs_init/(gs_init*.9)))].=1 end #10% START AS LEAKERS
           for i = 1:ngroups
           Random.seed!(seed+i+2+ngroups)
             traits.leakage_type[agents.gid.==i] = sample(leak_temp, gs_init)
@@ -289,7 +289,7 @@ function cpr_abm(
     end
     # Outgroup learn
     Random.seed!(seed+56)
-    if zero == true
+    if invasion == true
         traits.og_type = rand(Beta(1,10), n)
       else
         traits.og_type  = inv_logit.(rnorm(n,logit(.5), .15)) #THIS STARTS AROUND 50%

@@ -46,7 +46,7 @@ lim=msy[i][:harvest][end,1,1]
 a=cpr_abm(n = 150*2, max_forest = 2*410000, ngroups =2, nsim = 1, nrounds = 1000,
 lattice = [1,2], harvest_limit = 16.168, regrow = .025, pun1_on = false, pun2_on = false, wages = 0.007742636826811269,
  price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-punish_cost = 0.00650525196229018395, labor = .7, zero = true,
+punish_cost = 0.00650525196229018395, labor = .7, invasion = true,
 travel_cost = 0.003, full_save = true, kmax_data = [410000, 410000],
 learn_group_policy = true)
 
@@ -58,7 +58,7 @@ for i in seq
     b=cpr_abm(n = 150*2, max_forest = 2*410000, ngroups =2, nsim = 1, nrounds = 1000,
     lattice = [1,2], harvest_limit = 16.168, regrow = .025, pun1_on = false, pun2_on = false, wages = 0.007742636826811269,
     price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.00650525196229018395, labor = .7, zero = true,
+    punish_cost = 0.00650525196229018395, labor = .7, invasion = true,
     travel_cost = 0.003, full_save = true, kmax_data = [i, 210000],
     learn_group_policy = true)
     push!(out, b)
@@ -83,7 +83,7 @@ for i in seq
     pun2_on = true, wages = 0.1,
     price = 1, defensibility = 1, fines1_on = false,
     fines2_on = false, seized_on = true, labor = .7,
-    zero = true, 
+    invasion = true, 
     travel_cost = 0.3, full_save = true, 
     experiment_limit = i, experiment_punish2 = 1)
     push!(out2, b)
@@ -107,7 +107,7 @@ for i in seq
             pun2_on = true, wages = 0.1, harvest_var =.1,
             price = 1, defensibility = 1, fines1_on = false,
             fines2_on = false, seized_on = L, labor = .7,
-            zero = true, harvest_var_ind = 0.1,
+            invasion = true, harvest_var_ind = 0.1,
             travel_cost = 0.1, full_save = true)
     end
     println("gothere")
@@ -150,7 +150,7 @@ S=collect(0:.02:1)
     cpr_abm(n = 150*2, max_forest = 2*210000, ngroups =2, nsim = 100,
     lattice = [1,2], harvest_limit = 4.8, regrow = .025, pun2_on = false, 
     leak=false,
-    wages = 1.3, price = .06, defensibility = 1, experiment_leak = L, experiment_effort =1, fines1_on = false, punish_cost = 0.001, labor = .7, zero = true)
+    wages = 1.3, price = .06, defensibility = 1, experiment_leak = L, experiment_effort =1, fines1_on = false, punish_cost = 0.001, labor = .7, invasion = true)
 end
 dat=pmap(g, S)
 #@JLD2.save("brute.jld2", dat)
@@ -187,7 +187,7 @@ S=collect(0.1:.05:1)
     lattice = [1,2], harvest_limit = 1, harvest_var = .1, harvest_var_ind = .1,
     regrow = .01, pun2_on = true, leak=false,
     wages = 0.1, price = 1, defensibility = 1, experiment_leak = L, experiment_effort =.5, experiment_punish2=1,
-     fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, begin_leakage_experiment = 1)
+     fines1_on = false, punish_cost = 0.1, labor = .7, invasion = true, begin_leakage_experiment = 1)
 end
 dat=pmap(g, S)
 serialize("brutetest.dat", dat)
@@ -205,7 +205,7 @@ S=collect(0.1:.05:1)
     lattice = [3,3], harvest_limit = 4, harvest_var = .7, harvest_var_ind = .1,
     regrow = .01, pun2_on = true, leak=true, nrounds = 500,
     wages = 0.1, price = 1, experiment_punish1=L, experiment_group = collect(1:1:9), back_leak = true,
-    fines1_on = false, punish_cost = 0.1, labor = .7, zero = true, learn_group_policy = true, control_learning = true)
+    fines1_on = false, punish_cost = 0.1, labor = .7, invasion = true, learn_group_policy = true, control_learning = true)
 end
 dat=pmap(g, S)
 serialize("brute2.dat", dat)
@@ -222,7 +222,7 @@ S=collect(.05:.05:1)
 @everywhere function g(L)
     cpr_abm(n = 150*9, max_forest = 9*201000, ngroups =9, nsim = 20,
     lattice = [3,3], harvest_limit = 8.75, regrow = .025, pun1_on = true, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.1, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0.1,
+    punish_cost = 0.1, labor = .7, invasion = true, experiment_punish1 = L,  travel_cost = 0.1,
     experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
 end
 dat=pmap(g, S)
@@ -356,7 +356,7 @@ png("cpr\\output\\fourpic.png")
  @everywhere function g2(L, ng)  
     cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
     lattice = [3,3], harvest_limit = 2, harvest_var = 0.5, nrounds = 5000, travel_cost = 0,
-    harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1, regrow = 0.01,
+    harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), invasion = true, nsim = 1, regrow = 0.01,
     experiment_punish2 = 1, experiment_punish1 = 0.01,  experiment_leak = L, special_leakage_group = 5,
     leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, seized_on = false,
     begin_leakage_experiment = 1)
@@ -368,7 +368,7 @@ ng = fill(9, 40)
 @everywhere function g2(L, ng) 
        cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
        lattice = [3,3], harvest_limit = 2, harvest_var = 0.5, nrounds = 5000, travel_cost = 0,
-       harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1, regrow = 0.01,
+       harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), invasion = true, nsim = 1, regrow = 0.01,
        experiment_punish2 = 1, experiment_punish1 = 0.01,  experiment_leak = L, special_leakage_group = 5,
        leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, seized_on = false,
        begin_leakage_experiment = 1)
@@ -386,7 +386,7 @@ ng = fill(9, 40)
 @everywhere function g2(L, ng) 
        cpr_abm(labor = .7, max_forest = 105000*ng, n = ng*75, ngroups = ng, 
        lattice = [3,3], harvest_limit = 2, harvest_var = 0.5, nrounds = 10000, travel_cost = 0,
-       harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), zero = true, nsim = 1, regrow = 0.01,
+       harvest_var_ind = 0.1, experiment_group = collect(1:1:ng), invasion = true, nsim = 1, regrow = 0.01,
        experiment_punish2 = 1, experiment_punish1 = 0.01,  experiment_leak = L, special_leakage_group = 5,
        leak=false, control_learning = true, back_leak= true, pun1_on = true, groups_sampled = 8, seized_on = false,
        begin_leakage_experiment = 5000)
@@ -547,7 +547,7 @@ S=collect(0:.02:1)
     cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
     lattice = [3,3], harvest_limit = 8.259, regrow = .025, pun1_on = true, 
     wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    punish_cost = 0.00650525196229018395, labor = .7, invasion = true, experiment_punish1 = L,  travel_cost = 0,
     experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true)
 end
 dat=pmap(g, S)
@@ -565,7 +565,7 @@ S=collect(0:.02:1)
     cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
     lattice = [3,3], harvest_limit = 8.259+2, regrow = .025, pun1_on = true, 
     wages = 0.007742636826811269, price = 0.0027825594022071257, defensibility = 1, fines1_on = false, fines2_on = false, seized_on = true,
-    punish_cost = 0.00650525196229018395, labor = .7, zero = true, experiment_punish1 = L,  travel_cost = 0,
+    punish_cost = 0.00650525196229018395, labor = .7, invasion = true, experiment_punish1 = L,  travel_cost = 0,
     experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true, learn_group_policy = true)
 end
 dat=pmap(g, S)
@@ -1104,7 +1104,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 #     cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 50,
 #     lattice = [3,3], harvest_limit = 4.8, regrow = .025, pun1_on = true, 
 #     wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-#     punish_cost = 0.01, labor = .7, zero = true, experiment_punish1 = L, 
+#     punish_cost = 0.01, labor = .7, invasion = true, experiment_punish1 = L, 
 #     experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, )
 # end
 # dat=pmap(g, S)
@@ -1126,7 +1126,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 #     cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 20,
 #     lattice = [3,3], harvest_limit = 4.8, regrow = .025, pun1_on = true, 
 #     wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-#     punish_cost = 0.01, labor = .7, zero = true, experiment_punish1 = L, travel_cost = 0.001,
+#     punish_cost = 0.01, labor = .7, invasion = true, experiment_punish1 = L, travel_cost = 0.001,
 #     experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true)
 # end
 
@@ -1163,7 +1163,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 #     lattice = [3,3], harvest_limit = 4.8, regrow = .025, pun1_on = false, pun2_on = false,
 #     var_forest = L, 
 #     wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-#     punish_cost = 0.01, labor = .7, zero = true, travel_cost = 0.01, back_leak = true, control_learning = true, groups_sampled = 6)
+#     punish_cost = 0.01, labor = .7, invasion = true, travel_cost = 0.01, back_leak = true, control_learning = true, groups_sampled = 6)
 # end
 
 # dat=pmap(g, S)
@@ -1212,7 +1212,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # fines2_on = false, 
 # punish_cost = 0.00001,
 # labor = .7,
-# zero = true,
+# invasion = true,
 # learn_group_policy = true,
 # nrounds = 1500, 
 # glearn_strat = "income",
@@ -1229,7 +1229,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # fines2_on = false, 
 # punish_cost = 0.00001,
 # labor = .7,
-# zero = true,
+# invasion = true,
 #  learn_group_policy = false,
 # nrounds = 1000, 
 # outgroup = 0.01)
@@ -1281,7 +1281,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # tempb =   cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 1,
 # lattice = [3,3], harvest_limit = 4.8, regrow = .025, pun1_on = true, 
 # wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-# punish_cost = 0.01, labor = .7, zero = true, experiment_punish1 = .55, 
+# punish_cost = 0.01, labor = .7, invasion = true, experiment_punish1 = .55, 
 # experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true)
 
 # plot(tempb[:punish2][:,:,1])
@@ -1290,7 +1290,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # tempb =   cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10,
 # lattice = [3,3], harvest_limit = 6, regrow = .025, pun1_on = true, harvest_var = 2.5,
 # wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-# punish_cost = 0.01, labor = .7, zero = true, experiment_punish1 = 0.02, 
+# punish_cost = 0.01, labor = .7, invasion = true, experiment_punish1 = 0.02, 
 # experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true)
 
 
@@ -1306,7 +1306,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # t1 =   cpr_abm(n = 150*9, max_forest = 9*210000, ngroups =9, nsim = 10, nrounds = 1000,
 # lattice = [3,3], harvest_limit = 4, regrow = .01, pun1_on = true,
 # wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-# punish_cost = 0.01, labor = .7, zero = true, experiment_punish1 = 0.02, 
+# punish_cost = 0.01, labor = .7, invasion = true, experiment_punish1 = 0.02, 
 # experiment_group = [1, 2, 3, 4, 5, 6, 7, 8, 9], back_leak = true, control_learning = true, full_save = true)
 
 
@@ -1323,7 +1323,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # t2 =   cpr_abm(n = 75*36, max_forest = 36*210000, ngroups =36, nsim = 5, nrounds = 1000,
 # lattice = [6,6], harvest_limit = 6, regrow = .025, pun1_on = true, harvest_var = 3,
 # wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-# punish_cost = 0.01, labor = .7, zero = true, back_leak = false, control_learning = false, full_save = true)
+# punish_cost = 0.01, labor = .7, invasion = true, back_leak = false, control_learning = false, full_save = true)
 
 
 
@@ -1339,7 +1339,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # t3 =   cpr_abm(n = 150*49, max_forest = (49)*210000, ngroups =49, nsim = 5, nrounds = 500,
 # lattice = [7,7], harvest_limit = 6, regrow = .025, pun1_on = true, harvest_var = 3,
 # wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-# punish_cost = 0.01, labor = .7, zero = true, back_leak = false, control_learning = false, full_save = true)
+# punish_cost = 0.01, labor = .7, invasion = true, back_leak = false, control_learning = false, full_save = true)
 
 
 # plot(mean(mean(t3[:punish][:,:,:], dims = 3), dims = 2)[:,:,1], ylim = (0, 1))
@@ -1357,7 +1357,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 # t4 =   cpr_abm(n = 150*49, max_forest = (49)*210000, ngroups =49, nsim = 5, nrounds = 500,
 # lattice = [7,7], harvest_limit = 3.5, regrow = .025, pun1_on = true, harvest_var = 2,
 # wages = 1.3, price = .06, defensibility = 1, fines1_on = false, fines2_on = false, 
-# punish_cost = 0.01, labor = .7, zero = true, back_leak = true, control_learning = true, full_save = true, 
+# punish_cost = 0.01, labor = .7, invasion = true, back_leak = true, control_learning = true, full_save = true, 
 # experiment_punish1 = 1, experiment_group = [collect(1:49)][1])
 
 
@@ -1384,7 +1384,7 @@ png(plot(maintain, collapse, leakage, layout = grid(1,3), size = (900, 220)), "c
 #     cpr_abm(n = 150*2, max_forest = 2*210000, ngroups =2, nsim = 50,
 #     lattice = [1,2], harvest_limit = 4.8, regrow = .025, pun2_on = false, leak=false,
 #     wages = 1.3, price = .06, defensibility = 1, experiment_leak = L, experiment_effort =1, fines1_on = false,
-#      punish_cost = 0.001, labor = .7, zero = true, bsm = "collective")
+#      punish_cost = 0.001, labor = .7, invasion = true, bsm = "collective")
 # end
 # dat=pmap(g, S)
 # #@JLD2.save("brute.jld2", dat)
