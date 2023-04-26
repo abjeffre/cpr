@@ -62,19 +62,73 @@ plot(search, stock, payoff)
 ###########################################################################################
 ################### DEMONSTRATE HOW THE FOLK THEORM SAVES GROUPS AND THE SYSTEM ###########
 
-out1 = []
-for i in 0:.2:.20
+@everywhere function g(x)
     ngroups = 20
-    test = cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+    cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
     max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
-    learn_group_policy =false, invasion = true, nsim = 10, 
-    experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = i,
+    learn_group_policy =false, invasion = true, nsim = 1, 
+    experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = x,
     full_save = true, genetic_evolution = false, #glearn_strat = "income",
     limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
-    push!(test, out1)
 end
 
+cnt = 1
+for i in collect(0:.02:.20)
+    S = fill(i, 20)
+    out=pmap(g, S)
+    save(string("m1_",cnt,".jld2"), "out", out)
+    out = nothing
+    cnt +=1
+end
+
+    
+
+
+
+############################################################################################
+#########################
+
+
+@everywhere function g(x)
+    ngroups = 20
+    cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
+    learn_group_policy =false, invasion = true, nsim = 1, 
+    experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = x,
+    full_save = true, genetic_evolution = false, glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+end
+
+cnt = 1
+for i in collect(0:.02:.20)
+    S = fill(i, 20)
+    out=pmap(g, S)
+    save(string("C:/Users/jeffr/OneDrive/Documents/CPR/data/m2_",cnt,".jld2"), "out", out)
+    out = nothing
+    cnt +=1
+end
+
+    
+
+
+
+
+
+
+
+
+
+
+S=collect(0:.02:.20)
+out=pmap(g, S)
+using JLD2
+save("test.jld2", "S", S)
+load("test.jld2")
+
 sa
+i=10
+plot(plot(out[i][:stock][:,:,1], c = :black), plot(out[i][:limit][:,:,1], c = :black),
+ plot(out[i][:payoffR][:,:,1], c = :black), layout=grid(1,3), label = "", size = (1000, 300))
 
 out2 = []
 for i in 0:.2:.20
