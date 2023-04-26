@@ -20,8 +20,11 @@ function SocialTransmission(trait, models, fidelity, types)
                                 x[:,i] =  ifelse.(trans_error[:,i], inv_logit.(logit.(x[models,i]) .+ n_error), x[models,i])
                         end
                         if types[i] == "positivecont"
-                                n_error = rand(Normal(1, .02), n)
-                                x[:,i] =  ifelse.(trans_error[:,i], x[models,i] .* n_error, x[models,i])
+                                 n_error = rand(Normal(0, .2), n)
+                                 proposed = x[models,i] .+ n_error
+                                 x[:,i] =  ifelse.(trans_error[:,i], ifelse.(proposed .<= 0, .1, proposed), x[models,i])
+                                 #new = rand(Uniform(0, 6), n)
+                                 #x[:,i] =  ifelse.(trans_error[:,i], n_error, x[models,i])
                         end
                 end
         end
@@ -74,14 +77,16 @@ function SocialTransmissionGroup(trait, models, fidelity, types, agents, ngroups
                                 x[:,i] =  ifelse.(trans_error[:,i], inv_logit.(logit.(x[models,i]) .+ n_error), x[models,i])
                         end
                         if types[i] == "positivecont"
-                                n_error = rand(Normal(1, .02), n)
-                                x[:,i] =  ifelse.(trans_error[:,i], x[models,i] .* n_error, x[models,i])
+                                n_error = rand(Normal(0, .2), n)
+                                proposed = x[models,i] .+ n_error
+                                x[:,i] =  ifelse.(trans_error[:,i], ifelse.(proposed .<= 0, .1, proposed), x[models,i])
                         end
                         if types[i] == "grouppositivecont"
                                 medians =reportMedian(x[:,i], agents.gid, ngroups)
                                 x[:,i][Bool.(out)]=medians[agents.gid][Bool.(out)]
-                                n_error = rand(Normal(1, .02), n)
-                                x[:,i] =  ifelse.(trans_error[:,i], x[models, i] .* n_error, x[models, i])
+                                n_error = rand(Normal(0, .2), n)
+                                proposed = x[models,i] .+ n_error
+                                x[:,i] =  ifelse.(trans_error[:,i], ifelse.(proposed .<= 0, .1, proposed), x[models,i])
                         end
                 end
         end

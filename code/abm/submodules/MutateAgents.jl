@@ -18,8 +18,12 @@ function MutateAgents(trait, mutation, types)
                                 x[:,i] =  ifelse.(trans_error[:,i], inv_logit.(logit.(x[:,i]) .+ n_error), x[:,i])
                         end
                         if types[i] == "positivecont"
-                                n_error = rand(Normal(1, .02), n)
-                                x[:,i] =  ifelse.(trans_error[:,i], (x[:,i]) .* n_error, x[:,i])
+  #                             n_error = rand(Normal(1, .02), n)
+#                               x[:,i] =  ifelse.(trans_error[:,i], (x[:,i]) .* n_error, x[:,i])
+                                n_error = rand(Normal(0, .2), n)
+                                proposed = x[models,i] .+ n_error
+                                #println(proposed)
+                                x[:,i] =  ifelse.(trans_error[:,i], ifelse.(proposed .<= 0, .1, proposed), x[models,i])
                         end
                 end
         end

@@ -279,6 +279,8 @@ print(g[:payoffR][end,:,1])
 
 ####################################################################
 ################### HOW DOES IT SPEARD #############################
+using Plots.PlotMeasures
+
 out = []
 ngroups =2
 for i in 0.5:.5:15
@@ -310,18 +312,10 @@ p1 = plot(out[1][:stock][:,1,1], color = cgrad(:thermal, 15, rev = true, categor
 for i in 2:15 plot!(out[i][:stock][:,1,1],  color = cgrad(:thermal, 15, rev = true, categorical = true)[i]) end
 
 
-p2 = plot(out[1][:payoffR][:,1,1], color = cgrad(:thermal, 15, rev = true, categorical = true)[1], xlab = "Time", ylab = "Payoff")
+p2 = plot(out[1][:payoffR][:,1,1], color = cgrad(:thermal, 15, rev = true, categorical = true)[1], xlab = "Time", ylab = "Payoff", ylim = (0,30))
 for i in 2:15 plot!(out[i][:payoffR][:,1,1],  color = cgrad(:thermal, 15, rev = true, categorical = true)[i]) end
 
-p3 = plot(out[1][:harvest][:,1,1], color = cgrad(:thermal, 15, rev = true, categorical = true)[1], xlab = "Time", ylab = "Payoff")
-for i in 2:15 plot!(out[i][:harvest][:,1,1],  color = cgrad(:thermal, 15, rev = true, categorical = true)[i]) end
-
-
-harv = function(x, e) 3*x*(100*e)^.5*.00001 + (1-e)*1 end
-harv(100000, 1)
-
-
-plot(p1, p2, Threshold, Trajedy, labels = "", width = 3, height  = 2, size = (1000, 350))
+plot(p1, p2, Threshold, Trajedy, labels = "", width = 3, height  = 2, size = (1000, 350), bottom_margin = 20px, left_margin = 20px)
 
 
 #######################################################

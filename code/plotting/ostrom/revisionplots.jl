@@ -110,11 +110,71 @@ end
 
     
 
+##############################################################################
+############## GROUP SELECTION SMALL #########################################
+
+using JLD2
+using Plots
+
+loaded=load("Y:/eco_andrews/Projects/CPR/data/m1_5.jld2")
+test=loaded["out"]
+
+p4=plot(test[1][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)
+for i in 2:20 plot!(test[i][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)end
+
+p5=plot(test[1][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
+for i in 2:20 plot!(test[i][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)end
+
+p6=plot(test[1][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .5)
+for i in 2:20 plot!(test[i][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .1)end
+
+p_10=plot(p4, p5, p6); # When the probability of learning from an outgroup member is .10
+savefig(p_10, "test_10.pdf")
+
+# Mean 
+l10=[mean(test[i][:limit][end,:,1]) for i in 1:20]
+p10=[mean(test[i][:payoffR][end,:,1]) for i in 1:20]
+s10=[mean(test[i][:stock][end,:,1]) for i in 1:20]
+
+mean(l10)
+mean(p10)
+mean(s10)
 
 
+###############################################################################
+################### GROUP SELECTION LARGE #####################################
 
+loaded=load("Y:/eco_andrews/Projects/CPR/data/m1_11.jld2")
 
+test=loaded["out"]
 
+p4=plot(test[1][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)
+for i in 2:20 plot!(test[i][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)end
+
+p5=plot(test[1][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
+for i in 2:20 plot!(test[i][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)end
+
+p6=plot(test[1][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .5)
+for i in 2:20 plot!(test[i][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .1)end
+
+p_20=plot(p4, p5, p6); # When the probability of learning from an outgroup member is .1
+savefig(p_20, "test_20.pdf")
+
+# Mean 
+l20=[mean(test[i][:limit][end,:,1]) for i in 1:20]
+p20=[mean(test[i][:payoffR][end,:,1]) for i in 1:20]
+s20=[mean(test[i][:stock][end,:,1]) for i in 1:20]
+
+mean(l20)
+mean(p20)
+mean(s20)
+
+i =1
+plot(test[i][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
+plot(test[i][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
+plot(test[i][:punish2][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
+plot(test[i][:effort][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
+plot(test[i][:harvest][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
 
 
 
@@ -155,3 +215,15 @@ plot(p4, p5, p6)
 ########### WHY DOES THIS WORK ###############
 
 # This works because agents parasitize those extracting resources. 
+
+ngroups = 20
+ok=cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 3000, leak = false,
+learn_group_policy =false, invasion = true, nsim = 1, 
+experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = .2,
+full_save = true, genetic_evolution = false, #glearn_strat = "income",
+limit_seed_override = collect(range(start = .1, stop = 6, length =ngroups)))
+
+plot(ok[:limit][:,:,1], label = "")
+plot(ok[:stock][:,:,1])
+plot(ok[:payoffR][:,:,1])
