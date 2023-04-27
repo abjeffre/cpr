@@ -54,18 +54,14 @@ payoff = plot(e[:payoffR][:,:,1], label = "", c = :black, alpha =.2, xlab = "Tim
 
 plot(search, stock, payoff)
 
-##################################################################################################
-########################### DEMONSTRATE THAT GROUP SELECTION DOES NOT SAVE GROUPS ################
-
-
 
 ###########################################################################################
-################### DEMONSTRATE HOW THE FOLK THEORM SAVES GROUPS AND THE SYSTEM ###########
+################### GROUP SIZE SWEEP        ###############
 
 @everywhere function g(x)
-    ngroups = 20
+    ngroups = 40
     cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
+    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 20000, leak = false,
     learn_group_policy =false, invasion = true, nsim = 1, 
     experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = x,
     full_save = true, genetic_evolution = false, #glearn_strat = "income",
@@ -73,142 +69,120 @@ plot(search, stock, payoff)
 end
 
 cnt = 1
-for i in collect(0:.02:.20)
-    S = fill(i, 20)
+for i in collect(0:.02:.50)
+    S = fill(i, 60)
     out=pmap(g, S)
     save(string("m1_",cnt,".jld2"), "out", out)
     out = nothing
     cnt +=1
 end
 
-    
+#####################################################################
+################### SAVE DATA #######################################
 
+for i in collect(1:26)
+    data=load(string("m1_", i, ".jld2"))
+    payoff = []
+    stock = []
+    punish =[]
+    limit = []
+    for k in collect(1:60)
+        push!(payoff, data["out"][k][:payoffR])
+        push!(stock, data["out"][k][:stock])
+        push!(punish, data["out"][k][:punish2])
+        push!(limit, data["out"][k][:limit])
+    end
+    save(string("limit_", i, ".jld2"), "dat", limit)
+    save(string("stock_", i, ".jld2"), "dat", stock)
+    save(string("punish_", i, ".jld2"), "dat", punish)
+    save(string("payoff_", i, ".jld2"), "dat", payoff)
+end
 
-
-############################################################################################
-#########################
-
-
+######################################################################################
+########################### 100 GROUPS ##############################################
 @everywhere function g(x)
-    ngroups = 20
-    cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
+    ngroups = 100
+    cpr_abm(degrade = 1, n=30*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 20000, leak = false,
     learn_group_policy =false, invasion = true, nsim = 1, 
     experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = x,
-    full_save = true, genetic_evolution = false, glearn_strat = "income",
+    full_save = true, genetic_evolution = false, #glearn_strat = "income",
     limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
 end
 
 cnt = 1
-for i in collect(0:.02:.20)
-    S = fill(i, 20)
+for i in collect(0:.02:.50)
+    S = fill(i, 60)
     out=pmap(g, S)
-    save(string("C:/Users/jeffr/OneDrive/Documents/CPR/data/m2_",cnt,".jld2"), "out", out)
+    save(string("m2_",cnt,".jld2"), "out", out)
     out = nothing
     cnt +=1
 end
 
-    
+#####################################################################
+################### SAVE DATA #######################################
 
-##############################################################################
-############## GROUP SELECTION SMALL #########################################
-
-using JLD2
-using Plots
-
-loaded=load("Y:/eco_andrews/Projects/CPR/data/m1_5.jld2")
-test=loaded["out"]
-
-p4=plot(test[1][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)
-for i in 2:20 plot!(test[i][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)end
-
-p5=plot(test[1][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
-for i in 2:20 plot!(test[i][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)end
-
-p6=plot(test[1][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .5)
-for i in 2:20 plot!(test[i][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .1)end
-
-p_10=plot(p4, p5, p6); # When the probability of learning from an outgroup member is .10
-savefig(p_10, "test_10.pdf")
-
-# Mean 
-l10=[mean(test[i][:limit][end,:,1]) for i in 1:20]
-p10=[mean(test[i][:payoffR][end,:,1]) for i in 1:20]
-s10=[mean(test[i][:stock][end,:,1]) for i in 1:20]
-
-mean(l10)
-mean(p10)
-mean(s10)
-
-
-###############################################################################
-################### GROUP SELECTION LARGE #####################################
-
-loaded=load("Y:/eco_andrews/Projects/CPR/data/m1_11.jld2")
-
-test=loaded["out"]
-
-p4=plot(test[1][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)
-for i in 2:20 plot!(test[i][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .1)end
-
-p5=plot(test[1][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
-for i in 2:20 plot!(test[i][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)end
-
-p6=plot(test[1][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .5)
-for i in 2:20 plot!(test[i][:payoffR][1:10:end,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .1)end
-
-p_20=plot(p4, p5, p6); # When the probability of learning from an outgroup member is .1
-savefig(p_20, "test_20.pdf")
-
-# Mean 
-l20=[mean(test[i][:limit][end,:,1]) for i in 1:20]
-p20=[mean(test[i][:payoffR][end,:,1]) for i in 1:20]
-s20=[mean(test[i][:stock][end,:,1]) for i in 1:20]
-
-mean(l20)
-mean(p20)
-mean(s20)
-
-i =1
-plot(test[i][:limit][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
-plot(test[i][:stock][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
-plot(test[i][:punish2][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
-plot(test[i][:effort][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
-plot(test[i][:harvest][1:10:end,:,1], label = "", xlab = "Time", ylab = "MAH", c = :black, alpha = .1)
-
-
-
-
-S=collect(0:.02:.20)
-out=pmap(g, S)
-using JLD2
-save("test.jld2", "S", S)
-load("test.jld2")
-
-sa
-i=10
-plot(plot(out[i][:stock][:,:,1], c = :black), plot(out[i][:limit][:,:,1], c = :black),
- plot(out[i][:payoffR][:,:,1], c = :black), layout=grid(1,3), label = "", size = (1000, 300))
-
-out2 = []
-for i in 0:.2:.20
-    ngroups = 20
-    test = cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
-    learn_group_policy =false, invasion = true, nsim = 10, 
-    experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = i,
-    full_save = true, genetic_evolution = false, glearn_strat = "income",
-    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
-    push!(test, out2)
+for i in collect(1:26)
+    data=load(string("m2_", i, ".jld2"))
+    payoff = []
+    stock = []
+    punish =[]
+    limit = []
+    for k in collect(1:60)
+        push!(payoff, data["out"][k][:payoffR])
+        push!(stock, data["out"][k][:stock])
+        push!(punish, data["out"][k][:punish2])
+        push!(limit, data["out"][k][:limit])
+    end
+    save(string("limit2_", i, ".jld2"), "dat", limit)
+    save(string("stock2_", i, ".jld2"), "dat", stock)
+    save(string("punish2_", i, ".jld2"), "dat", punish)
+    save(string("payoff2_", i, ".jld2"), "dat", payoff)
 end
 
 
+######################################################################################
+########################### 300 GROUPS ##############################################
+@everywhere function g(x)
+    ngroups = 300
+    cpr_abm(degrade = 1, n=10*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 20000, leak = false,
+    learn_group_policy =false, invasion = true, nsim = 1, 
+    experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = x,
+    full_save = true, genetic_evolution = false, #glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+end
 
-p4=plot(test[:stock][:,:,1], label = "", xlab = "Time", ylab = "Resource Stock", c = :black, alpha = .5)
-p5=plot(test[:limit][:,:,1], label = "", xlab = "Time", ylab = "Policy", c = :black, alpha = .5)
-p6=plot(test[:payoffR][:,:,1], label = "", xlab = "Time", ylab = "Payoff", c = :black, alpha = .5)
+cnt = 1
+for i in collect(0:.02:.50)
+    S = fill(i, 60)
+    out=pmap(g, S)
+    save(string("m3_",cnt,".jld2"), "out", out)
+    out = nothing
+    cnt +=1
+end
 
-plot(p4, p5, p6)
+#####################################################################
+################### SAVE DATA #######################################
+
+for i in collect(1:26)
+    data=load(string("m3_", i, ".jld2"))
+    payoff = []
+    stock = []
+    punish =[]
+    limit = []
+    for k in collect(1:60)
+        push!(payoff, data["out"][k][:payoffR])
+        push!(stock, data["out"][k][:stock])
+        push!(punish, data["out"][k][:punish2])
+        push!(limit, data["out"][k][:limit])
+    end
+    save(string("limit3_", i, ".jld2"), "dat", limit)
+    save(string("stock3_", i, ".jld2"), "dat", stock)
+    save(string("punish3_", i, ".jld2"), "dat", punish)
+    save(string("payoff3_", i, ".jld2"), "dat", payoff)
+end
+
 
 
 ##############################################
@@ -216,14 +190,51 @@ plot(p4, p5, p6)
 
 # This works because agents parasitize those extracting resources. 
 
-ngroups = 20
-ok=cpr_abm(degrade = 1, n=75*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 3000, leak = false,
+ngroups = 100
+ok2=cpr_abm(degrade = 1, n=30*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
 learn_group_policy =false, invasion = true, nsim = 1, 
-experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = .2,
-full_save = true, genetic_evolution = false, #glearn_strat = "income",
-limit_seed_override = collect(range(start = .1, stop = 6, length =ngroups)))
+experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = .01,
+full_save = true, genetic_evolution = false, glearn_strat = "income", #socialLearnYear =collect(1:10:5000)
+limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
 
-plot(ok[:limit][:,:,1], label = "")
-plot(ok[:stock][:,:,1])
-plot(ok[:payoffR][:,:,1])
+plot(plot(ok[:limit][:,:,1], label = ""), plot(ok[:stock][:,:,1], label = ""), plot(ok[:payoffR][:,:,1], label = ""), layout = grid(1,3), size = (1000, 300))
+plot(plot(ok2[:limit][:,:,1], label = ""), plot(ok2[:stock][:,:,1], label = ""), plot(ok2[:payoffR][:,:,1], label = ""), layout = grid(1,3), size = (1000, 300))
+
+
+for i in collect(1:26)
+    data=load(string("m1_", i, ".jld2"))
+    payoff = []
+    stock = []
+    punish =[]
+    limit = []
+    for k in collect(1:60)
+        push!(payoff, data["out"][k][:payoffR])
+        push!(stock, data["out"][k][:stock])
+        push!(punish, data["out"][k][:punish2])
+        push!(limit, data["out"][k][:limit])
+    end
+    save(string("limit_", i, ".jld2"), "dat", limit)
+    save(string("stock_", i, ".jld2"), "dat", stock)
+    save(string("punish_", i, ".jld2"), "dat", punish)
+    save(string("payoff_", i, ".jld2"), "dat", payoff)
+end
+
+
+#############################################################
+############ CHECKING #######################################
+using JLD2
+using Plots
+using StatsBase
+ms = []
+for k in 1:26
+    out=load("Y:/eco_andrews/Projects/CPR/data/stock_$k.jld2")
+    dat = out["dat"]
+    p1=plot(dat[1][1:10:10000,:,1], label = "", c = :black, alpha = .01)
+    for i in 2:60 plot!(dat[i][1:10:10000,:,1], label = "", c = :black, alpha = .01) end
+    p1
+    a1=[mean(Float64.(dat[i][9900:end,:,1])) for i in 1:60]
+    push!(ms, mean(a1))
+end
+
+plot(ms)
