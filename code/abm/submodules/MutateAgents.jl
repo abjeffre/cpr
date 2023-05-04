@@ -21,9 +21,9 @@ function MutateAgents(trait, mutation, types)
   #                             n_error = rand(Normal(1, .02), n)
 #                               x[:,i] =  ifelse.(trans_error[:,i], (x[:,i]) .* n_error, x[:,i])
                                 n_error = rand(Normal(0, .2), n)
-                                proposed = x[models,i] .+ n_error
+                                proposed = x[:,i] .+ n_error
                                 #println(proposed)
-                                x[:,i] =  ifelse.(trans_error[:,i], ifelse.(proposed .<= 0, .1, proposed), x[models,i])
+                                x[:,i] =  ifelse.(trans_error[:,i], ifelse.(proposed .<= 0, .1, proposed), x[:,i])
                         end
                 end
         end

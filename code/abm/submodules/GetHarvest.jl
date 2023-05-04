@@ -13,18 +13,19 @@ end
 
   # Harvest
   #Note that this harvest function does not pool labor before applying the elastisicty
-function GetHarvestDensity(effort, loc, K, kmax, tech, labor, degrade, necessity, ngroups, agents)
+function GetHarvestDensity(effort, loc, K, kmax, tech, labor, degrade, ngroups, agents, density_alpha)
     b = zeros(ngroups)
     dens = zeros(ngroups)
     effort=effort.*100
     for i in 1:ngroups
         b[i] =   K[i]^degrade[i]
-        dens[i] = K[i]/Kmax[i] 
+        dens[i] = K[i]/kmax[i] 
     end
     #tech.*((1 .+ effort.^labor) .- 1).*b[loc] .- necessity
     H=tech[agents.gid].*((effort.^labor[agents.id]) ).*b[loc] 
-    H = H- H*(1-(K/Kmax))
-enqd
+    H = H.- H.*density_alpha.*(1 .-(K[loc]./kmax[loc]))
+    return H
+end
 
 
   # Harvest
@@ -49,4 +50,3 @@ test=function(K, Kmax, α=1)
   return(H)
 end
 
-test(9000, 100000, 1)

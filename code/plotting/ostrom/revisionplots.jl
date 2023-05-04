@@ -5,7 +5,7 @@ ngroups =2
 for i in 0.5:.5:15
     c = cpr_abm(degrade = 1, n=100*ngroups, ngroups = ngroups, lattice = [1,2],
         max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 1000, leak = false,
-        limit_seed = [0,3], learn_group_policy =false, invasion = false, nsim = 1, experiment_punish2 =1, experiment_limit = i,
+        punish_seed = [0,3], learn_group_policy =false, invasion = false, nsim = 1, experiment_punish2 =1, experiment_limit = i,
         experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = .0,
         full_save = true, genetic_evolution = false, glearn_strat = "income"
         )
@@ -103,7 +103,7 @@ end
 @everywhere function g(x)
     ngroups = 100
     cpr_abm(degrade = 1, n=30*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-    max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 20000, leak = false,
+    max_forest = 1333*ngroups, tech = .00002, wages = 1, price = 3, nrounds = 15000, leak = false,
     learn_group_policy =false, invasion = true, nsim = 1, 
     experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = x,
     full_save = true, genetic_evolution = false, #glearn_strat = "income",
@@ -111,8 +111,8 @@ end
 end
 
 cnt = 1
-for i in collect(0:.02:.50)
-    S = fill(i, 60)
+for i in [0, .05, .1, .2, .4]
+    S = fill(i, 50)
     out=pmap(g, S)
     save(string("m2_",cnt,".jld2"), "out", out)
     out = nothing
@@ -192,7 +192,7 @@ end
 
 ngroups = 100
 ok2=cpr_abm(degrade = 1, n=30*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
+max_forest = 1333*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 10000, leak = false,
 learn_group_policy =false, invasion = true, nsim = 1, 
 experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = .01,
 full_save = true, genetic_evolution = false, glearn_strat = "income", #socialLearnYear =collect(1:10:5000)
@@ -238,3 +238,366 @@ for k in 1:26
 end
 
 plot(ms)
+
+
+
+##################################################
+################# CONTEXTUAL ANALYSIS #############
+
+ngroups = 100
+ntemp = 30
+ok2=cpr_abm(degrade = 1, n=ntemp*ngroups, ngroups = ngroups, lattice = [10,10], distance_adj = .01, inspect_timing = "before",
+max_forest = 1333*ntemp*ngroups, tech = .00002, wages = 1, price = 3, nrounds = 2000, leak = true, punish_cost = 0.0001,
+learn_group_policy =false, invasion = true, nsim = 1, experiment_punish2 = 1, seized_on = true, experiment_limit = 2,
+experiment_group = collect(1:ngroups), control_learning = true, back_leak = true, outgroup = .1, density_alpha = 0, fidelity = .1,
+full_save = true, genetic_evolution = false, socialLearnYear =collect(1:10:5000),
+limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+
+
+# Loop over every year and run two regression
+# 1.  Decomposition of fitness.
+# 2.  The strength of selection.
+
+# Do this for both contextual analysis and price equations
+# Contextual analysis
+# 1. fitness = c1*x + c2*X   
+# 2. selection δx = c1*var(x) + c2*var(X)
+
+# Price equation
+# 1. fitness = c1(x-X) + (c1+c2)*X   
+# 2. selection δx = c1(var(x)-var(X)) + (c1+c2)*var(X)
+
+using GLM
+using Plots
+
+plot(ok2[:stock][:,:,1], label = "")
+plot(ok2[:payoffR][:,:,1], label = "")
+plot(ok2[:effort][:,:,1], label = "")
+plot(ok2[:limit][:,:,1], label = "")
+plot(ok2[:punish][:,:,1], label = "")
+plot(mean(ok2[:leakage][:,:,1], dims =2), label = "")
+
+Inv_coefs = []
+G_coefs = []
+for i in 1:3000
+    dat = DataFrame(Y = Float64.(ok2[:payoffRfull][i,:,1]),
+                    X = Float64.(ok2[:limit][i,Int.(ok2[:gid][:,1,1]),1]),
+                    x = Float64.(ok2[:limitfull][i,:,1]))
+    a=lm(@formula(Y ~ x + X), dat)
+    push!(G_coefs, coef(a)[3])
+    push!(Inv_coefs, coef(a)[2])
+end
+
+plot(Inv_coefs)
+plot!(G_coefs)
+hline!([0,0])
+#######################
+########## PRICE ######
+
+using GLM
+using Plots
+Inv_coefs = []
+G_coefs = []
+for i in 1:3000
+    dat = DataFrame(Y = Float64.(ok2[:payoffRfull][i,:,1]),
+                    X = Float64.(ok2[:limit][i,Int.(ok2[:gid][:,1,1]),1]),
+                    x = Float64.(ok2[:limitfull][i,:,1]))
+    dat.x = dat.x .-dat.X
+    a=lm(@formula(Y ~ x + X), dat)
+    push!(G_coefs, coef(a)[3])
+    push!(Inv_coefs, coef(a)[2])
+end
+
+plot(Inv_coefs)
+plot!(G_coefs)
+hline!([0,0])
+
+
+
+
+
+##########################################
+########### CONTEXTUAL SELECTION #########
+dat = DataFrame(p = mean(Float64.(ok2[:limitfull][2,:,1].-ok2[:limitfull][1,:,1])),
+                X = var(Float64.(ok2[:limit][1,:,1])),
+                x = mean([var(Float64.(ok2[:limitfull][1,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])
+)
+
+for i in 2:1999
+    temp = DataFrame(p = mean(Float64.(ok2[:limitfull][i+1,:,1].-ok2[:limitfull][i,:,1])),
+                X = var(Float64.(ok2[:limit][i,:,1])),
+                x = mean([var(Float64.(ok2[:limitfull][i,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])    )
+
+    append!(dat, temp)
+end
+
+
+plot(dat.x)
+plot!(dat.X)
+plot!(dat.p)
+
+dat = dat
+lm(@formula(p ~ x + X), dat)
+
+dat2 = dat[900:1999,:]
+lm(@formula(p ~ x + X), dat2)
+
+
+##################################
+######### PRICE ##################
+
+dat = DataFrame(p = mean(Float64.(ok2[:limitfull][2,:,1].-ok2[:limitfull][1,:,1])),
+                X = var(Float64.(ok2[:limit][1,:,1])),
+                x = mean([var(Float64.(ok2[:limitfull][1,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])
+)
+
+for i in 2:1999
+    temp = DataFrame(p = mean(Float64.(ok2[:limitfull][i+1,:,1].-ok2[:limitfull][i,:,1])),
+                X = var(Float64.(ok2[:limit][i,:,1])),
+                x = mean([var(Float64.(ok2[:limitfull][i,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])    )
+    append!(dat, temp)
+end
+
+dat.x = dat.x.-dat.X
+
+
+plot(dat.x)
+plot!(dat.X)
+plot!(dat.p)
+
+lm(@formula(p ~ x + X), dat)
+dat2 = dat[ 1:999,:]
+lm(@formula(p ~ x + X), dat2)
+
+
+
+
+
+########################################
+############ TEST ######################
+
+
+dat = DataFrame(p = mean(Float64.(ok2[:limitfull][2,:,1].-ok2[:limitfull][1,:,1])),
+                X = var(Float64.(ok2[:limit][1,:,1])),
+                x = var(Float64.(ok2[:limitfull][1,:,1]))
+)
+
+for i in 2:1999
+    temp = DataFrame(p = mean(Float64.(ok2[:limitfull][i+1,:,1].-ok2[:limitfull][i,:,1])),
+                X = var(Float64.(ok2[:limit][i,:,1])),
+                x = var(Float64.(ok2[:limitfull][i,:,1]) ))
+    append!(dat, temp)
+end
+
+#Contextual
+lm(@formula(p ~ x + X), dat)
+dat2 = dat[900:1999,:]
+lm(@formula(p ~ x + X), dat)
+
+# Price 
+dat.x = dat.x-dat.X
+lm(@formula(p ~ x + X), dat)
+dat2 = dat[900:1999,:]
+lm(@formula(p ~ x + X), dat)
+
+
+plot(dat.x)
+plot!(dat.X)
+plot!(dat.p)
+
+
+
+
+
+
+
+
+
+
+
+
+
+dat1 = dat[1:500,:]
+lm(@formula(p ~ x + X), dat1)
+
+dat2 = dat[2000:2999,:]
+lm(@formula(p ~ x + X), dat2)
+
+
+
+################################
+############# BORDERS ###########
+
+
+
+Inv_coefs = []
+G_coefs = []
+S_coefs = []
+for i in 1:3000
+    dat = DataFrame(Y = Float64.(ok2[:payoffRfull][i,:,1]),
+                    X = Float64.(ok2[:punish][i,Int.(ok2[:gid][:,1,1]),1]),
+                    x = Float64.(ok2[:punishfull][i,:,1]),
+                    S = Float64.(ok2[:stock][i,Int.(ok2[:gid][:,1,1]),1]))
+    a=lm(@formula(Y ~ x + X  ), dat)
+    push!(G_coefs, coef(a)[3])
+    push!(Inv_coefs, coef(a)[2])
+  #  push!(S_coefs, coef(a)[4])
+end
+
+
+plot(Inv_coefs)
+plot!(G_coefs)
+hline!([0,0])
+#######################
+########## PRICE ######
+
+using GLM
+using Plots
+Inv_coefs = []
+G_coefs = []
+for i in 1:3000
+    dat = DataFrame(Y = Float64.(ok2[:payoffRfull][i,:,1]),
+                    X = Float64.(ok2[:punish][i,Int.(ok2[:gid][:,1,1]),1]),
+                    x = Float64.(ok2[:punishfull][i,:,1]))
+    dat.x = dat.x .-dat.X
+    a=lm(@formula(Y ~ x + X), dat)
+    push!(G_coefs, coef(a)[3])
+    push!(Inv_coefs, coef(a)[2])
+end
+
+plot(Inv_coefs)
+plot!(G_coefs)
+hline!([0,0])
+
+
+plot(Inv_coefs[1:100])
+plot!(G_coefs[1:100])
+
+##########################################
+########### CONTEXTUAL SELECTION #########
+dat = DataFrame(p = mean(Float64.(ok2[:punishfull][2,:,1].-ok2[:punishfull][1,:,1])),
+                X = var(Float64.(ok2[:punish][1,:,1])),
+                x = mean([var(Float64.(ok2[:punishfull][1,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])
+)
+
+for i in 2:2999
+    temp = DataFrame(p = mean(Float64.(ok2[:punishfull][i+1,:,1].-ok2[:punishfull][i,:,1])),
+                X = var(Float64.(ok2[:punish][i,:,1])),
+                x = mean([var(Float64.(ok2[:punishfull][i,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])    )
+
+    append!(dat, temp)
+end
+
+
+plot(dat.x)
+plot!(dat.X)
+plot!(dat.p)
+
+dat = dat
+lm(@formula(p ~ x + X), dat)
+
+dat2 = dat[2000:2500,:]
+lm(@formula(p ~ x + X), dat2)
+
+
+##################################
+######### PRICE ##################
+
+dat = DataFrame(p = mean(Float64.(ok2[:punishfull][1+1,:,1].-ok2[:punishfull][1,:,1])),
+                X = var(Float64.(ok2[:punish][1,:,1])),
+                x = mean([var(Float64.(ok2[:punishfull][1,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])
+)
+
+for i in 2:2999
+    temp = DataFrame(p = mean(Float64.(ok2[:punishfull][i+1,:,1].-ok2[:punishfull][i,:,1])),
+                X = var(Float64.(ok2[:punish][i,:,1])),
+                x = mean([var(Float64.(ok2[:punishfull][i,Int.(ok2[:gid][:,1,1]) .== j,1])) for j in 1:100])    )
+    append!(dat, temp)
+end
+
+dat.x = dat.x.-dat.X
+
+dat2 = dat[2000:2500,:]
+lm(@formula(p ~ x + X), dat2)
+
+
+plot(dat.x)
+plot!(dat.X)
+plot!(dat.p)
+
+lm(@formula(p ~ x + X), dat)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ngroups = 30
+ntemp = 10
+a= cpr_abm(degrade =  1, n=ntemp*ngroups, ngroups = ngroups, lattice = [5,6], labor = 1, inspect_timing = "before", 
+    max_forest = 1333*ntemp*ngroups, tech = .000012, wages = 1, price = 3, nrounds = 2500, leak = true,
+    learn_group_policy =false, invasion = true, nsim = 1, travel_cost = .01, seized_on = false, regrow =.025,
+    experiment_group = collect(1:15), control_learning = false, back_leak = true, outgroup = .1, experiment_punish1 = 1,
+    full_save = true, genetic_evolution = false, #glearn_strat = "income", 
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+
+ngroups = 1000
+ntemp = 5
+b= cpr_abm(degrade = 1, n=ntemp*ngroups, ngroups = ngroups, lattice = [10,100], labor = 1, inspect_timing = "before", 
+    max_forest = 1333*ntemp*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 1000, leak = false, groups_sampled = 2,
+    learn_group_policy =false, invasion = true, nsim = 1, travel_cost = .01, seized_on = false, regrow =.025,
+    experiment_group = collect(1:2:ngroups),  control_learning = false, back_leak = true, outgroup = .1, 
+    full_save = true, genetic_evolution = false, #glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+
+
+
+
+
+c= cpr_abm(degrade = 1, n=ntemp*ngroups, ngroups = ngroups, lattice = [1,30], labor = 1, inspect_timing = "before", 
+    max_forest = 1333*ntemp*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 2500, leak = false, groups_sampled = 2,
+    learn_group_policy =false, invasion = true, nsim = 1, travel_cost = .01, seized_on = false, regrow =.025,
+    experiment_group = collect(1:2:30), experiment_effort = 1, control_learning = false, back_leak = true, outgroup = .1, experiment_punish1 = 0,
+    full_save = true, genetic_evolution = false, #glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+
+
+
+plot(a[:stock][:,:,1])
+plot(b[:stock][:,:,1])
+plot(b[:punish][:,:,1])
+plot(b[:leakage][:,:,1])
+
+
+plot!(c[:stock][:,:,1])
+plot!(c[:effort][:,:,1])
+plot(b[:leakage][:,:,1])
+
+b[:loc]
+plot(b[:harvest][:,:,1])
+plot(b[:payoffR][:,1:2:30,1], ylim = (0, 50), label = "")
+plot!(b[:payoffR][:,2:2:30,1], ylim = (0, 50), label = "")
+plot(mean(a[:payoffR][:,1:15,1],dims =2) .-mean(a[:payoffR][:,16:30,1],dims =2), ylim = (-5, 5), label = "")
+hline!([0,0])
+
+
+plot!(mean(a[:payoffR][:,16:30,1],dims =2), ylim = (0, 28), label = "")
+
+
+plot(a[:limit][:,:,1])
+
+plot(a[:punish][:,:,1])
+plot(a[:punish2][:,:,1])
+plot((a[:punish][:,:,1]).-(a[:leakage][:,:,1]))

@@ -69,7 +69,7 @@ function cpr_abm(
   fine_start = 1,                 # Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
   fine_var = .2,                  # Determines the group offset for fines at the begining
   distance_adj =0.9,              # This affects the proboabilty of sampling a more close group.
-  travel_cost = .00,              # This basically controls the travel time for individuals who travel to neightboring communities to steal from Note that higher values mean less leakage
+  travel_cost = .01,              # This basically controls the travel time for individuals who travel to neightboring communities to steal from Note that higher values mean less leakage
   groups_sampled = 1,             # When leakers sample candidate wards to visit they draw this number of groups to compare forest sizes
   social_learning = true,         # Toggels whether Presitge Biased Tranmission is on
   nmodels = 3,                    # The number of models sampled to copy from in social learning
@@ -106,7 +106,7 @@ function cpr_abm(
   harvest_zero = false,           # Automatically sets harvest to invasion to observe simple regrowth dynamics
   wealth_degrade = nothing,       # When wealth is passed on it degrades by some percent
   slearn_freq = 1,                # Not opperational - it defines the frequency of social learning 
-  reset_stock = 100000,                 # Is the year in which resources are reset to max
+  reset_stock = 100000,           # Is the year in which resources are reset to max
   socialLearnYear = nothing,      # Which years individuals are allowed to socially learn in  - specify as a vector of dates
   αlearn = 1,                     # Controls learning rate
   indvLearn = false,              # Controls whehter individual learning is turned on
@@ -117,7 +117,7 @@ function cpr_abm(
   bsm = "individual",              # Defines how gains from seizures are split options = "Collective" or "individual"
   genetic_evolution = true,        # defines whether or not genetic evolution opperates. 
   special_leakage_group = nothing, # If the leakage experiment group cannot be the same as the other groups. 
-  begin_leakage_experiment = 200000, # this is set so large that it doesnt ping unless changed.
+  begin_leakage_experiment = 1, 
   population_growth = false,
   pgrowth_data = nothing,
   unitTest = false,
@@ -127,7 +127,8 @@ function cpr_abm(
   new_leakage_experiment = nothing,
   kseed = nothing,
   limit_seed_override = nothing,
-  effort_seed = nothing
+  effort_seed = nothing,
+  density_alpha = 0,
 )
   # Establish group population sizes
   if population_data != nothing
@@ -394,12 +395,14 @@ function cpr_abm(
       if glearn_strat == "random" gmean=AnalyticWeights(ones(ngroups))end
       if glearn_strat == false gmean=AnalyticWeights(ones(ngroups))end
       if experiment== true
-        if special_leakage_group == nothing
-            if length(experiment_group)==1 gmean[experiment_group]=0 end  #this ensures all learning happens not from the experimental group.
-            if length(experiment_group)>1 gmean[experiment_group].=0 end
-        else
-            if length(special_leakage_group)==1 gmean[special_leakage_group]=0 end  #this ensures all learning happens not from the experimental group.
-            if length(special_leakage_group)>1 gmean[special_leakage_group].=0 end
+        if control_learning== false
+          if special_leakage_group == nothing
+              if length(experiment_group)==1 gmean[experiment_group]=0 end  #this ensures all learning happens not from the experimental group.
+              if length(experiment_group)>1 gmean[experiment_group].=0 end
+          else
+              if length(special_leakage_group)==1 gmean[special_leakage_group]=0 end  #this ensures all learning happens not from the experimental group.
+              if length(special_leakage_group)>1 gmean[special_leakage_group].=0 end
+          end
         end
       end
 
@@ -463,8 +466,8 @@ function cpr_abm(
       ####################################
       ###### Evolutionary dynamics #######
       # println(agents.payoff)
-      # First we set all negative or payoffs = to 0.0001 to aid in sampling
-      # Next we check to see if genetic evolution is turned on
+      # First we check to see if genetic evolution is turned on
+      # Second we set all negative or payoffs = to 0.0001 to aid in sampling
       # If genetic evolution is on we check to see if agents are learning from from the experimental groups.
       # First then, if learning from the control group is allowed then we first deal with agents in the experimental group
       # All agents within the experimental group only reporduce amongst themselves.
