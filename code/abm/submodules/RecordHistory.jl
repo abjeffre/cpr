@@ -6,20 +6,20 @@ function RecordHistory(; history = history, K = K, kmax = kmax, ngroups = ngroup
     history[:effort][year,:,sim] .=round.(report(effort[:,2], agents.gid, ngroups), digits=3)
     history[:limit][year,:,sim] .= round.(reportMedian(traits.harv_limit, agents.gid, ngroups), digits=3)
     history[:leakage][year,:,sim] .= round.(report(traits.leakage_type,agents.gid, ngroups), digits=3)
-    history[:og][year,:,sim] .= round.(report(traits.og_type,agents.gid, ngroups), digits=3)
+    # history[:og][year,:,sim] .= round.(report(traits.og_type,agents.gid, ngroups), digits=3)
     history[:harvest][year,:,sim] .= round.(report(HG,agents.gid, ngroups), digits=3)
     history[:punish][year,:,sim]  .= round.(report(traits.punish_type,agents.gid, ngroups), digits=3)
     history[:punish2][year,:,sim]  .= round.(report(traits.punish_type2,agents.gid, ngroups), digits=3)
-    history[:fine1][year,:,sim] .= round.(reportMedian(traits.fines1, agents.gid, ngroups), digits=3)
-    history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fines2, agents.gid, ngroups), digits=3)
+    # history[:fine1][year,:,sim] .= round.(reportMedian(traits.fines1, agents.gid, ngroups), digits=3)
+    # history[:fine2][year,:,sim]  .= round.(reportMedian(traits.fines2, agents.gid, ngroups), digits=3)
     history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round,agents.gid, ngroups), digits=3)
     history[:loc][year,1:n,sim] .= loc
     history[:gid][1:n, sim] .= agents.gid
     if full_save == true
     history[:limitfull][year, :, sim] .= traits.harv_limit
     history[:effortfull][year, :, sim] .= effort[:,2]
-    history[:leakfull][year, :, sim] .= traits.leakage_type
-    history[:punishfull][year, :, sim] .= traits.punish_type
+    # history[:leakfull][year, :, sim] .= traits.leakage_type
+    # history[:punishfull][year, :, sim] .= traits.punish_type
     history[:punish2full][year, :, sim] .= traits.punish_type2
     history[:payoffRfull][year, :, sim] .= agents.payoff_round
     history[:harvestfull][year, :, sim] .= HG           

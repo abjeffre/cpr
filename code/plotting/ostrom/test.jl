@@ -406,3 +406,96 @@ g=12
 corel=[cor(test[:payoffRfull][i,test[:gid].==g,1], test[:punish2full][i,test[:gid].==g,1]) for i in 1:15000]
 plot(plot(corel, alpha = .05), plot(test[:stock][:,g,1], lw = 4, label = ""))
 mean(Float64.(corel))
+
+
+
+G=load("Y:/eco_andrews/Projects/CPR/data/G1.jld2")["G"]
+I=load("Y:/eco_andrews/Projects/CPR/data/I1.jld2")["I"]
+
+a=plot(G[1], c = :orange, alpha = .2, label = "")
+plot!(I[1], c = :violet, alpha = .2, label = "")
+
+for i in 1:50
+  plot!(G[i], c = :orange, alpha = .2, label = "")
+  plot!(I[i], c = :violet, alpha = .2, label = "")
+end 
+a
+
+P = [dat["out"][i][:punish2][14000:15000,:,1]] 
+
+
+a=load("Y:/eco_andrews/Projects/CPR/data/test.jld2")["test"]
+
+plot(a[1].p)
+plot!(a[1].X)
+plot!(a[1].x)
+
+using GLM
+
+x=[coef(lm(@formula(p ~ x + X), a[i]))[2] for i in 1:50]
+X=[coef(lm(@formula(p ~ x + X), a[i]))[3] for i in 1:50]
+
+scatter(x)
+scatter!(X)
+
+
+ngroups = 10
+n = 30
+ok2=cpr_abm(degrade = 1, n=30*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+max_forest = 1333*ngroups*n, tech = .00002, wages = 1, price = 3, nrounds = 3000, leak = true, regrow= .1,
+learn_group_policy =false, invasion = true, nsim = 1, control_learning = false, back_leak = true, outgroup = .2,
+full_save = true, genetic_evolution = false, limit_seed_override = collect(range(start = .1, stop = 5, length =ngroups)))
+
+
+
+
+ngroups = 10
+n = 30
+ok2=cpr_abm(degrade = 1, n=30*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+max_forest = 1333*ngroups*n, tech = .00002, wages = 1, price = 3, nrounds = 3000, leak = true, regrow= .1,
+learn_group_policy =false, invasion = true, nsim = 1, control_learning = false, back_leak = true, outgroup = .2,
+full_save = true, genetic_evolution = true, limit_seed_override = collect(range(start = .1, stop = 5, length =ngroups)))
+
+
+plot(plot(ok2[:stock][:,:,1], label = ""), plot(ok2[:leakage][:,:,1], label = ""), plot(ok2[:punish][:,:,1], label = ""), plot(ok2[:punish2][:,:,1], label = ""), plot(ok2[:limit][:,:,1], label = ""))
+
+
+
+S = [collect(1:10), collect(11:20)]
+
+
+@everywhere function g(a, b)
+  addNumbers(a = a, b = b)
+end
+
+output=pmap(g, S[1], S[2])
+
+
+
+
+
+
+function GetContextualSelection(data, x, X)
+  out = []
+  for k in 1:1
+      df=data["out"][k]
+      ngroups=size(df[X])[2]
+      nrounds = size(df[X])[1]
+      println(k)
+      dat = DataFrame(p = mean(Float64.(df[x][2,:,1].-df[x][1,:,1])),
+                      X = var(Float64.(df[X][1,:,1])),
+                      x = mean([var(Float64.(df[x][1,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])
+      )
+
+      for i in 2:(nrounds-1)
+          temp = DataFrame(p = mean(Float64.(df[x][i+1,:,1].-df[x][i,:,1])),
+                      X = var(Float64.(df[X][i,:,1])),
+                      x = mean([var(Float64.(df[x][i,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])    )
+
+          append!(dat, temp)
+      end
+      push!(out,dat) 
+  end
+  return(out)
+end
+

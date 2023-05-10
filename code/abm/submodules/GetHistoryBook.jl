@@ -6,24 +6,24 @@ function getHistoryBook(;n = n, nrounds = nrounds, ngroups = ngroups,
     :effort => zeros(nrounds, ngroups, nsim),
     :limit => zeros(nrounds, ngroups, nsim),
     :leakage => zeros(nrounds, ngroups, nsim),
-    :og => zeros(nrounds, ngroups, nsim),
+    # :og => zeros(nrounds, ngroups, nsim),
     :harvest => zeros(nrounds, ngroups, nsim),
     :punish => zeros(nrounds, ngroups, nsim),
     :punish2 => zeros(nrounds, ngroups, nsim),
-    :cel =>  zeros(nrounds, ngroups, nsim),
-    :clp2 => zeros(nrounds, ngroups, nsim),
-    :cep2 => zeros(nrounds, ngroups, nsim),
-    :fine1 => zeros(nrounds, ngroups, nsim),
-    :fine2 =>zeros(nrounds, ngroups, nsim),
+    # :cel =>  zeros(nrounds, ngroups, nsim),
+    # :clp2 => zeros(nrounds, ngroups, nsim),
+    # :cep2 => zeros(nrounds, ngroups, nsim),
+    # :fine1 => zeros(nrounds, ngroups, nsim),
+    # :fine2 =>zeros(nrounds, ngroups, nsim),
     :loc => ifelse(population_growth == true, zeros(nrounds, convert(Int, sum(pgrowth_data)*ngroups + n), nsim), zeros(nrounds, n, nsim)),
     :gid => ifelse(population_growth == true, zeros(convert(Int, sum(pgrowth_data)*ngroups + n), nsim), zeros(n, nsim)),
     :payoffR => zeros(nrounds, ngroups, nsim))
   if full_save == true 
     history[:limitfull] = zeros(nrounds, n, nsim)
     history[:effortfull] = zeros(nrounds, n, nsim)
-    history[:leakfull] = zeros(nrounds, n, nsim)
-    history[:limitfull] = zeros(nrounds, n, nsim)
-    history[:punishfull] = zeros(nrounds, n, nsim)
+    # history[:leakfull] = zeros(nrounds, n, nsim)
+    # history[:limitfull] = zeros(nrounds, n, nsim)
+    # history[:punishfull] = zeros(nrounds, n, nsim)
     history[:punish2full] = zeros(nrounds, n, nsim)
     history[:payoffRfull] = zeros(nrounds, n, nsim)
     history[:harvestfull] = zeros(nrounds, n, nsim)            

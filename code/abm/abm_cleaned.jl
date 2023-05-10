@@ -453,7 +453,7 @@ function cpr_abm(
                   traits=SocialTransmission(traits, models, fidelity, traitTypes)
                 end                    
                 effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
-                history[:models][year,:,sim] .= models 
+                if full_save == true history[:models][year,:,sim] .= models end 
               end # End ngroup = n check
             end#end social learning year 
     end # End Social Learning
