@@ -17,7 +17,10 @@ function SocialTransmission(trait, models, fidelity, types)
                         if types[i] == "binary" x[:,i]=ifelse.(trans_error[:,i], ifelse.(x[models,i].==1,0,1), x[models,i])  end
                         if types[i] == "prob"
                                 n_error = rand(Normal(), n)
-                                x[:,i] =  ifelse.(trans_error[:,i], inv_logit.(logit.(x[models,i]) .+ n_error), x[models,i])
+                                proposal = inv_logit.(logit.(x[models,i]) .+ n_error)
+                                proposal = ifelse.(proposal .> .999, .9, proposal)                                
+                                new_value = ifelse.(proposal .< 0.001, .1, proposal)
+                                x[:,i] =  ifelse.(trans_error[:,i], new_value, x[models,i])
                         end
                         if types[i] == "positivecont"
                                  n_error = rand(Normal(0, .2), n)

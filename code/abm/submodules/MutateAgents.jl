@@ -15,7 +15,10 @@ function MutateAgents(trait, mutation, types)
                         if types[i] == "binary" x[:,i]=ifelse.(trans_error[:,i], ifelse.(x[:,i].==1,0,1), x[:,i])  end
                         if types[i] == "prob"
                                 n_error = rand(Normal(),  n)
-                                x[:,i] =  ifelse.(trans_error[:,i], inv_logit.(logit.(x[:,i]) .+ n_error), x[:,i])
+                                proposal = inv_logit.(logit.(x[:,i]) .+ n_error)
+                                proposal = ifelse.(proposal .> .999, .9, proposal)                                
+                                new_value = ifelse.(proposal .< 0.001, .1, proposal)
+                                x[:,i] =  ifelse.(trans_error[:,i], new_value, x[:,i])
                         end
                         if types[i] == "positivecont"
   #                             n_error = rand(Normal(1, .02), n)
