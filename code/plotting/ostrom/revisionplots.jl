@@ -302,12 +302,84 @@ test3=ExtractMultilevelData(files, :limit, :limitfull)
 
 
 
+
+
+ngroups = 100
+n= 30
+cpr_abm(degrade = 1, n=n*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+max_forest = 1333*n*ngroups, tech = .00002, wages = 1, price = 3, nrounds = 15000, leak = false,
+learn_group_policy =false, invasion = true, nsim = 1, 
+experiment_group = collect(1:ngroups), control_learning = true, back_leak = true, outgroup = x,
+full_save = true, genetic_evolution = false, #glearn_strat = "income",
+limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+
 # #####################################################################
 # ################### SAVE DATA #######################################
 
+# Parameters
+cb=collect(range(start = 0.001, stop = 3.999, length = 10)) # Cost Benifit Ratio
+maxbc = 4 # Max CB Ratio
+punish_cost = collect(range(start = 0.001, stop = 2, length = 10)) # remeber this goes up to 2 
+ngroups = 100
+n= 30
+
+temp=expand_grid(cb, punish_cost)
+S=zeros(100, 3)
+S[:, 1:2] = temp 
+S[:,3] = maxbc.-S[:,1]
+
+@everywhere function g(b, c, pc)
+    cpr_abm(degrade = 1, n=30*100,
+    ngroups = 100,
+    lattice = [10,10],
+    max_forest = 1333*30*100,
+    tech = .00002,
+    wages = c,
+    price = b,
+    nrounds = 15000,
+    leak = true,
+    learn_group_policy =false,
+    invasion = true,
+    nsim = 50,
+    punish_cost = pc,
+    outgroup = .3,
+    full_save = false,
+    genetic_evolution = false,
+    #glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =100)))
+end    
+
+for i in length(cb)
+    c = fill(S[i, 1], 50)
+    b = fill(S[i, 3], 50)
+    pc = fill(S[i, 2], 50)
+    out=pmap(g, b, c, pc)
+    dirname = string("sweep_pc,",pc[1], "_c", c[1], "_b",b[1], ".jld2")
+    mkdir(dirname)
+    save(string("$dirname/output.jld2"), "out", out)
+end
 
 
 
+
+a=cpr_abm(degrade = 1, n=n*ngroups,
+    ngroups = ngroups,
+    lattice = [1,ngroups],
+    max_forest = 1333*n*ngroups,
+    tech = .00002,
+    wages = 1,
+    price = 3,
+    nrounds = 1500,
+    leak = true,
+    learn_group_policy =false,
+    invasion = true,
+    nsim = 1,
+    punish_cost = 2,
+    outgroup = .3,
+    full_save = false,
+    genetic_evolution = false,
+    #glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
 
 # mutable struct myparams()
 # N::Int64

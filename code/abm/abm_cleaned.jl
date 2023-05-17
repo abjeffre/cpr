@@ -8,7 +8,7 @@ using StatsBase
 # include("cpr/code/abm/submodules/SocialTransmission.jl")
 # include("cpr/code/abm/submodules/ResourceDynamics.jl")
 # include("cpr/code/abm/submodules/MutateAgents.jl")
-# include("cpr/code/abm/submodules/MakeBabies.jl")
+# include("cpr/code/abm/submodules/MakeBabies.jhisl")
 # include("cpr/code/abm/submodules/KillAgents.jl")
 # include("cpr/code/abm/submodules/GetSeizedPay.jl")
 # include("cpr/code/abm/submodules/GetPollution.jl")
@@ -415,6 +415,7 @@ function cpr_abm(
           out[i] = rbinom(1,1, traits.og_type[i])[1]
         end
       end
+      # Determine whether social learning opperates this year
       sly =
         if socialLearnYear == nothing
             sly = true
@@ -427,35 +428,34 @@ function cpr_abm(
         end
 
       if sly == true
-        if n == ngroups
-                    if year > 1
-                        #models=GetModelsn1(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
-                        models=GetModelsn1(agents, history, learn_type, year)
-                        #println("Before: ", sum(effort[:,2][models] .>= effort[:,2][agents.id]))
-                        if learn_group_policy
-                          traits=SocialTransmissionGroup(traits, models, fidelity, traitTypesGroup, agents, ngroups, out)
-                        else                          
-                          traits=SocialTransmission(traits, models, fidelity, traitTypes)
-                        end                    
-                        # effortT = copy(effort)
-                        effort2 = zeros(n,2)
-                        effort2[:,2] = history[:effort][year-1,:,1]
-                        effort2[:,1] = 1 .-effort2[:,2]
-                        effort=SocialTransmission2(effort, effort2, models, fidelity, "Dirichlet")
-                    #   println("Mutation: ", sum(effort[:,2] .> effortT[:,2][models])) 
-                     end
-                
-                else
-                models=GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
-                if learn_group_policy
-                  traits=SocialTransmissionGroup(traits, models, fidelity, traitTypesGroup, agents, ngroups, out)
-                else
-                  traits=SocialTransmission(traits, models, fidelity, traitTypes)
-                end                    
-                effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
-                if full_save == true history[:models][year,:,sim] .= models end 
-              end # End ngroup = n check
-            end#end social learning year 
+        if n == ngroups # This for when the number of individuals equals the number of groups. 
+          if year > 1 
+            #models=GetModelsn1(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
+            models=GetModelsn1(agents, history, learn_type, year)
+            #println("Before: ", sum(effort[:,2][models] .>= effort[:,2][agents.id]))
+            if learn_group_policy
+              traits=SocialTransmissionGroup(traits, models, fidelity, traitTypesGroup, agents, ngroups, out)
+            else                          
+              traits=SocialTransmission(traits, models, fidelity, traitTypes)
+            end                    
+            # effortT = copy(effort)
+            effort2 = zeros(n,2)
+            effort2[:,2] = history[:effort][year-1,:,1]
+            effort2[:,1] = 1 .-effort2[:,2]
+            effort=SocialTransmission2(effort, effort2, models, fidelity, "Dirichlet")
+            #   println("Mutation: ", sum(effort[:,2] .> effortT[:,2][models])) 
+          end 
+        else # This is for normal social learning
+          models=GetModels(agents, ngroups, gmean, nmodels, out, learn_type, glearn_strat)
+          if learn_group_policy
+            traits=SocialTransmissionGroup(traits, models, fidelity, traitTypesGroup, agents, ngroups, out)
+          else
+            traits=SocialTransmission(traits, models, fidelity, traitTypes)
+          end                    
+          effort=SocialTransmission(effort, models, fidelity, "Dirichlet")
+          if full_save == true history[:models][year,:,sim] .= models end 
+        end # End ngroup = n check
+      end#end social learning year 
     end # End Social Learning
 
     
