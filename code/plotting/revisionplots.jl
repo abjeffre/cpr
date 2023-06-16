@@ -55,7 +55,7 @@ payoff = plot(e[:payoffR][:,:,1], label = "", c = :black, alpha =.2, xlab = "Tim
 plot(search, stock, payoff)
 
 
-###########################################################################################
+###########################################################
 ################### GROUP SIZE SWEEP        ###############
 
 @everywhere function g(x)
@@ -113,39 +113,309 @@ end
 
 
 cnt = 1
+base_folder = "outgroup_sweeps"
 for i in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5]
     S = fill(i, 50)
     out=pmap(g, S)
-    dirname = string("ngroups100_outgroup",i)
+    dirname = string("$base_folder/ngroups100_outgroup",i)
     mkdir(dirname)
     save(string("$dirname/output.jld2"), "out", out)
     out = nothing
 end
 
 
-##########################################################################################
-####################### 300 GROUPS #######################################################
-
-@everywhere function g(x)
-    ngroups = 300
-    n= 30
-    cpr_abm(degrade = 1, n=n*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-    max_forest = 1333*n*ngroups, tech = .00002, wages = 1, price = 3, nrounds = 15000, leak = false,
-    learn_group_policy =false, invasion = true, nsim = 1, 
-    experiment_group = collect(1:ngroups), control_learning = true, back_leak = true, outgroup = x,
-    full_save = true, genetic_evolution = false, #glearn_strat = "income",
-    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+Stock = []
+Punish1 = []
+Punish2 = []
+Limit = []
+for dir in readdir(base_folder)
+    dat=load(string("$base_folder/$dir/output.jld2"))
+    println(dir)
+    ST=[mean(dat["out"][i][:stock][14500:15000,:,1]) for i in 1:50]
+    P1=[mean(dat["out"][i][:punish][14500:15000,:,1]) for i in 1:50]
+    P2=[mean(dat["out"][i][:punish2][14500:15000,:,1]) for i in 1:50]
+    L=[mean(convert.(Float64,dat["out"][i][:limit][14500:15000,:,1])) for i in 1:50]    
+    push!(Stock, ST)
+    push!(Limit, L)
+    push!(Punish1, P1)
+    push!(Punish2, P2)
 end
 
-cnt = 1
-for i in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5]
-    S = fill(i, 50)
-    out=pmap(g, S)
-    dirname = string("ngroups300_outgroup",i)
-    mkdir(dirname)
-    save(string("$dirname/output.jld2"), "out", out)
-    out = nothing
+STOCK=[mean(mean(Stock[i])) for i in 1:6]
+LIMIT=[mean(mean(Limit[i])) for i in 1:6]
+REGULATE=[mean(mean(Punish2[i])) for i in 1:6]
+
+save("$base_folder/stock_outgroup.jld2", "out", STOCK)
+save("$base_folder/limit_outgroup.jld2", "out", LIMIT)
+save("$base_folder/regulate_outgroup.jld2", "out", REGULATE)
+
+
+STO=load("Y:/eco_andrews/Projects/CPR/data/stock_outgroup.jld2")
+LIM=load("Y:/eco_andrews/Projects/CPR/data/limit_outgroup.jld2")
+REG=load("Y:/eco_andrews/Projects/CPR/data/regulate_outgroup.jld2")
+plot([0.01, .1, .2, .3, .4, .5], REG["out"], label = "", ylab = " ", xlab = "Group Selection (out-group learning)", ylim = (0,1), c = :Black, line = :dash)  
+plot!([0.01, .1, .2, .3, .4, .5], LIM["out"]/5.1, label = "", c = :Black)
+#plot!([0.01, .1, .2, .3, .4, .5], STO["out"], label = "", ylab = "Regulate", xlab = "Group Selection (out-group learning)", ylim = (0,1), c = :Black)  
+
+normalize(LIM["out"])
+# #####################################################################
+# ################### PHASE DIAGRAMS #######################################
+
+# Parameters
+punish_cost = collect(range(start = 0.001, stop = .4, length = 10)) # remeber this goes up to 2 
+cb=collect(range(start = 0.001, stop = 3.999, length = 10)) # Cost Benifit Ratio
+maxbc = 4 # Max CB Ratio
+ngroups = 100
+n= 30
+
+temp=expand_grid(cb, punish_cost)
+S=zeros(100, 3)
+S[:, 1:2] = temp 
+S[:,3] = maxbc.-S[:,1]
+
+@everywhere function g(b, c, pc)
+    cpr_abm(degrade = 1, n=30*100,
+    ngroups = 100,
+    lattice = [10,10],
+    max_forest = 1333*30*100,
+    tech = .00002,
+    wages = c,
+    price = b,
+    nrounds = 10000,
+    leak = true,
+    learn_group_policy =false,
+    invasion = true,
+    nsim = 1,
+    inspect_timing = "after",
+    punish_cost = pc,
+    outgroup = .75,
+    full_save = false,
+    genetic_evolution = false,
+    #glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =100)))
+end    
+
+base_folder = "phase_sweeps"
+for i in 1:50
+    b = round.(fill(S[i, 1], 50), digits = 3)
+    pc = round.(fill(S[i, 2], 50), digits = 3)
+    c = round.(fill(S[i, 3], 50), digits = 3)
+    dirname = string("sweep_pc",pc[1], "_c", c[1], "_b",b[1])
+    if dirname ∉ readdir(base_folder)
+        out=pmap(g, b, c, pc)
+        mkdir(dirname)
+        save(string("$base_folder/$dirname/output.jld2"), "out", out)
+    else
+        println("$dirname already exists - skipping")
+    end
 end
+
+
+base_folder = "phase_sweeps"
+for i in 51:100
+    b = round.(fill(S[i, 1], 50), digits = 3)
+    pc = round.(fill(S[i, 2], 50), digits = 3)
+    c = round.(fill(S[i, 3], 50), digits = 3)
+    dirname = string("sweep_pc",pc[1], "_c", c[1], "_b",b[1])
+    if dirname ∉ readdir(base_folder)
+        out=pmap(g, b, c, pc)
+        mkdir(dirname)
+        save(string("$base_folder/$dirname/output.jld2"), "out", out)
+    else
+        println("$dirname already exists - skipping")
+    end
+end
+
+
+
+# #####################################################################
+# ################### PHASE DIAGRAMS Low #######################################
+
+# Parameters
+punish_cost = collect(range(start = 0.001, stop = .4, length = 10)) # remeber this goes up to 2 
+cb=collect(range(start = 0.001, stop = 4, length = 10)) # Cost Benifit Ratio
+maxbc = 4 # Max CB Ratio
+ngroups = 100
+n= 30
+
+temp=expand_grid(cb, punish_cost)
+S=zeros(100, 3)
+S[:, 1:2] = temp 
+S[:,3] = maxbc.-S[:,1]
+
+@everywhere function g(b, c, pc)
+    cpr_abm(degrade = 1, n=30*100,
+    ngroups = 100,
+    lattice = [10,10],
+    max_forest = 1333*30*100,
+    tech = .00002,
+    wages = c,
+    price = b,
+    nrounds = 10000,
+    leak = true,
+    learn_group_policy =false,
+    invasion = true,
+    nsim = 1,
+    punish_cost = pc,
+    outgroup = .25,
+    full_save = false,
+    genetic_evolution = false,
+    #glearn_strat = "income",
+    limit_seed_override = collect(range(start = .1, stop = 4, length =100)))
+end    
+
+base_folder = "phase_sweeps"
+for i in 1:50
+    b = round.(fill(S[i, 1], 50), digits = 3)
+    pc = round.(fill(S[i, 2], 50), digits = 3)
+    c = round.(fill(S[i, 3], 50), digits = 3)
+    dirname = string("sweep_pc",pc[1], "_c", c[1], "_b",b[1])
+    if dirname ∉ readdir(base_folder)
+        out=pmap(g, b, c, pc)
+        mkdir(dirname)
+        save(string("$dirname/output.jld2"), "out", out)
+    else
+        println("$dirname already exists - skipping")
+    end
+end
+base_folder = "phase_sweeps"
+for i in 51:100
+    b = round.(fill(S[i, 1], 50), digits = 3)
+    pc = round.(fill(S[i, 2], 50), digits = 3)
+    c = round.(fill(S[i, 3], 50), digits = 3)
+    dirname = string("sweep_pc",pc[1], "_c", c[1], "_b",b[1])
+    if dirname ∉ readdir(base_folder)
+        out=pmap(g, b, c, pc)
+        mkdir(dirname)
+        save(string("$base_folder/$dirname/output.jld2"), "out", out)
+    else
+        println("$dirname already exists - skipping")
+    end
+end
+
+
+
+
+####################################################################################
+############# THIS WAS RUN ON TWO SERVERS SO THE DATA MUST BE COMBINED #############
+
+base_folder = "phase_sweeps"
+  
+stock = []
+payoff = []
+regulate = []
+exclude = []
+limit = []
+
+for i in 1:size(S)[1]
+    println(i)
+    b = round.(fill(S[i, 1], 50), digits = 3)
+    pc = round.(fill(S[i, 2], 50), digits = 3)
+    c = round.(fill(S[i, 3], 50), digits = 3)
+    dirname2 = string("sweep_pc",pc[1], "_c", c[1], "_b",b[1])
+    if dirname2 ∈ readdir()
+        out=load("$dirname2/output.jld2")["out"]
+        push!(stock, Float64.(mean([mean(out[i][:stock][9400:10000, :, 1]) for i in 1:50])))
+        push!(exclude, Float64.(mean([mean(out[i][:punish][9400:10000, :, 1]) for i in 1:50])))
+        push!(regulate, Float64.(mean([mean(out[i][:punish2][9400:10000, :, 1]) for i in 1:50])))
+        push!(limit, mean([mean(Float64.(out[i][:limit][9400:10000, :, 1])) for i in 1:50]))
+        push!(payoff, mean([mean(Float64.(out[i][:payoffR][9400:10000, :, 1])) for i in 1:50]))
+    else
+        push!(stock, nothing)
+        push!(exclude, nothing)
+        push!(regulate, nothing)
+        push!(limit, nothing)
+        push!(payoff, nothing)
+    end
+end
+
+save("limit.jld2", "out", limit)
+save("stock.jld2", "out", stock)
+save("exclude.jld2", "out", exclude)
+save("regulate.jld2", "out", regulate)
+save("payoff.jld2", "out", payoff)
+
+save("limit2.jld2", "out", limit)
+save("stock2.jld2", "out", stock)
+save("exclude2.jld2", "out", exclude)
+save("regulate2.jld2", "out", regulate)
+save("payoff2.jld2", "out", payoff)
+
+######################################################
+############## MERGE THE TWO #########################
+
+items=("limit", "stock", "regulate", "exclude", "payoff")
+for i in items
+    a = load(string("Y:/eco_andrews/Projects/CPR/data/$i",".jld2"))["out"]
+    a2 = load(string("Y:/eco_andrews/Projects/CPR/data/$i","2.jld2"))["out"]
+    for j in 1:100
+        if  a2[j] .!== nothing
+            a[j] = a2[j]
+        end
+    end
+    if i == "limit" global lim = a end
+    if i == "exclude" global exc = a end
+    if i == "regulate" global reg = a end
+    if i == "stock" global sto = a end
+    if i == "payoff" global pay = a end
+end 
+     
+#########################################################
+############# MOVE TO PLOTTING ##########################
+
+sto=ifelse.(sto.== nothing, 0, sto)
+exc=ifelse.(exc.== nothing, 0, exc)
+reg=ifelse.(reg.== nothing, 0, reg)
+pay=ifelse.(pay.== nothing, 0, pay)
+lim=ifelse.(lim.== nothing, 0, lim)
+
+
+plot(sto)
+plot(exc)
+plot(reg)
+stom=reshape(sto, 10, 10)
+excm=reshape(exc, 10, 10)
+regm=reshape(reg, 10, 10)
+limm=reshape(lim, 10, 10)
+paym=reshape(pay, 10, 10)
+
+x = .2
+collective =(excm .> x) .& (regm .> x)
+only_exclude = (excm .> x) .& (regm .< x)
+only_regulate =  (excm .< x) .& (regm .> x)
+tragedy = (excm .<= x) .& (regm .<= x)
+cornocopia = stom[:,10] .>5
+temp = zeros(10, 10)
+temp[10,: ] .=1
+heatmap(temp)
+heatmap(collective)
+heatmap(only_exclude)
+heatmap(only_regulate)
+heatmap(tragedy)
+
+# ##########################################################################################
+# ####################### 300 GROUPS #######################################################
+
+# @everywhere function g(x)
+#     ngroups = 300
+#     n= 30
+#     cpr_abm(degrade = 1, n=n*ngroups, ngroups = ngroups, lattice = [1,ngroups],
+#     max_forest = 1333*n*ngroups, tech = .00002, wages = 1, price = 3, nrounds = 15000, leak = false,
+#     learn_group_policy =false, invasion = true, nsim = 1, 
+#     experiment_group = collect(1:ngroups), control_learning = true, back_leak = true, outgroup = x,
+#     full_save = true, genetic_evolution = false, #glearn_strat = "income",
+#     limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
+# end
+
+# cnt = 1
+# for i in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5]
+#     S = fill(i, 50)
+#     out=pmap(g, S)
+#     dirname = string("ngroups300_outgroup",i)
+#     mkdir(dirname)
+#     save(string("$dirname/output.jld2"), "out", out)
+#     out = nothing
+# end
 
 
 # Loop over every year and run two regression
@@ -288,78 +558,7 @@ function ExtractMultilevelData(files, x, X)
 end
 test3=ExtractMultilevelData(files, :limit, :limitfull)
 
-
-
-
-
-
-
-###################################
-########## STOCK ##################
-
-[mean(dat["out"][i][:stock][9000:10000,:,1]) for i in 1:50]
-
-
-
-
-
-
-ngroups = 100
-n= 30
-cpr_abm(degrade = 1, n=n*ngroups, ngroups = ngroups, lattice = [1,ngroups],
-max_forest = 1333*n*ngroups, tech = .00002, wages = 1, price = 3, nrounds = 15000, leak = false,
-learn_group_policy =false, invasion = true, nsim = 1, 
-experiment_group = collect(1:ngroups), control_learning = true, back_leak = true, outgroup = x,
-full_save = true, genetic_evolution = false, #glearn_strat = "income",
-limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups)))
-
-# #####################################################################
-# ################### SAVE DATA #######################################
-
-# Parameters
-cb=collect(range(start = 0.001, stop = 3.999, length = 10)) # Cost Benifit Ratio
-maxbc = 4 # Max CB Ratio
-punish_cost = collect(range(start = 0.001, stop = 2, length = 10)) # remeber this goes up to 2 
-ngroups = 100
-n= 30
-
-temp=expand_grid(cb, punish_cost)
-S=zeros(100, 3)
-S[:, 1:2] = temp 
-S[:,3] = maxbc.-S[:,1]
-
-@everywhere function g(b, c, pc)
-    cpr_abm(degrade = 1, n=30*100,
-    ngroups = 100,
-    lattice = [10,10],
-    max_forest = 1333*30*100,
-    tech = .00002,
-    wages = c,
-    price = b,
-    nrounds = 15000,
-    leak = true,
-    learn_group_policy =false,
-    invasion = true,
-    nsim = 50,
-    punish_cost = pc,
-    outgroup = .3,
-    full_save = false,
-    genetic_evolution = false,
-    #glearn_strat = "income",
-    limit_seed_override = collect(range(start = .1, stop = 4, length =100)))
-end    
-
-for i in length(cb)
-    c = fill(S[i, 1], 50)
-    b = fill(S[i, 3], 50)
-    pc = fill(S[i, 2], 50)
-    out=pmap(g, b, c, pc)
-    dirname = string("sweep_pc,",pc[1], "_c", c[1], "_b",b[1], ".jld2")
-    mkdir(dirname)
-    save(string("$dirname/output.jld2"), "out", out)
-end
-
-
+files = ["m2_1.jld2", "m2_2.jld2", "m2_3.jld2", "m2_4.jld2", "m2_5.jld2"]
 
 
 a=cpr_abm(degrade = 1, n=n*ngroups,

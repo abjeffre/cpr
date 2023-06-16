@@ -6,12 +6,16 @@
 # in the experiment but also are part of the learning pool. 
 # Groups which can be learned from 
 
-function setupExperiments(;temp = temp, special_leakage_group = special_leakage_group,
-    experiment_group = experiment_group, control_learning = control_learning, ngroups = ngroups)
+function setupExperiments(;temp = temp,
+     special_leakage_group = special_leakage_group,     
+     experiment_group = experiment_group,
+     control_learning = control_learning,
+     ngroups = ngroups)
+    
     experiment =  any(temp .!= false) ?  true : false # Check to see if any experimental condition is turned on?
     # Setup special leakage control learning group
-    if special_leakage_group != nothing
-        exclude_patches = experiment_group[experiment_group .∉  special_leakage_group]
+    if special_leakage_group !== nothing
+        exclude_patches = experiment_group[findall(x->x ∈ special_leakage_group, experiment_group )]
         experiment_learning_groups = experiment_group[findall(x->x ∉ special_leakage_group, experiment_group ) ]
     #    exclude_patches = special_leakage_group
     else

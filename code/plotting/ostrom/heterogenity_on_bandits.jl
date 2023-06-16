@@ -23,5 +23,5 @@ seq = collect(1:1:length(out))
 # Plot
 leakage=[mean(out[i][:leakage][:,2,1]) for i in 1:length(out)]
 heterogenity=plot(seq, leakage, label = false, xlab = "Heterogenity in patch size",
- ylab = "Roving Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15)
-xticks!([minimum(seq), maximum(seq)], ["Low", "High"], ylim = (0, 1))
+ ylab = "Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15)
+xticks!([minimum(seq), maximum(seq)], ["Low", "High"], ylim = (0, 1), grid = false)

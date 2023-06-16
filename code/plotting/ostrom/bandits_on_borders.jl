@@ -32,7 +32,7 @@ x=repeat(x, 10)
 
 mean(y)
 border=plot([μ μ], fillrange=[PI[:,1] PI[:,2]], fillalpha=0.3, c=:grey, label = false,
- xlab = "Roving Bandity", ylab = "Support for Boundaries",
+ xlab = "Bandity", ylab = "Boundaries",
 xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
 title = "(g)", titlelocation = :left, titlefontsize = 15)
 scatter!(x.*19, y, c=:black, alpha = .2, label = false)

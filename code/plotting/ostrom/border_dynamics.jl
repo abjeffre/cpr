@@ -47,12 +47,12 @@ end #end function
 using Plots
 out=borders(γ=.2, ω = .004, t = 1000)
 maintain=plot(out[:s], ylim = (0,1), label = "Resource Stock", legend = :bottomleft, c = :green, ylab = "Trait Frequency", xlab = "Time",
- title = "(h)", titlelocation = :left, titlefontsize = 15)
-plot!(out[:x], label = "Boundary Patrols", c =:blue)
-plot!(out[:r], label = "Roving Bandits", c = :red)
+ title = "(e)", titlelocation = :left, titlefontsize = 15, grid = false , legendfontsize = 7,  foreground_color_legend = nothing )
+plot!(out[:x], label = "Boundaries", c =:blue)
+plot!(out[:r], label = "Bandits", c = :red)
 
 out=borders(γ=.2, ω = .006, t = 1000)
 collapse=plot(out[:s], ylim = (0,1), label = "Resource Stock", legend = :bottomleft, c = :green, xlab = "Time", ylab = "Trait Frequency",
-title = "(i)", titlelocation = :left, titlefontsize = 15)
-plot!(out[:x], label = "Boundary Patrols", c = :blue)
-plot!(out[:r], label = "Roving Bandits", c= :red)
+title = "(f)", titlelocation = :left, titlefontsize = 15, grid = false, legendfontsize = 7, foreground_color_legend = nothing )
+plot!(out[:x], label = "Boundaries", c = :blue)
+plot!(out[:r], label = "Bandits", c= :red)

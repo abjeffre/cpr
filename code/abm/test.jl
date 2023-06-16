@@ -285,7 +285,7 @@ out = []
 ngroups =2
 for i in 0.5:.5:15
     c = cpr_abm(degrade = 1, n=100*ngroups, ngroups = ngroups, lattice = [1,2],
-        max_forest = 100000*ngroups, tech = .00001, wages = 1, price = 3, nrounds = 1000, leak = false,
+        max_forest = 1333*100*ngroups, tech = .00002, wages = 1, price = 3, nrounds = 1000, leak = false,
         limit_seed = [0,3], learn_group_policy =false, invasion = false, nsim = 1, experiment_punish2 =1, experiment_limit = i,
         experiment_group = collect(1:ngroups), control_learning = false, back_leak = true, outgroup = .0,
         full_save = true, genetic_evolution = false, glearn_strat = "income"
@@ -497,5 +497,653 @@ function GetContextualSelection(data, x, X)
       push!(out,dat) 
   end
   return(out)
+end
+
+
+
+
+
+
+for i in each(readdir("phase_sweeps"))
+
+
+  print("Current directory: ", pwd())
+  for i in readdir("phase_sweeps")
+    path = string("phase_sweeps/$i/output.jld2")
+    a=load(path)
+  end
+  
+  
+  
+    load(string(i))
+  
+  
+  foreach(readdir("phase_sweeps")) do f
+         println(readdir, f)
+         #dump(stat(f)) # you can customize what you want to print
+  end
+  
+  cnt = 1
+  time  = []
+  fname = []
+  for f in readdir("phase_sweeps")
+    c = round(S[cnt,1], digits =3)
+    b = round(S[cnt,3], digits =3)
+    pc = round(S[cnt, 2], digits =3)
+    push!(time, mtime("phase_sweeps/$f"))
+    push!(fname, f)  
+    #new=string("sweep_pc", pc, "_b",b,"_c",c)
+    #mv(string("phase_sweeps/$f"), new)
+    #cnt=cnt+1
+  end
+  
+  
+  a=DataFrame(n = fname,
+            t = time)
+  
+  
+  stock = []
+  regulate = []
+  exclude = []
+  limit = []
+  
+  for i in readdir("phase_sweeps")
+    println(i)
+    temp=load("phase_sweeps/$i/output.jld2")
+    temp=temp["out"]
+    push!(stock, mean([mean(temp[i][:stock][14400:15000, :, 1]) for i in 1:50]))
+    push!(exclude, mean([mean(temp[i][:punish][14400:15000, :, 1]) for i in 1:50]))
+    push!(regulate, mean([mean(temp[i][:punish2][14400:15000, :, 1]) for i in 1:50]))
+    push!(limit, mean([mean(temp[i][:limit][14400:15000, :, 1]) for i in 1:50]))
+  end
+  save("limit.jld2", "out", limit)
+  save("stock.jld2", "out", stock)
+  save("exclude.jld2", "out", exclude)
+  save("regulate.jld2", "out", regulate)
+  
+  
+  reg=load("Y:/eco_andrews/Projects/CPR/data/regulate.jld2")
+  exc=load("Y:/eco_andrews/Projects/CPR/data/exclude.jld2")
+  lim=load("Y:/eco_andrews/Projects/CPR/data/limit.jld2")
+  sto=load("Y:/eco_andrews/Projects/CPR/data/stock.jld2")
+  
+  
+  plot(sto["out"])
+  plot(exc["out"])
+  plot(reg["out"])
+  stom=reshape(sto["out"], 10, 10)
+  excm=reshape(exc["out"], 10, 10)
+  regm=reshape(reg["out"], 10, 10)
+  limm=reshape(lim["out"], 10, 10)
+  
+  x = .13
+  heatmap((excm .> x) .& (regm .> x))
+  heatmap((excm .> x) .& (regm .< x))
+  heatmap((excm .< x) .& (regm .> x))
+  heatmap((excm .< x) .& (regm .< x))
+  
+  heatmap(excm)
+  heatmap(regm)
+    
+    ngroups = 50
+    max_forest = n*ngroups*1333
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups))
+
+  a=cpr_abm(
+    n = n*ngroups,
+    max_forest = max_forest,
+    ngroups =ngroups,
+    nsim = 1,
+    lattice = [5,10],
+    limit_seed_override = limit_seed_override,
+    pun2_on = true,
+    leak=false,
+    pun1_on = false,
+    seized_on = false,
+    experiment_group = [5,6],
+    price = price,
+    wages = wages,
+    experiment_leak = L, 
+    experiment_effort =1,
+    control_learning = false,
+    punish_cost = 0.1,
+    tech = tech,
+    outgroup = .9,
+    invasion = true,
+    nrounds = 1000,
+    begin_leakage_experiment = 1)
+
+  plot(a[:stock][:,:,1])
+  plot(a[:punish2][:,:,1])
+  
+
+
+
+y1 = [mean(mean(dat[i][:punish2][900:1000,:,:], dims =2)[:,1,:], dims = 1) for i in 1:length(dat)]
+a=reduce(vcat, y1)
+μ = mean(a, dims = 2)
+a=reduce(vcat, y1)
+a=reduce(vcat, a)
+
+p2 = []
+l = []
+for i in 1:19 
+  for j in 1:50
+    p2=[p2; reduce(vcat, mean(dat[i][j][:punish2][1900:2000,:,1], dims =1))]
+    l=[l; reduce(vcat, mean(dat[i][j][:limit][1900:2000,:,1], dims =1))]
+  end
+end
+
+
+p=plot(dat[1][1][:limit][:,:,1], label = "", c = :black, alpha = .02)
+for i in 1:50 
+  plot!(dat[1][i][:limit][:,:,1], label = "", c = :black, alpha = .02) 
+end
+p
+hline!([3.33], c =:red)
+
+sum([sum(dat[1][i][:limit][1000:2000,:,1] .> 3.33) for i in 1:50])
+sum([sum(dat[19][i][:limit][1000:2000,:,1] .> 3.33) for i in 1:50])
+
+scatter(p2, l, alpha = .1)
+
+
+
+function g(b, c, pc, o)
+  cpr_abm(degrade = 1, n=30*100,
+  ngroups = 100,
+  lattice = [10,10],
+  max_forest = 1333*30*100,
+  tech = .00002,
+  wages = c,
+  price = b,
+  nrounds = 4000,
+  leak = true,
+  learn_group_policy =false,
+  invasion = true,
+  nsim = 1,
+  inspect_timing = "after",
+  punish_cost = pc,
+  outgroup = o,
+  full_save = false,
+  genetic_evolution = false,
+  #glearn_strat = "income",
+  limit_seed_override = collect(range(start = .1, stop = 4, length =100)))
+end    
+
+
+a=g(3, 1, .01, .25)
+b=g(3, 1, .01, .75)
+
+
+plot(plot(a[:stock][:,:,1], label = ""), plot(b[:stock][:,:,1], label = ""))
+
+
+using BenchmarkTools
+using Profile
+using Juno
+
+@profile for i in 1:50 cpr_abm(ngroups = 100, lattice = [10, 10], n = 30*100, nrounds = 2) end
+Profile.print()
+Juno.profiler()
+Profile.clear()
+
+@profview cpr_abm(ngroups = 100, lattice = [10, 10], n = 30*100, nrounds = 2)
+
+
+function profile_test(n)
+  for i = 1:n
+      A = randn(100,100,20)
+      m = maximum(A)
+      Am = mapslices(sum, A; dims=2)
+      B = A[:,:,5]
+      Bsort = mapslices(sort, B; dims=1)
+      b = rand(100)
+      C = B.*b
+  end
+end
+
+using ProfileView
+@profview profile_test(1)  # run once to trigger compilation (ignore this one)
+@profview profile_test(10)
+
+
+
+
+Inv=load("Y:/eco_andrews/Projects/CPR/data/Inv.jld2")["out"]
+G=load("Y:/eco_andrews/Projects/CPR/data/G.jld2")["out"]
+
+mean(mean(G))
+mean(mean(Inv))
+plot(G, c=:Red, label = false, ylim = (-50,50))
+plot!(Inv, c=:Blue, label = false, ylim = (-50,50))
+hline!([0])
+
+
+
+function GetContextualSelection(data, x, X)
+  out = []
+  for k in 1:50
+      df=data["out"][k]
+      ngroups=size(df[X])[2]
+      nrounds = size(df[X])[1]
+      println(k)
+      dat = DataFrame(p = mean(Float64.(df[x][2,:,1].-df[x][1,:,1])),
+                      X = var(Float64.(df[X][1,:,1])),
+                      x = mean([var(Float64.(df[x][1,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])
+      )
+
+      for i in 2:(nrounds-1)
+          temp = DataFrame(p = mean(Float64.(df[x][i+1,:,1].-df[x][i,:,1])),
+                      X = var(Float64.(df[X][i,:,1])),
+                      x = mean([var(Float64.(df[x][i,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])    )
+
+          append!(dat, temp)
+      end
+      push!(out,dat) 
+  end
+  return(out)
+end
+
+
+
+
+##################################################################
+#################### SELECTION ###################################
+dir = readdir(base_folder)[5]
+
+
+
+function GetPriceSelection(data, x, X)
+  out = []
+  for k in 1:50
+      println(k)
+      df=data["out"][k]
+      ngroups=size(df[X])[2]
+      nrounds = size(df[X])[1]
+      dat = DataFrame(p = mean(Float64.(df[x][5002,:,1].-df[x][1,:,1])),
+                      X = var(Float64.(df[X][5001,:,1])),
+                      x = mean([var(Float64.(df[x][5001,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])
+      )
+
+      for i in 5002:(nrounds-1)
+          temp = DataFrame(p = mean(Float64.(df[x][i+1,:,1].-df[x][i,:,1])),
+                      X = var(Float64.(df[X][i,:,1])),
+                      x = mean([var(Float64.(df[x][i,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])    )
+          append!(dat, temp)
+      end
+      dat.x = dat.x.-dat.X
+      push!(out,dat) 
+  end
+  return out
+end
+
+
+
+
+function GetPricePayoff(data, x, X)
+  Inv = []
+  G = []
+  for k in 1:50
+      println(k)
+      Inv_coefs = []
+      G_coefs = []
+      df=data["out"][k]
+      nrounds=size(df[X])[1]
+      ngroups=size(df[X])[2]
+      for i in 5000:nrounds
+          dat = DataFrame(Y = Float64.(df[:payoffRfull][i,:,1]),
+                          X = Float64.(df[X][i,Int.(df[:gid][:,1,1]),1]),
+                          x = Float64.(df[x][i,:,1]))
+          dat.x .= dat.x.-dat.X
+          a=lm(@formula(Y ~ x + X), dat)
+          push!(Inv_coefs, coef(a)[2])
+          push!(G_coefs, coef(a)[3]) 
+      end
+      push!(Inv, Inv_coefs)
+      push!(G, G_coefs)
+  end
+  return[Inv, G]
+end
+
+
+LimP = []
+LimS = []
+RegP = []
+RegS = []
+
+base_folder = "outgroup_sweeps"
+for dir in readdir(base_folder)
+    dat=load(string("$base_folder/$dir/output.jld2"))
+    println(dir)
+    limit_payoff=GetPricePayoff(dat, :limitfull, :limit)
+    limit_selection = GetPriceSelection(dat, :limitfull, :limit)
+    reg_payoff = GetPricePayoff(dat, :punish2full, :punish)
+    reg_selection = GetPriceSelection(dat, :punish2full, :punish)
+    push!(LimP, limit_payoff)
+    push!(LimS, limit_selection)
+    push!(RegP, reg_payoff)
+    push!(RegS, reg_selection)
+end
+
+#
+save("LimP.jld2", "out", LimP) 
+save("LimS.jld2", "out", LimS)
+save("RegP.jld2", "out", RegP) 
+save("RegS.jld2", "out", RegS)
+
+
+LimP=load("Y:/eco_andrews/Projects/CPR/data/LimP.jld2")
+LimS=load("Y:/eco_andrews/Projects/CPR/data/LimS.jld2")
+REGP=load("Y:/eco_andrews/Projects/CPR/data/RegP.jld2")
+REGS=load("Y:/eco_andrews/Projects/CPR/data/RegS.jld2")
+
+using GLM
+
+using GLM
+
+a=[[coef(lm(@formula(p ~ x + X),LimS["out"][j][i])) for i in 1:50] for j in 1:11]
+
+j=11
+scatter([a[j][i][2] for i in 1:50], ylim=(-4, 4))
+scatter!([a[j][i][3] for i in 1:50])
+plot([median(a[i][1:end][3]) for i in 1:11])
+plot!([median(a[i][1:end][2]) for i in 1:11])
+
+
+a=[[[median(LimP["out"][j][k][i]) for i in 1:50] for k in 1:2] for j in 1:11]
+q=plot()
+for i in 1:11 scatter!(fill(i, 50).+rand(Uniform(0, 1),50), a[i][1], label = "", c = :black) end
+q
+
+for i in 1:11 scatter!(fill(i, 50).+rand(Uniform(0, 1),50), a[i][2], label = "", c = :red) end
+q
+plot!([median(a[i][2]) for i in 1:11], c=:blue, w=3)
+plot!([median(a[i][1]) for i in 1:11], c = :orange, w=4)
+
+
+
+#####################################################################
+############### CHECK FOR WHEN STOCK IS OVER OR UNDER ###############
+out = []
+for j in 1:11
+  a =[]
+  print("I")
+  k=1
+  for i in 1:50
+  #for k in 1:2
+       temp = vec(median(STOCK["out"][j][i], dims = 1).<.5)
+      ind=findall(temp .==1)
+      if size(ind)[1] > 1 
+        push!(a, median(LimP["out"][j][k][i][ind]))
+      end
+    end
+    push!(out, a)
+  end
+  
+end 
+
+q = plot()
+for i in 3:11
+  scatter!(fill(i, 50).+rand(Uniform(0, 1),50), out[i], label = "", c = :black)
+end
+q
+
+a=[[[median(LimP["out"][j][k][i]) for i in 1:50] for k in 1:2] for j in 1:11]
+q=plot()
+for i in 1:11 scatter!(fill(i, 50).+rand(Uniform(0, 1),50), a[i][1], label = "", c = :black) end
+q
+
+for i in 1:11 scatter!(fill(i, 50).+rand(Uniform(0, 1),50), a[i][2], label = "", c = :red) end
+q
+plot!([median(a[i][2]) for i in 1:11], c=:blue, w=3)
+plot!([median(a[i][1]) for i in 1:11], c = :orange, w=4)
+
+
+
+
+
+
+
+
+a=[[[median(REGP["out"][j][k][i]) for i in 1:50] for k in 1:2] for j in 1:11]
+
+q=plot()
+for i in 1:11 scatter!(fill(i, 50).+rand(Uniform(0, 1),50), a[i][1], label = "", c = :black) end
+q
+
+for i in 1:11 scatter!(fill(i, 50).+rand(Uniform(0, 1),50), a[i][2], label = "", c = :red) end
+q
+
+plot!([median(a[i][2]) for i in 1:11])
+plot!([median(a[i][1]) for i in 1:11])
+
+
+#############################################################
+##################### SCRAPE OUT STOCKS #####################
+
+
+Stock = []
+Payoff = []
+Punish2 = []
+base_folder = "outgroup_sweeps"
+for dir in readdir(base_folder)
+    dat=load(string("$base_folder/$dir/output.jld2"))
+    println(dir)
+    ST=[dat["out"][i][:stock][5000:15000,:,1] for i in 1:50]
+    P=[dat["out"][i][:payoffRfull][5000:15000,:,1] for i in 1:50]
+    P2=[dat["out"][i][:punish2][5000:15000,:,1] for i in 1:50]
+    push!(Stock, ST)
+    push!(Payoff, P)
+    push!(Punish2, P2)
+end
+
+save("STOCK_FULL.jld2", "out", Stock)
+save("PAYOFF_FULL.jld2", "out", P)
+save("PUNISH_FULL.jld2", "out", P2)
+
+
+
+STOCK=load("Y:/eco_andrews/Projects/CPR/data/STOCK_FULL.jld2")
+EXCLUDE=load("Y:/eco_andrews/Projects/CPR/data/PUNISH_FULL.jld2")
+
+#################################################
+########## WHEN STOCK IS ABOVE 5 ################
+
+coefs = []
+for j in 1:11
+  println(string("j = $j"))
+  out = []
+  for i in 1:50
+    println(string("i = $i"))
+    isoverMSY = Int.(median(STOCK["out"][j][i][2:(end-1),:], dims = 2) .> .6)
+    ind=findall(x->x==1, vec(isoverMSY))
+    if size(ind)[1] > 1
+      dat=LimS["out"][j][i][ind, :]
+      a=coef(lm(@formula(p ~ x + X),dat))
+      push!(out, a)
+    else
+      push!(out, nothing)
+   end
+  end
+  push!(coefs, out)
+end
+
+x = []
+for i in 1:11
+  out = []
+  println("i = $i")
+  for j in 1:50 
+    println("j = $j")
+    if coefs[i][j] !== nothing
+      println("got here")
+      push!(out, coefs[i][j][2])
+    end 
+  end 
+  push!(x, out)
+end
+
+q=plot()
+for i in 1:11
+  if any(x[i] .!== nothing)
+    n=size(x[i])
+    scatter!(fill(i, n).+rand(Uniform(0, .3),n), x[i], label = "", c = :black, alpha = .2)
+  end
+end
+
+temp = []
+for i in 1:11
+  if all(x[i].== nothing)
+    push!(temp, 0)
+  else
+    push!(temp, mean(x[i]))
+  end
+end
+plot!(temp)
+
+
+x = []
+for i in 1:11
+  out = []
+  println("i = $i")
+  for j in 1:50 
+    println("j = $j")
+    if coefs[i][j] !== nothing
+      println("got here")
+      push!(out, coefs[i][j][3])
+    end 
+  end 
+  push!(x, out)
+end
+
+for i in 1:11
+  if any(x[i] .!== nothing)
+    n=size(x[i])
+    scatter!(fill(i, n).+rand(Uniform(0, .3),n), x[i], label = "", c = :red, alpha = .2)
+  end
+end
+
+temp = []
+for i in 1:11
+  if all(x[i].== nothing)
+    push!(temp, 0)
+  else
+    push!(temp, mean(x[i]))
+  end
+end
+plot!(temp)
+
+
+hline!([0])
+
+
+
+
+#################################################
+########## WHEN STOCK IS BELOW 5 ################
+
+coefs = []
+for j in 1:11
+  println(string("j = $j"))
+  out = []
+  for i in 1:50
+    println(string("i = $i"))
+    tempdat= median(STOCK["out"][j][i][2:(end-1),:], dims = 2)
+    tempdat2= median(EXCLUDE["out"][j][i][2:(end-1),:], dims = 2)  
+    isoverMSY = ((tempdat.< .5)  .& (tempdat .> .05) .& (tempdat2 .> .6))
+      ind2 = 
+    ind=findall(x->x==1, vec(isoverMSY))
+    if size(ind)[1] > 1
+      dat=LimS["out"][j][i][ind, :]
+      a=coef(lm(@formula(p ~ x + X),dat))
+      push!(out, a)
+    else
+      push!(out, nothing)
+   end
+  end
+  push!(coefs, out)
+end
+
+x = []
+for i in 1:11
+  out = []
+  println("i = $i")
+  for j in 1:50 
+    println("j = $j")
+    if coefs[i][j] !== nothing
+      println("got here")
+      push!(out, coefs[i][j][2])
+    end 
+  end 
+  push!(x, out)
+end
+
+q=plot()
+for i in 1:11
+  if any(x[i] .!== nothing)
+    n=size(x[i])
+    scatter!(fill(i, n).+rand(Uniform(0, .3),n), abs.(x[i]), label = "", c = :black, alpha = .2)
+  end
+end
+q
+
+
+
+x = []
+for i in 1:11
+  out = []
+  println("i = $i")
+  for j in 1:50 
+    println("j = $j")
+    if coefs[i][j] !== nothing
+      println("got here")
+      push!(out, coefs[i][j][3])
+    end 
+  end 
+  push!(x, out)
+end
+
+for i in 1:11
+  if any(x[i] .!== nothing)
+    n=size(x[i])
+    scatter!(fill(i, n).+rand(Uniform(0, .3),n), abs.(x[i]), label = "", c = :red, alpha = .2, ylim = (0, 3))
+  end
+end
+q
+hline!([0])
+
+mean(abs.(x))
+
+
+
+
+
+
+
+
+
+
+function GetPriceSelection(data, x, X)
+  out = []
+  for k in 1:50
+      println(k)
+      df=data["out"][k]
+      ngroups=size(df[X])[2]
+      nrounds = size(df[X])[1]
+      dat = DataFrame(p = mean(Float64.(df[x][5002,:,1].-df[x][1,:,1])),
+                      X = var(Float64.(df[X][5001,:,1])),
+                      x = mean([var(Float64.(df[x][5001,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])
+      )
+
+      for i in 5002:(nrounds-1)
+          temp = DataFrame(p = mean(Float64.(df[x][i+1,:,1].-df[x][i,:,1])),
+                      X = var(Float64.(df[X][i,:,1])),
+                      x = mean([var(Float64.(df[x][i,Int.(df[:gid][:,1,1]) .== j,1])) for j in 1:ngroups])    )
+          append!(dat, temp)
+      end
+      dat.x = dat.x.-dat.X
+      push!(out,dat) 
+  end
+  return out
 end
 

@@ -38,9 +38,9 @@ function cpr_abm(
   wages = .1,                     # Wage rate in other sectors - opportunity costs
   max_forest = 350000,            # Average max stock
   var_forest = 0,                 # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = 1,                     # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = 1,                    # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                   # The regrowth rate
-  volatility = 0,                 # The volatility of the resource each round - set as variance on a normal
+  volatility = Normal(0, 0),      # The volatility of the resource each round - set as variance on a normal
   pollution = false,              # Pollution provides a public cost based on 
   pol_slope = .1,                 # As the slope increases the rate at which pollution increases as the resource declines increase
   pol_C = .1,                     # As the constant increases the total amount of polution increases

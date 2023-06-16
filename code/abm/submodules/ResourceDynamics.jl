@@ -5,8 +5,8 @@ function ResourceDynamics(harvest, stock, max_stock, regrow, volatility, ngroups
       stock += stock*regrow.*(1 .- stock./max_stock)
 
       #apply volatility
-      vola=rand(Normal(1, volatility), ngroups)
-      stock .= stock.*vola
+      vola=rand(volatility, ngroups)
+      stock .= stock.+vola.*stock
 
       #Check to make sure stock follows logical constraints
       stock .= ifelse.(stock .> max_stock, max_stock, stock)
