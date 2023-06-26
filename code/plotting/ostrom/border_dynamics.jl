@@ -46,13 +46,13 @@ end #end function
 
 using Plots
 out=borders(γ=.2, ω = .004, t = 1000)
-maintain=plot(out[:s], ylim = (0,1), label = "Resource Stock", legend = :bottomleft, c = :green, ylab = "Trait Frequency", xlab = "Time",
+maintain=plot(out[:s], ylim = (0,1), label = "Resource Stock", legend = :bottomleft, c = :forestgreen, ylab = "Trait Frequency", xlab = "Time",
  title = "(e)", titlelocation = :left, titlefontsize = 15, grid = false , legendfontsize = 7,  foreground_color_legend = nothing )
-plot!(out[:x], label = "Boundaries", c =:blue)
-plot!(out[:r], label = "Bandits", c = :red)
+plot!(out[:x], label = "Boundaries", c =:dodgerblue)
+plot!(out[:r], label = "Bandits", c = :orange3)
 
 out=borders(γ=.2, ω = .006, t = 1000)
-collapse=plot(out[:s], ylim = (0,1), label = "Resource Stock", legend = :bottomleft, c = :green, xlab = "Time", ylab = "Trait Frequency",
+collapse=plot(out[:s], ylim = (0,1), label = "Resource Stock", legend = :bottomleft, c = :forestgreen, xlab = "Time", ylab = "Trait Frequency",
 title = "(f)", titlelocation = :left, titlefontsize = 15, grid = false, legendfontsize = 7, foreground_color_legend = nothing )
-plot!(out[:x], label = "Boundaries", c = :blue)
-plot!(out[:r], label = "Bandits", c= :red)
+plot!(out[:x], label = "Boundaries", c = :dodgerblue)
+plot!(out[:r], label = "Bandits", c= :orange3)

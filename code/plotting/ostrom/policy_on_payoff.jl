@@ -89,7 +89,7 @@ ylab = "Payoffs", labels = "Enforced", alpha = .25, markerstrokecolor = :orange,
 title = "(k)", titlelocation = :left, titlefontsize = 15, legendfontsize=11,  ylim = (0, 15),  foreground_color_legend = nothing )
 scatter!(x2[x1 .== :black], x[x1 .== :black], c=:black, label = false, xlab = "MAH",  
 ylab = "Payoffs", labels = ("Not Enforced"), alpha = .25)
-vline!([3.3, 3.3], c=:red, label = "MSY")
+vline!([3.3, 3.3], c=:red, label = "MSH")
 
 savefig("Covariance.pdf")
 
