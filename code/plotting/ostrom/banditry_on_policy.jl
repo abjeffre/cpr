@@ -101,10 +101,10 @@ plotsl = []
 for j in 1:2
     trim = collect(1:100:5000)
     groups = collect(1:100)
-    lab = ifelse(j == 1, "(m)", "(l)")
+    lab = ifelse(j == 1, "(p)", "(o)")
     col = ifelse.(dat[j][1][:stock][trim,groups,1] .> .3, :green, :black)
-    a=plot(dat[j][1][:limit][trim,groups,1], label = "", alpha = 0.1, linecolor=col,  yticks = (0, ""),
-     xlab = string("Time", annotate[j]), ylab = "MSH", ylim = (0, 10), grid = false, ytick = ((0, 9), ("Low MAH", "High MAH")), yrotation = 90,
+    a=plot(dat[j][1][:limit][trim,groups,1], label = "", alpha = 0.01, linecolor=col,  yticks = (0, ""),
+     xlab = string("Time", annotate[j]), ylab = "MSY", ylim = (0, 10), grid = false, ytick = ((0, 9), ("Low MAH", "High MAH")), yrotation = 90,
      title = lab, titlelocation = :left, titlefontsize = 15);
     for i in 1:25
         col = ifelse.(dat[j][i][:stock][trim,groups,1] .> .3, :green, :black)

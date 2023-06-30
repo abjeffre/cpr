@@ -313,14 +313,15 @@ for i in 1:size(S)[1]
     pc = round.(fill(S[i, 2], 50), digits = 3)
     c = round.(fill(S[i, 3], 50), digits = 3)
     dirname2 = string("sweep_pc",pc[1], "_c", c[1], "_b",b[1])
-    if dirname2 ∈ readdir()
-        out=load("$dirname2/output.jld2")["out"]
-        push!(stock, Float64.(mean([mean(out[i][:stock][9400:10000, :, 1]) for i in 1:50])))
-        push!(exclude, Float64.(mean([mean(out[i][:punish][9400:10000, :, 1]) for i in 1:50])))
-        push!(regulate, Float64.(mean([mean(out[i][:punish2][9400:10000, :, 1]) for i in 1:50])))
-        push!(limit, mean([mean(Float64.(out[i][:limit][9400:10000, :, 1])) for i in 1:50]))
-        push!(payoff, mean([mean(Float64.(out[i][:payoffR][9400:10000, :, 1])) for i in 1:50]))
+    if dirname2 ∈ readdir(base_folder)
+        out=load("$base_folder/$dirname2/output.jld2")["out"]
+        push!(stock, mean([mean(Float64.(out[i][:stock][9000:10000, :, 1])) for i in 1:50]))
+        push!(exclude, mean([mean(Float64.(out[i][:punish][9000:10000, :, 1])) for i in 1:50]))
+        push!(regulate, mean([mean(Float64.(out[i][:punish2][9000:10000, :, 1])) for i in 1:50]))
+        push!(limit, mean([mean(Float64.(out[i][:limit][9000:10000, :, 1])) for i in 1:50]))
+        push!(payoff, mean([mean(Float64.(out[i][:payoffR][9000:10000, :, 1])) for i in 1:50]))
     else
+        println(string("$dirname2 not found"))
         push!(stock, nothing)
         push!(exclude, nothing)
         push!(regulate, nothing)
@@ -362,6 +363,11 @@ end
      
 #########################################################
 ############# MOVE TO PLOTTING ##########################
+reg = load(string("Y:/eco_andrews/Projects/CPR/data/regulate2",".jld2"))["out"]
+sto = load(string("Y:/eco_andrews/Projects/CPR/data/stock2",".jld2"))["out"]
+exc = load(string("Y:/eco_andrews/Projects/CPR/data/exclude2",".jld2"))["out"]
+lim = load(string("Y:/eco_andrews/Projects/CPR/data/limit2",".jld2"))["out"]
+pay = load(string("Y:/eco_andrews/Projects/CPR/data/payoff2",".jld2"))["out"]
 
 sto=ifelse.(sto.== nothing, 0, sto)
 exc=ifelse.(exc.== nothing, 0, exc)
@@ -379,15 +385,17 @@ regm=reshape(reg, 10, 10)
 limm=reshape(lim, 10, 10)
 paym=reshape(pay, 10, 10)
 
-x = .2
+using pyplot()
+heatmap(excm, clim = (0, 1), xlab = "cᵣ & cₓ", ylab = "p/w", aspect_ratio = 1, title = "Enforce Access Rights (Outgroup = 0.25)" )
+heatmap(regm, clim = (0, 1), xlab = "cᵣ & cₓ", ylab = "p/w", aspect_ratio = 1, title = "Enforce Use Rights (Outgroup = 0.25)" )
+heatmap(limm, clim = (0, 6), xlab = "cᵣ & cₓ", ylab = "p/w", aspect_ratio = 1, title = "MAH (Outgroup = 0.25)" )
+heatmap(stom, clim = (0, 1), xlab = "cᵣ & cₓ", ylab = "p/w", aspect_ratio = 1, title = "Resource Stock (Outgroup = 0.25)") 
+heatmap(paym, clim = (0, 5), xlab = "cᵣ & cₓ", ylab = "p/w", aspect_ratio = 1, title = "Payoffs (Outgroup = 0.25)" )
+x = .3
 collective =(excm .> x) .& (regm .> x)
 only_exclude = (excm .> x) .& (regm .< x)
 only_regulate =  (excm .< x) .& (regm .> x)
 tragedy = (excm .<= x) .& (regm .<= x)
-cornocopia = stom[:,10] .>5
-temp = zeros(10, 10)
-temp[10,: ] .=1
-heatmap(temp)
 heatmap(collective)
 heatmap(only_exclude)
 heatmap(only_regulate)
@@ -462,15 +470,16 @@ function GetPricePayoff(data, x, X)
     Inv = []
     G = []
     for k in 1:50
+        println(k)
         Inv_coefs = []
         G_coefs = []
         df=data["out"][k]
         nrounds=size(df[X])[1]
         ngroups=size(df[X])[2]
-        for i in 1:nrounds
+        for i in 1:100:nrounds
             dat = DataFrame(Y = Float64.(df[:payoffRfull][i,:,1]),
-                            X = Float64.(df[:X][i,Int.(df[:gid][:,1,1]),1]),
-                            x = Float64.(df[:x][i,:,1]))
+                            X = Float64.(df[X][i,Int.(df[:gid][:,1,1]),1]),
+                            x = Float64.(df[x][i,:,1]))
             dat.x .= dat.x.-dat.X
             a=lm(@formula(Y ~ x + X), dat)
             push!(G_coefs, coef(a)[3])

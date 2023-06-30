@@ -74,5 +74,5 @@ end
 seq = x2
 Selection=scatter(x1, x2, c=:black, label = false, xlab = "Regulation", yticks = (0, " "), yrotation = 90,
 ylab = "MAH", alpha = .3, grid = false,  ytick = ((minimum(seq), maximum(seq)), ("Low MAH", "High MAH")),
-title = "(j)", titlelocation = :left, titlefontsize = 15)
-hline!([3.3], lw = 2, c=:red, label = "MSH", legendfontsize = 3,  foreground_color_legend = nothing)
+title = "(m)", titlelocation = :left, titlefontsize = 15)
+hline!([3.3], lw = 2, c=:red, label = "MSY", legendfontsize = 3,  foreground_color_legend = nothing)

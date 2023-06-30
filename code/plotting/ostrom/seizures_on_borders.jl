@@ -87,11 +87,58 @@ dat = load("Y:/eco_andrews/Projects/CPR/data/seizures.jld2")
 dat = dat["out"]
 
 seizures=plot(dat[1][1][:punish][:,:,1], labels = "", ylab = "Boundaries",
- xlab = "Time (seizures)", c=:black, alpha = .1, xticks = (0, " "), ylim = (0,1),
+ xlab = "Time (seizures)", c=:black, alpha = .01, xticks = (0, " "), ylim = (0,1),
  title = "(d)", titlelocation = :left, titlefontsize = 15, grid = false)
-[plot!(dat[1][i][:punish][:,:,1], labels = "", c =:black, alpha = .025) for i in 1:40]
+[plot!(dat[1][i][:punish][:,:,1], labels = "", c =:black, alpha = .01) for i in 1:40]
+savefig("seizures.pdf")
 
 noseizures=plot(dat[2][1][:punish][:,:,1], labels = "", ylab = "Boundaries", xlab = "Time (no seizures)",
- c=:black, alpha = .1, xticks = (0, " "), ylim = (0,1),
+ c=:black, alpha = .01, xticks = (0, " "), ylim = (0,1),
  title = "(c)", titlelocation = :left, titlefontsize = 15, grid = false)
-[plot!(dat[2][i][:punish][:,:,1], labels = "", c =:black, alpha = .025) for i in 1:40]
+[plot!(dat[2][i][:punish][:,:,1], labels = "", c =:black, alpha = .01) for i in 1:40]
+savefig("noseizures.pdf")
+
+
+
+
+S=[true, false]
+@everywhere function g(L)
+    # set up a smaller call function that allows for only a sub-set of pars to be manipulated
+    wages = 1
+    price = 3
+    outgroup = .7
+    tech = 0.00002
+    n = 30
+    ngroups = 9
+    max_forest = n*ngroups*1333
+    degrade = 1
+    limit_seed_override = collect(range(start = .1, stop = 4, length =ngroups))
+
+    cpr_abm(
+    n = n*ngroups,
+    max_forest = max_forest,
+    ngroups =ngroups,
+    nsim = 1,
+    lattice = [3,3],
+    limit_seed_override = limit_seed_override,
+    pun2_on = true,
+    leak=L,
+    price = price,
+    wages = wages,
+    control_learning = true,
+    back_leak = true,
+    punish_cost = 0.1,
+    tech = tech,
+    outgroup = 0.7,
+    invasion = true,
+    nrounds = 5000,
+    begin_leakage_experiment = 1)
+end
+data = []
+for i in 1:length(S)
+    par = fill(S[i], 25)    
+    dat=pmap(g, par)
+    push!(data, dat)
+end
+save("seizures2.jld2", "out", data)
+

@@ -106,8 +106,8 @@ end
 
 groups = [collect(1:1:4); collect(7:1:9)]
 bandits_on_self_regulation_new = plot([mean([mean(dat[i][j][:punish2][1900:2000,groups,:]) for j in 1:50]) for i in 1:20], c=:black, label = false,
-xlab = "Banditry", ylab = "Regulation", 
+xlab = "Banditry", ylab = "Regulation",  w = 3,
 xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
 title = "(g)", titlelocation = :left, titlefontsize = 15, ylim = (0, 1))
-scatter!(y, x, label = "", c=:grey, alpha = .1, markerstrokecolor = :grey, grid = false)
+scatter!(y, x, label = "", c=:black, alpha = .05, markerstrokecolor = :black, grid = false)
 savefig("bandits_on_self_regulation_new.pdf")

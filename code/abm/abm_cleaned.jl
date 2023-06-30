@@ -309,7 +309,6 @@ function cpr_abm(
         SP1=GetSeizedPay(seized1, traits.punish_type, agents.gid, ngroups)
         SP2=GetSeizedPay(seized2, traits.punish_type2, agents.gid, ngroups)
         FP1=GetFinesPay(SP1, groups.fine1, agents.gid, ngroups)
-        
         FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
         
       end
@@ -339,10 +338,23 @@ function cpr_abm(
       ###### PAYOFFS ###################
       #Wage Labor Market
       WL = wages[agents.gid].*effort[:,1] #tech
-      agents.payoff_round = (HG .*(1 .- caught_sum).*price + SP1.*price + SP2.*price + FP1.*price + FP2.*price).^α +
-       WL - MC1 - MC2 - TC- POL[agents.gid] + ECO[agents.gid] - 
-      ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) -
-       HG .*(caught2).*groups.fine2[agents.gid]
+      agents.payoff_round = 
+      (HG .*(1 .- caught_sum).*price + # Payoff from harvesting
+      SP1.*price + # Payoff from Seizures Access Rights
+      SP2.*price + # Payoff from Seizures USe Rights
+      FP1.*price + # Payoff from Fines Access Right
+      FP2.*price # Payoff from Fines Use Rights
+      ).^α + # Scaled by some diminishing marginal returns on harvesting
+       WL - # Plus wages
+       MC1 - # Minus cost of investment in access rights
+       MC2 - # Minus cost of investment in use rights
+       TC- # Minus Travel costs
+       POL[agents.gid] + # Minus Polution costs
+       ECO[agents.gid] - # Plus Ecosystem Services
+       ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) - # Minuse fines if must be paid
+       HG .*(caught2).*groups.fine2[agents.gid] # Minus fines from ingroup
+      
+      # Store Payoffs
       agents.payoff += agents.payoff_round .+ baseline
       agents.payoff_round[isnan.(agents.payoff_round)] .=0
       agents.payoff[isnan.(agents.payoff)] .=0

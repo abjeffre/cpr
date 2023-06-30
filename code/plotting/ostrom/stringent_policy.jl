@@ -26,3 +26,4 @@ stringent=[mean(out[i][:leakage][:,1,1]) for i in 1:length(out)]
 stringent=plot(5.5 .- seq, maximum(stringent).-stringent, c = :black, label = false, xlab = "Policy Stringency",
  xtick = ((minimum(seq), maximum(seq)), ("Low MAH", "High MAH")), ylab = "Banditry",
  title = "(b)", titlelocation = :left, titlefontsize = 15, ylim = (0, 1), grid = false)
+ savefig("stringent_policy.pdf")

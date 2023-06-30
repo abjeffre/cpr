@@ -64,11 +64,11 @@ if run == true
     for dir in readdir(base_folder)
         dat=load(string("$base_folder/$dir/output.jld2"))
         println(dir)
-        ST=[mean(dat["out"][i][:stock][14500:15000,:,1]) for i in 1:50]
-        P1=[mean(dat["out"][i][:punish][14500:15000,:,1]) for i in 1:50]
-        P2=[mean(dat["out"][i][:punish2][14500:15000,:,1]) for i in 1:50]
-        L=[mean(convert.(Float64,dat["out"][i][:limit][14500:15000,:,1])) for i in 1:50]
-        P=[mean(convert.(Float64,dat["out"][i][:payoffR][14500:15000,:,1])) for i in 1:50]        
+        ST=[mean(convert.(Float64,dat["out"][i][:stock][14000:15000,:,1])) for i in 1:50]
+        P1=[mean(convert.(Float64,dat["out"][i][:punish][14000:15000,:,1])) for i in 1:50]
+        P2=[mean(convert.(Float64,dat["out"][i][:punish2][14000:15000,:,1])) for i in 1:50]
+        L=[mean(convert.(Float64,dat["out"][i][:limit][14000:15000,:,1])) for i in 1:50]
+        P=[mean(convert.(Float64,dat["out"][i][:payoffR][14000:15000,:,1])) for i in 1:50]        
         push!(Stock, ST)
         push!(Limit, L)
         push!(Punish1, P1)
@@ -81,6 +81,11 @@ if run == true
     PAYOFF=[mean(mean(Payoff[i])) for i in 1:11]
 
     # Save Data
+    save("stock_outgroup2.jld2", "out", Stock)
+    save("limit_outgroup2.jld2", "out", Limit)
+    save("regulate_outgroup2.jld2", "out", Punish2)
+    save("payoff_outgroup2.jld2", "out", Payoff)
+
     save("stock_outgroup.jld2", "out", STOCK)
     save("limit_outgroup.jld2", "out", LIMIT)
     save("regulate_outgroup.jld2", "out", REGULATE)
@@ -95,3 +100,38 @@ end
     title = "(i)", titlelocation = :left, titlefontsize = 15,
      ylim = (0,1), c = :Black, 3, ylab = "Regulate", grid = false)  
     # plot!([0.01, .1, .2, .3, .4, .5], LIM["out"]/5.1, label = "", c = :Black)
+
+########################
+###### TESTING #########
+
+x = [0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]
+temp=load("Y:/eco_andrews/Projects/CPR/data/Punish2.jld2")["out"]
+
+OutgroupR = plot(title = "(i)", titlelocation = :left, titlefontsize = 15,
+ xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = "", c = :black, alpha = .2) end
+plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "Regulate", xlab = "Out-Group learning", grid = false)
+
+x = [0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]
+temp=load("Y:/eco_andrews/Projects/CPR/data/stock_outgroup2.jld2")["out"]
+
+OutgroupS = plot(title = "(k)", titlelocation = :left, titlefontsize = 15,
+xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = "", c = :black, alpha = .2) end
+plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "Resource Stock", xlab = "Out-Group learning", grid = false)
+
+x = [0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]
+temp=load("Y:/eco_andrews/Projects/CPR/data/limit_outgroup2.jld2")["out"]
+
+OutgroupL = plot(title = "(j)", titlelocation = :left, titlefontsize = 15, 
+xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
+for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = "", c = :black, alpha = .2) end
+plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "MAH", xlab = "Out-Group learning", grid = false)
+hline!([3.3], c = :red, label = "MSY", foreground_color_legend = nothing )
+
+temp=load("Y:/eco_andrews/Projects/CPR/data/payoff_outgroup2.jld2")["out"]
+OutgroupP = plot(title = "(l)", titlelocation = :left, titlefontsize = 15, 
+xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")
+))
+for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = "", c = :black, alpha = .2) end
+plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "Payoffs", xlab = "Out-Group learning", grid = false)
