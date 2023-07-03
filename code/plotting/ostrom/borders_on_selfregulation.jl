@@ -83,18 +83,18 @@ if RUN  == true
         push!(data, dat)
     end
 
-    save("borders_on_reg.jld2", "out", data)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/borders_on_reg.jld2", "out", data)
 end
 
 
-dat = load("Y:/eco_andrews/Projects/CPR/data/borders_on_reg.jld2")
+dat = load("C:/Users/jeffr/Documents/Work/cpr/data/borders_on_reg.jld2")
 dat = dat["out"]
 
 groups = 1:9
 x = []
 y =[]
 for i in 1:19
-    a=[mean(dat[i][j][:punish2][4900:5000,groups,:], dims = 1) for j in 1:50]
+    a=[mean(dat[i][j][:punish2][4500:5000,groups,:], dims = 1) for j in 1:50]
     a=reduce(vcat, a)
     a=reduce(vcat, a)
     x = [x; a]
@@ -102,10 +102,10 @@ for i in 1:19
 end
 
 
-borders_on_self_regulation_new = plot([mean([mean(dat[i][j][:punish2][1900:2000,:,:]) for j in 1:50]) for i in 1:19], c=:black, label = false,
+borders_on_self_regulation_new = plot([mean([mean(dat[i][j][:punish2][4500:5000,:,:]) for j in 1:50]) for i in 1:19], c=:black, label = false,
 xlab = "Boundaries", ylab = "Regulation", w = 3,
 xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
 title = "(h)", titlelocation = :left, titlefontsize = 15, ylim = (0, 1), xlim = (0, 20))
-scatter!(y, x, label = "", c=:black, alpha = .01,  markerstrokecolor = :black,  grid = false)
+scatter!(y, x, label = "", c=:black, alpha = .05,  markerstrokecolor = :black,  grid = false)
 
 savefig("borders_on_self_regulation_new.pdf")

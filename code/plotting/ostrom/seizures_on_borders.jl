@@ -83,19 +83,20 @@ if RUN == true
     save("seizures.jld2", "out", data)
 end
 
-dat = load("Y:/eco_andrews/Projects/CPR/data/seizures.jld2")
+dat = load("C:/Users/jeffr/Documents/Work/cpr/data/seizures.jld2")
 dat = dat["out"]
-
-seizures=plot(dat[1][1][:punish][:,:,1], labels = "", ylab = "Boundaries",
- xlab = "Time (seizures)", c=:black, alpha = .01, xticks = (0, " "), ylim = (0,1),
+alpha2 = 0.03
+rounds = 1:300
+seizures=plot(dat[1][1][:punish][rounds,:,1], labels = "", ylab = "Boundaries",
+ xlab = "Time (seizures)", c=:black, alpha = alpha2, xticks = (0, " "), ylim = (0,1),
  title = "(d)", titlelocation = :left, titlefontsize = 15, grid = false)
-[plot!(dat[1][i][:punish][:,:,1], labels = "", c =:black, alpha = .01) for i in 1:40]
+[plot!(dat[1][i][:punish][rounds,:,1], labels = "", c =:black, alpha = alpha2) for i in 1:40]
 savefig("seizures.pdf")
 
-noseizures=plot(dat[2][1][:punish][:,:,1], labels = "", ylab = "Boundaries", xlab = "Time (no seizures)",
- c=:black, alpha = .01, xticks = (0, " "), ylim = (0,1),
+noseizures=plot(dat[2][1][:punish][rounds,:,1], labels = "", ylab = "Boundaries", xlab = "Time (no seizures)",
+ c=:black, alpha = alpha2, xticks = (0, " "), ylim = (0,1),
  title = "(c)", titlelocation = :left, titlefontsize = 15, grid = false)
-[plot!(dat[2][i][:punish][:,:,1], labels = "", c =:black, alpha = .01) for i in 1:40]
+[plot!(dat[2][i][:punish][rounds,:,1], labels = "", c =:black, alpha = alpha2) for i in 1:40]
 savefig("noseizures.pdf")
 
 

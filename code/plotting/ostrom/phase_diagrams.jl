@@ -190,11 +190,11 @@ end
 #################################################
 ############# PLOT ι = 0.75 #####################
 
-reg = load(string("Y:/eco_andrews/Projects/CPR/data/regulateh",".jld2"))["out"]
-sto = load(string("Y:/eco_andrews/Projects/CPR/data/stockh",".jld2"))["out"]
-exc = load(string("Y:/eco_andrews/Projects/CPR/data/excludeh",".jld2"))["out"]
-lim = load(string("Y:/eco_andrews/Projects/CPR/data/limith",".jld2"))["out"]
-pay = load(string("Y:/eco_andrews/Projects/CPR/data/payoffh",".jld2"))["out"]
+reg = load(string("C:/user/jeffr/Documents/Work/cpr/data/regulateh",".jld2"))["out"]
+sto = load(string("C:/user/jeffr/Documents/Work/cpr/data/stockh",".jld2"))["out"]
+exc = load(string("C:/user/jeffr/Documents/Work/cpr/data/excludeh",".jld2"))["out"]
+lim = load(string("C:/user/jeffr/Documents/Work/cpr/data/limith",".jld2"))["out"]
+pay = load(string("C:/user/jeffr/Documents/Work/cpr/data/payoffh",".jld2"))["out"]
 
 sto=ifelse.(sto.== nothing, 0, sto)
 exc=ifelse.(exc.== nothing, 0, exc)
@@ -226,11 +226,11 @@ savefig("sweeps_iota075.pdf")
 #################################################
 ############# PLOT ι = 0.25 #####################
 
-reg = load(string("Y:/eco_andrews/Projects/CPR/data/regulatel",".jld2"))["out"]
-sto = load(string("Y:/eco_andrews/Projects/CPR/data/stockl",".jld2"))["out"]
-exc = load(string("Y:/eco_andrews/Projects/CPR/data/excludel",".jld2"))["out"]
-lim = load(string("Y:/eco_andrews/Projects/CPR/data/limitl",".jld2"))["out"]
-pay = load(string("Y:/eco_andrews/Projects/CPR/data/payoffl",".jld2"))["out"]
+reg = load(string("C:/user/jeffr/Documents/Work/cpr/data/regulatel",".jld2"))["out"]
+sto = load(string("C:/user/jeffr/Documents/Work/cpr/data/stockl",".jld2"))["out"]
+exc = load(string("C:/user/jeffr/Documents/Work/cpr/data/excludel",".jld2"))["out"]
+lim = load(string("C:/user/jeffr/Documents/Work/cpr/data/limitl",".jld2"))["out"]
+pay = load(string("C:/user/jeffr/Documents/Work/cpr/data/payoffl",".jld2"))["out"]
 
 sto=ifelse.(sto.== nothing, 0, sto)
 exc=ifelse.(exc.== nothing, 0, exc)

@@ -44,7 +44,7 @@
 
 
 
-dat = load("Y:/eco_andrews/Projects/CPR/data/borders_on_reg.jld2")
+dat = load("C:/Users/jeffr/Documents/Work/cpr/data/borders_on_reg.jld2")
 dat = dat["out"]
 
 

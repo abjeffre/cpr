@@ -93,9 +93,9 @@ if run == true
 end
 
     # 
-    STO=load("Y:/eco_andrews/Projects/CPR/data/stock_outgroup.jld2")
-    LIM=load("Y:/eco_andrews/Projects/CPR/data/limit_outgroup.jld2")
-    REG=load("Y:/eco_andrews/Projects/CPR/data/regulate_outgroup.jld2")
+    STO=load("C:/Users/jeffr/Documents/Work/cpr/data/stock_outgroup.jld2")
+    LIM=load("C:/User/jeffr/Documents/Work/cpr/data/limit_outgroup.jld2")
+    REG=load("C:/Users/jeffr/Documents/Work/cpr/data/regulate_outgroup.jld2")
     Outgroup=plot([0.01, .1, .2, .3, .4, .5], REG["out"], label = "", xlab = "Out-group learning",
     title = "(i)", titlelocation = :left, titlefontsize = 15,
      ylim = (0,1), c = :Black, 3, ylab = "Regulate", grid = false)  
@@ -105,7 +105,7 @@ end
 ###### TESTING #########
 
 x = [0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]
-temp=load("Y:/eco_andrews/Projects/CPR/data/Punish2.jld2")["out"]
+temp=load("C:/Users/jeffr/Documents/Work/cpr/data/regulate_outgroup2.jld2")["out"]
 
 OutgroupR = plot(title = "(i)", titlelocation = :left, titlefontsize = 15,
  xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
@@ -113,7 +113,7 @@ for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = 
 plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "Regulate", xlab = "Out-Group learning", grid = false)
 
 x = [0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]
-temp=load("Y:/eco_andrews/Projects/CPR/data/stock_outgroup2.jld2")["out"]
+temp=load("C:/Users/jeffr/Documents/Work/cpr/data/stock_outgroup2.jld2")["out"]
 
 OutgroupS = plot(title = "(k)", titlelocation = :left, titlefontsize = 15,
 xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
@@ -121,7 +121,7 @@ for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = 
 plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "Resource Stock", xlab = "Out-Group learning", grid = false)
 
 x = [0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]
-temp=load("Y:/eco_andrews/Projects/CPR/data/limit_outgroup2.jld2")["out"]
+temp=load("C:/Users/jeffr/Documents/Work/cpr/data/limit_outgroup2.jld2")["out"]
 
 OutgroupL = plot(title = "(j)", titlelocation = :left, titlefontsize = 15, 
 xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
@@ -129,7 +129,7 @@ for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = 
 plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "MAH", xlab = "Out-Group learning", grid = false)
 hline!([3.3], c = :red, label = "MSY", foreground_color_legend = nothing )
 
-temp=load("Y:/eco_andrews/Projects/CPR/data/payoff_outgroup2.jld2")["out"]
+temp=load("C:/Users/jeffr/Documents/Work/cpr/data/payoff_outgroup2.jld2")["out"]
 OutgroupP = plot(title = "(l)", titlelocation = :left, titlefontsize = 15, 
 xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")
 ))
