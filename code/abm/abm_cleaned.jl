@@ -337,7 +337,7 @@ function cpr_abm(
       ##################################
       ###### PAYOFFS ###################
       #Wage Labor Market
-      WL = wages[agents.gid].*effort[:,1] #tech
+      WL = GetWages(effort[:,1], wages) #tech
       agents.payoff_round = 
       (HG .*(1 .- caught_sum).*price + # Payoff from harvesting
       SP1.*price + # Payoff from Seizures Access Rights
