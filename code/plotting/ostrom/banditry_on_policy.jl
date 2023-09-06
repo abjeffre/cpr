@@ -94,7 +94,7 @@ if RUN == true
     save("leakage_on_policy.jld2", "out", data)
 end
 
-dat = load("Y:/eco_andrews/Projects/CPR/data/leakage_on_policy.jld2")
+dat = load("C:/Users/jeffr/Documents/Work/cpr/data/leakage_on_policy.jld2")
 dat = dat["out"]
 annotate = [" (banditry)", " (no banditry)"]
 plotsl = []

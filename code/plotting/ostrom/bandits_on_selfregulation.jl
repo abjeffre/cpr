@@ -89,7 +89,7 @@ if run == true
     save("bandits_on_selfreg.jld2", "out", data)
 end
 
-dat = load("Y:/eco_andrews/Projects/CPR/data/bandits_on_selfreg.jld2")
+dat = load("C:/Users/jeffr/Documents/Work/cpr/data/bandits_on_selfreg.jld2")
 dat = dat["out"]
 
 groups = [collect(1:1:4); collect(7:1:9)]

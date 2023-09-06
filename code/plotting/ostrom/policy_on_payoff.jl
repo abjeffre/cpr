@@ -41,7 +41,7 @@
 
 
 
-dat = load("Y:/eco_andrews/Projects/CPR/data/borders_on_reg.jld2")
+dat = load("C:/Users/jeffr/Documents/Work/cpr/data/borders_on_reg.jld2")
 dat = dat["out"]
 
 
@@ -86,7 +86,7 @@ seq = x2
 
 Covariance=scatter(x2[x1 .== :red], x[x1 .== :red], c=:orange, label = false, xlab = "MAH",  xtick = ((minimum(seq), maximum(seq)), ("Low MAH", "High MAH")), yticks = (0, " "),  
 ylab = "Payoffs", labels = "Enforced", alpha = .25, markerstrokecolor = :orange,  grid = false, 
-title = "(n)", titlelocation = :left, titlefontsize = 15, legendfontsize=11,  ylim = (0, 15),  foreground_color_legend = nothing )
+title = "(m)", titlelocation = :left, titlefontsize = 15, legendfontsize=11,  ylim = (0, 15),  foreground_color_legend = nothing )
 scatter!(x2[x1 .== :black], x[x1 .== :black], c=:black, label = false, xlab = "MAH",  
 ylab = "Payoffs", labels = ("Not Enforced"), alpha = .25)
 vline!([3.3, 3.3], c=:red, label = "MSY")
