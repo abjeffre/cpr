@@ -1,10 +1,8 @@
-using Distributed
 @everywhere using Statistics
 @everywhere using Distributions
 @everywhere using Random
 @everywhere using Distributions
 @everywhere using StatsBase
-
 @everywhere include("submodules/SplitGroupsTest.jl")
 @everywhere include("submodules/SocialTransmission.jl")
 @everywhere include("submodules/ResourceDynamics.jl")
@@ -34,7 +32,7 @@ using Distributed
 @everywhere include("submodules/RecordHistory.jl")
 
 
-@everywhere include("C:/Users/jeffr/OneDrive/Documents/functions/utility.jl")
+
 #@everywhere include("CPR/code/abm/old_models/abm_group_policy.jl")
 #@everywhere include("cpr/code/abm/old_models/abm_special_leakage.jl")
 # @everywhere include("abm_popgrowth.jl")

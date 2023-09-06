@@ -1,6 +1,6 @@
 function RecordHistory(; history = history, K = K, kmax = kmax, ngroups = ngroups, effort = effort,
      traits = traits, agents = agents, seized2 = seized2, SP1 = SP1, SP2 = SP2,
-     rec_history = rec_history, full_save = full_save, HG = HG, loc = loc,
+     rec_history = rec_history, full_save = full_save, HG = HG, loc = loc, caught2 = caught2,
       n = n, sim=sim, year = year)
     history[:stock][year,:,sim] .=round.(K./kmax, digits=3)
     history[:effort][year,:,sim] .=round.(report(effort[:,2], agents.gid, ngroups), digits=3)
@@ -15,6 +15,9 @@ function RecordHistory(; history = history, K = K, kmax = kmax, ngroups = ngroup
     history[:payoffR][year,:,sim] .= round.(report(agents.payoff_round,agents.gid, ngroups), digits=3)
     history[:loc][year,1:n,sim] .= loc
     history[:gid][1:n, sim] .= agents.gid
+    history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
+    history[:caught2][year,:,sim] .= round.(report(caught2, agents.gid, ngroups), digits =2)
+   
     if full_save == true
     history[:limitfull][year, :, sim] .= traits.harv_limit
     history[:effortfull][year, :, sim] .= effort[:,2]
@@ -29,7 +32,7 @@ function RecordHistory(; history = history, K = K, kmax = kmax, ngroups = ngroup
     #history[:harvestNoLeak][year,:,sim] .= round.(report(HG[traits.leakage_type.==0], agents.gid[traits.leakage_type.==1], ngroups), digits=2)
     history[:age_max][year,:,sim] => round.(report(agents.age,agents.gid, ngroups), digits=2)
     # history[:seized][year,:,sim] .=  round.(reportSum(SP1, agents.gid, ngroups), digits =2)
-    # history[:seized2][year,:,sim] .= round.(reportSum(SP2, agents.gid, ngroups), digits =2)
+    
     # history[:seized2in][year,:,sim] .= seized2
     # history[:forsize][:,sim] .= kmax
     # history[:cel][year,:,sim] .=  round.(reportCor(effort[:,2], traits.harv_limit,agents.gid, ngroups), digits=3)

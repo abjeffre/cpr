@@ -17,7 +17,10 @@ function getHistoryBook(;n = n, nrounds = nrounds, ngroups = ngroups,
     # :fine2 =>zeros(nrounds, ngroups, nsim),
     :loc => ifelse(population_growth == true, zeros(nrounds, convert(Int, sum(pgrowth_data)*ngroups + n), nsim), zeros(nrounds, n, nsim)),
     :gid => ifelse(population_growth == true, zeros(convert(Int, sum(pgrowth_data)*ngroups + n), nsim), zeros(n, nsim)),
-    :payoffR => zeros(nrounds, ngroups, nsim))
+    :payoffR => zeros(nrounds, ngroups, nsim),
+    :seized2 => zeros(nrounds, ngroups, nsim),
+    :caught2 => zeros(nrounds, ngroups, nsim))
+
   if full_save == true 
     history[:limitfull] = zeros(nrounds, n, nsim)
     history[:effortfull] = zeros(nrounds, n, nsim)
@@ -33,7 +36,6 @@ function getHistoryBook(;n = n, nrounds = nrounds, ngroups = ngroups,
     #history[:harvestNoLeak] = zeros(nrounds, ngroups, nsim)
     history[:age_max] = zeros(nrounds, ngroups, nsim)
     #history[:seized] = zeros(nrounds, ngroups, nsim)
-    #history[:seized2] = zeros(nrounds, ngroups, nsim)
     #history[:seized2in] = zeros(nrounds, ngroups, nsim)
     #history[:forsize] =  zeros(ngroups, nsim)
     history[:models] =  zeros(nrounds, n, nsim)

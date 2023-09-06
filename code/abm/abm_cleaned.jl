@@ -47,7 +47,7 @@ function cpr_abm(
   ecosys = false,                 # Eco-system services provide a public good to all members of a group proportionalm to size of resource
   eco_slope = 1,                  # As the slope increases the resource will continue to produce ecosystem servies
   eco_C = .01,                    # As the constant increases the total net benifit of the ecosystem services increases
-  tech = 1,                       # Used for scaling Cobb Douglas production function
+  tech = .00001,                  # Used for scaling Cobb Douglas production function
   labor = .7,                     # The elasticity of labor on harvesting production
   price = 1.0,                      # This sets the price of the resource on the market
   ngoods = 2,                     # Specifiies the number of sectors
@@ -106,7 +106,7 @@ function cpr_abm(
   harvest_zero = false,           # Automatically sets harvest to invasion to observe simple regrowth dynamics
   wealth_degrade = nothing,       # When wealth is passed on it degrades by some percent
   slearn_freq = 1,                # Not opperational - it defines the frequency of social learning 
-  reset_stock = 100000,           # Is the year in which resources are reset to max
+  reset_stock = nothing,           # Is the year in which resources are reset to max
   socialLearnYear = nothing,      # Which years individuals are allowed to socially learn in  - specify as a vector of dates
   αlearn = 1,                     # Controls learning rate
   indvLearn = false,              # Controls whehter individual learning is turned on
@@ -129,6 +129,7 @@ function cpr_abm(
   limit_seed_override = nothing,
   effort_seed = nothing,
   density_alpha = 0,
+  wage_data = nothing
 )
   # Establish group population sizes
   if population_data != nothing
@@ -337,6 +338,7 @@ function cpr_abm(
       ##################################
       ###### PAYOFFS ###################
       #Wage Labor Market
+      if wage_data !== nothing wages = fill(wage_data[t], n) end
       WL = wages[agents.gid].*effort[:,1] #tech
       agents.payoff_round = 
       (HG .*(1 .- caught_sum).*price + # Payoff from harvesting
@@ -378,8 +380,10 @@ function cpr_abm(
         K = K .- new_leakage_experiment
         K=ifelse.(K .<=0, 1, K)
       end
-      if year ∈ reset_stock
-         K = kmax 
+      if reset_stock !== nothing
+         if reset_stock[t]
+            K = kmax 
+         end
       end
       if experiment_stock !== false
         K.=experiment_stock
@@ -388,7 +392,7 @@ function cpr_abm(
       ############# RECORD HISTORY ####################
       history =RecordHistory(history = history, K = K, kmax = kmax, ngroups = ngroups, effort = effort,
       traits = traits, agents = agents, seized2 = seized2, SP1 = SP1, SP2 = SP2,
-      rec_history = rec_history, full_save = full_save, HG = HG, loc = loc,
+      rec_history = rec_history, full_save = full_save, HG = HG, loc = loc, caught2 = caught2,
        n = n, sim=sim, year = year)
 
       ###############################################
