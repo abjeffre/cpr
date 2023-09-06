@@ -11,7 +11,8 @@ using Distributions
 using StatsBase
 using Distributed
 using Plots
-
+using Plots.PlotMeasures
+using JLD2
 if gethostname()  == "ECOD038"
     cd("Y:\\eco_andrews\\Projects\\")
 end
