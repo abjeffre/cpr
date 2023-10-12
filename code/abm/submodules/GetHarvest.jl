@@ -68,7 +68,6 @@ function GetHarvest(effort, loc, K, kmax, tech::Float64, labor::Vector{Float64},
   tech.*(effort.^labor[agents.gid]).*b[loc]
 end
 
-
 # Heterogenity in Labor and Degrade
 function GetHarvest(effort, loc, K, kmax, tech::Vector{Float64}, labor::Float64, degrade::Vector{Float64}, necessity, ngroups, agents)
   b = zeros(ngroups)
@@ -79,8 +78,6 @@ function GetHarvest(effort, loc, K, kmax, tech::Vector{Float64}, labor::Float64,
   #tech.*((1 .+ effort.^labor) .- 1).*b[loc] .- necessity
   tech[agents.gid].*(effort.^labor).*b[loc]
 end
-
-
 
 # Harvest
 #Note that this harvest function does not pool labor before applying the elastisicty

@@ -130,7 +130,14 @@ function cpr_abm(
   effort_seed = nothing,
   density_alpha = 0,
   wage_data = nothing
-)
+) 
+  # Make sure all potential parameters are converted into floats for multiple dispatch
+  wages=Float64.(wages)
+  tech=Float64.(tech)
+  labor=Float64.(labor)
+  degrade=Float64.(degrade)
+  price=Float64.(price)
+  
   # Establish group population sizes
   if population_data != nothing
       population_data = convert.(Int64, population_data)
