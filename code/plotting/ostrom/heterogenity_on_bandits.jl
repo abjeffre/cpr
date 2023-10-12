@@ -3,7 +3,7 @@
 
 
 mf = 30*1333
-seq = collect(mf:1000:(mf*4))
+seq = collect(mf:2000:(mf*4))
 
 if RUN  == true
     out = []
@@ -11,7 +11,7 @@ if RUN  == true
         b=cpr_abm(n = 30*2,
          max_forest = 2*mf,
          ngroups =2,
-         nsim = 1,
+         nsim = 100,
          nrounds = 1000,
          tech = 0.000002,
          price =3,
@@ -43,3 +43,10 @@ leakage=[mean(out[i][:leakage][1:200,2,1]) for i in 1:length(out)]
 heterogenity=plot(seq, leakage, label = false, xlab = "Heterogenity in patch size",
  ylab = "Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15)
 xticks!([minimum(seq), maximum(seq)], ["Low", "High"], ylim = (0, 1), grid = false)
+
+for j in 2:5 
+    leakage=[mean(out[i][:leakage][1:200,2,j]) for i in 1:length(out)]
+    plot!(seq, leakage, label = false, xlab = "Heterogenity in patch size",
+    ylab = "Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15)
+    xticks!([minimum(seq), maximum(seq)], ["Low", "High"], ylim = (0, 1), grid = false)
+end
