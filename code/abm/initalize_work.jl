@@ -31,6 +31,7 @@ using Distributed
 @everywhere include("cpr/code/abm/submodules/SeedTraits.jl")
 @everywhere include("cpr/code/abm/submodules/GetHistoryBook.jl")
 @everywhere include("cpr/code/abm/submodules/RecordHistory.jl")
+@everywhere include("cpr/code/abm/submodules/GetWages.jl")
 
 @everywhere include("functions/utility.jl")
 #@everywhere include("cpr/code/abm/abm_popgrowth.jl")

@@ -21,7 +21,7 @@ a = cpr_abm(tech =.000002,
  nrounds = nrounds,
  max_forest = 20000,
  #reset_stock = reset_stock,
- nsim = 30)
+ nsim = 1)
 
  high=plot(mean(a[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015")
  plot!(wage1, label = "", c = "black")

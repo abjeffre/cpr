@@ -38,7 +38,7 @@ function cpr_abm(
   wages = .1,                     # Wage rate in other sectors - opportunity costs
   max_forest = 350000,            # Average max stock
   var_forest = 0,                 # Controls athe heterogeneity in forest size across diffrent groups
-  degrade = 1,                    # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
+  degrade = 1.0,                    # This measures how degradable a resource is(when invasion the resource declines linearly with size and as it increase it degrades more quickly, if negative it decreases the rate of degredation), degradable resource means that as the resouce declines in size beyond its max more additional labor is required to harvest the same amount
   regrow = .01,                   # The regrowth rate
   volatility = Normal(0, 0),      # The volatility of the resource each round - set as variance on a normal
   pollution = false,              # Pollution provides a public cost based on 
@@ -340,7 +340,7 @@ function cpr_abm(
       #Wage Labor Market
       if wage_data !== nothing wages = fill(wage_data[t], n) end
       WL = wages[agents.gid].*effort[:,1] #tech
-      WL = GetWages(effort[:,1], wages) #tech
+      WL = GetWages(effort[:,1], wages, agents) #tech
       agents.payoff_round = 
       (HG .*(1 .- caught_sum).*price + # Payoff from harvesting
       SP1.*price + # Payoff from Seizures Access Rights
