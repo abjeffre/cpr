@@ -63,7 +63,7 @@ using Plots
 out=regulators(γ=.10, ω = .005, t = 1000, u=.1, Ω = .1, δ=.10, β = .100)
 plot(out[:s], ylim = (0,1), label = "Resource Stock", legend = :bottomleft, c = :green, ylab = "Trait Frequency", xlab = "Time",
  title = "(e)", titlelocation = :left, titlefontsize = 15)
-plot!(out[:x], label = "Border Patrols", c =:blue)
-plot!(out[:r], label = "Roving Bandits", c = :red)
-plot!(out[:u], label = "Regulators", c = :orange)
+plot!(out[:x], label = "Access-Rights", c =:blue)
+plot!(out[:r], label = "Roving bandits", c = :red)
+plot!(out[:u], label = "Use-Rights", c = :orange)
 

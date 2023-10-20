@@ -1,5 +1,5 @@
 # using Plots.PlotMeasures
-
+if RUN == true
  out = []
  ngroups =2
  n = 30
@@ -13,6 +13,10 @@
          )
      push!(out, c)
  end
+ save("cpr/data/Threshold.jld2", "out", out)
+end 
+
+out = load("cpr/data/Threshold.jld2")["out"]
 
  pay=[median(out[i][:payoffR][2000:3000,1,1]) for i in 1:length(out)]
  stock=[median(out[i][:stock][2000:3000,1,1]) for i in 1:length(out)]

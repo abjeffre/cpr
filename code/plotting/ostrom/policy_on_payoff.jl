@@ -46,37 +46,37 @@ dat = dat["out"]
 
 
 
-x = []
-y =[]
+global x = []
+global y =[]
 for i in 1:19
     a=[mean(dat[i][j][:payoffR][4400:5000,:,:], dims = 1) for j in 1:50]
     a=reduce(vcat, a)
     a=reduce(vcat, a)
-    x = [x; a]
-    y = [y; fill(i, size(a)[1])]
+    global x = [x; a]
+    global y = [y; fill(i, size(a)[1])]
 end
 
 
 
-x1 = []
-y1 =[]
+global x1 = []
+global y1 =[]
 for i in 1:19
     a=[mean(dat[i][j][:punish2][4400:5000,:,:], dims = 1) for j in 1:50]
     a=reduce(vcat, a)
     a=reduce(vcat, a)
-    x1 = [x1; a]
-    y1 = [y1; fill(i, size(a)[1])]
+    global x1 = [x1; a]
+    global y1 = [y1; fill(i, size(a)[1])]
 end
 
 
-x2 = []
-y2 =[]
+global x2 = []
+global y2 =[]
 for i in 1:19
     a=[mean(dat[i][j][:limit][4400:5000,:,:], dims = 1) for j in 1:50]
     a=reduce(vcat, a)
     a=reduce(vcat, a)
-    x2 = [x2; a]
-    y2 = [y2; fill(i, size(a)[1])]
+    global x2 = [x2; a]
+    global y2 = [y2; fill(i, size(a)[1])]
 end
 
 

@@ -35,18 +35,18 @@ if RUN  == true
 end
 
 # Load 
-# out=deserialize("CPR\\data\\abm\\patch_heterogenity.dat")
+out=deserialize("CPR\\data\\abm\\patch_heterogenity.dat")
 
 # seq = collect(1:1:length(out))
 # Plot
 leakage=[mean(out[i][:leakage][1:200,2,1]) for i in 1:length(out)]
 heterogenity=plot(seq, leakage, label = false, xlab = "Heterogenity in patch size",
- ylab = "Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15)
+ ylab = "Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15, alpha = .1)
 xticks!([minimum(seq), maximum(seq)], ["Low", "High"], ylim = (0, 1), grid = false)
 
-for j in 2:5 
+for j in 2:100 
     leakage=[mean(out[i][:leakage][1:200,2,j]) for i in 1:length(out)]
     plot!(seq, leakage, label = false, xlab = "Heterogenity in patch size",
-    ylab = "Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15)
+    ylab = "Banditry", c = :black, title = "(a)", titlelocation = :left, titlefontsize = 15, alpha = .1)
     xticks!([minimum(seq), maximum(seq)], ["Low", "High"], ylim = (0, 1), grid = false)
 end

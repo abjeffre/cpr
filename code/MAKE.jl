@@ -3,16 +3,21 @@
 
 ######################################
 ############ DETERMINE COMPUTER ######
-using DataFrames
-using Statistics
-using Distributions
-using Random
-using Distributions
-using StatsBase
 using Distributed
-using Plots
-using Plots.PlotMeasures
-using JLD2
+@everywhere using DataFrames
+@everywhere using Statistics
+@everywhere using Distributions
+@everywhere using Random
+@everywhere using Distributions
+@everywhere using StatsBase
+@everywhere using Plots
+@everywhere using Plots.PlotMeasures
+@everywhere using JLD2
+@everywhere using Serialization
+@everywhere using Statistics
+@everywhere using ColorSchemes
+@everywhere using Serialization
+
 
 if gethostname()  == "ECOD038"
     cd("Y:\\eco_andrews\\Projects\\")
@@ -24,15 +29,43 @@ end
 #####################################
 ######## Initalize Functions ########
 
-include(string(pwd(), "\\functions\\utility.jl"))
+@everywhere include(string(pwd(), "\\functions\\utility.jl"))
 
 ######################################
 #### Initalize submodules ############
 
-include(string(pwd(), "\\cpr\\code\\abm\\initalize_home.jl"))
+@everywhere include(string(pwd(), "\\cpr\\code\\abm\\initalize_home.jl"))
 
 ######################################
 ######### CHOOSE ABM VERSION #########
 
-include(string(pwd(), "\\cpr\\code\\abm\\abm_cleaned.jl"))
+@everywhere include(string(pwd(), "\\cpr\\code\\abm\\abm_cleaned.jl"))
 
+
+########################################
+######## DRAW PANELS ###################
+# If plots are already saved set run == false - otherwise true
+RUN = false
+
+
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\threshold.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\stringent_policy.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\selfregulation_on_policy.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\seizures_on_borders.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\policy_on_payoff.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\outgroup.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\heterogenity_on_bandits.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\borders_on_selfregulation.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\border_dynamics.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\bandits_on_selfregulation.jl"))
+# include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\bandits_on_borders.jl"))
+include(string(pwd(), "\\cpr\\code\\plotting\\ostrom\\banditry_on_policy.jl"))
+
+
+######################################
+############ MAKE FIGURE 2 ###########
+
+include(string(pwd(), "\\cpr\\code\\plotting\\main_fig.jl"))
+
+######################################
+############ PLOTS FOR SI 1 ##########

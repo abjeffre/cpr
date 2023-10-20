@@ -104,7 +104,7 @@ for j in 1:2
     lab = ifelse(j == 1, "(p)", "(o)")
     col = ifelse.(dat[j][1][:stock][trim,groups,1] .> .3, :green, :black)
     a=plot(dat[j][1][:limit][trim,groups,1], label = "", alpha = 0.01, linecolor=col,  yticks = (0, ""),
-     xlab = string("Time", annotate[j]), ylab = "MSY", ylim = (0, 10), grid = false, ytick = ((0, 9), ("Low MAH", "High MAH")), yrotation = 90,
+     xlab = string("Time", annotate[j]), ylab = "MAH", ylim = (0, 10), grid = false, ytick = ((0, 9), ("Low MAH", "High MAH")), yrotation = 90,
      title = lab, titlelocation = :left, titlefontsize = 15);
     for i in 1:25
         col = ifelse.(dat[j][i][:stock][trim,groups,1] .> .3, :green, :black)
@@ -112,7 +112,7 @@ for j in 1:2
 
         plot!(dat[j][i][:limit][trim,groups,1], label = "", alpha = .01, c=col)
     end
-    hline!([3.5, 3.5], c = :red, label = "")
+    hline!([3.5, 3.5], c = :red, label = "MSY", foreground_color_legend = nothing)
     push!(plotsl, a)
 end
 

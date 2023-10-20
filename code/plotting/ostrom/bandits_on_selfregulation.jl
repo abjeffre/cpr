@@ -93,20 +93,20 @@ dat = load("C:/Users/jeffr/Documents/Work/cpr/data/bandits_on_selfreg.jld2")
 dat = dat["out"]
 
 groups = [collect(1:1:4); collect(7:1:9)]
-x = []
-y =[]
+global x = []
+global y =[]
 for i in 1:20
     a=[mean(dat[i][j][:punish2][1900:2000,groups,:], dims = 1) for j in 1:50]
     a=reduce(vcat, a)
     a=reduce(vcat, a)
-    x = [x; a]
-    y = [y; fill(i, size(a)[1])]
+    global x = [x; a]
+    global y = [y; fill(i, size(a)[1])]
 end
 
 
 groups = [collect(1:1:4); collect(7:1:9)]
 bandits_on_self_regulation_new = plot([mean([mean(dat[i][j][:punish2][1900:2000,groups,:]) for j in 1:50]) for i in 1:20], c=:black, label = false,
-xlab = "Banditry", ylab = "Regulation",  w = 3,
+xlab = "Banditry", ylab = "Enf. Use-Rights",  w = 3,
 xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
 title = "(g)", titlelocation = :left, titlefontsize = 15, ylim = (0, 1))
 scatter!(y, x, label = "", c=:black, alpha = .05, markerstrokecolor = :black, grid = false)

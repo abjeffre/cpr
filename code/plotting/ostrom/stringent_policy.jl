@@ -37,13 +37,13 @@ end
 # Plot
 stringent=[mean(out[i][:leakage][1:1000,1,1]) for i in 1:length(out)]
 stringentp=plot(stringent, c = :black, label = false, xlab = "Policy Stringency",
- xtick = ((1, length(stringent)), ("Low MAH", "High MAH")), ylab = "Banditry",
+ xtick = ((1, length(stringent)), ("Low MAH", "High MAH")), ylab = "Banditry", alpha = .2,
  title = "(b)", titlelocation = :left, titlefontsize = 15, ylim = (0, 1), grid = false)
 
-for j in 2:10
+for j in 2:100
     stringent=[mean(out[i][:leakage][1:1000,1,j]) for i in 1:length(out)]
     plot!(stringent, c = :black, label = false, xlab = "Policy Stringency",
-    xtick = ((1, length(stringent)), ("Low MAH", "High MAH")), ylab = "Banditry",
+    xtick = ((1, length(stringent)), ("Low MAH", "High MAH")), ylab = "Banditry", alpha = .2,
     title = "(b)", titlelocation = :left, titlefontsize = 15, ylim = (0, 1), grid = false)
 end
 

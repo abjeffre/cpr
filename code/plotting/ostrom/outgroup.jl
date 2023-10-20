@@ -81,25 +81,25 @@ if run == true
     PAYOFF=[mean(mean(Payoff[i])) for i in 1:11]
 
     # Save Data
-    save("stock_outgroup2.jld2", "out", Stock)
-    save("limit_outgroup2.jld2", "out", Limit)
-    save("regulate_outgroup2.jld2", "out", Punish2)
-    save("payoff_outgroup2.jld2", "out", Payoff)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/stock_outgroup2.jld2", "out", Stock)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/limit_outgroup2.jld2", "out", Limit)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/regulate_outgroup2.jld2", "out", Punish2)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/payoff_outgroup2.jld2", "out", Payoff)
 
-    save("stock_outgroup.jld2", "out", STOCK)
-    save("limit_outgroup.jld2", "out", LIMIT)
-    save("regulate_outgroup.jld2", "out", REGULATE)
-    save("payoff_outgroup.jld2", "out", PAYOFF)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/stock_outgroup.jld2", "out", STOCK)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/limit_outgroup.jld2", "out", LIMIT)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/regulate_outgroup.jld2", "out", REGULATE)
+    save("C:/Users/jeffr/Documents/Work/cpr/data/payoff_outgroup.jld2", "out", PAYOFF)
 end
 
     # 
-    STO=load("C:/Users/jeffr/Documents/Work/cpr/data/stock_outgroup.jld2")
-    LIM=load("C:/User/jeffr/Documents/Work/cpr/data/limit_outgroup.jld2")
-    REG=load("C:/Users/jeffr/Documents/Work/cpr/data/regulate_outgroup.jld2")
-    Outgroup=plot([0.01, .1, .2, .3, .4, .5], REG["out"], label = "", xlab = "Out-group learning",
-    title = "(i)", titlelocation = :left, titlefontsize = 15,
-     ylim = (0,1), c = :Black, 3, ylab = "Regulate", grid = false)  
-    # plot!([0.01, .1, .2, .3, .4, .5], LIM["out"]/5.1, label = "", c = :Black)
+#    STO=load("C:/Users/jeffr/Documents/Work/cpr/data/stock_outgroup.jld2")
+#    LIM=load("C:/User/jeffr/Documents/Work/cpr/data/limit_outgroup.jld2")
+#    REG=load("C:/Users/jeffr/Documents/Work/cpr/data/regulate_outgroup.jld2")
+#    Outgroup=plot([0.01, .1, .2, .3, .4, .5], REG["out"], label = "", xlab = "Out-group learning",
+#    title = "(i)", titlelocation = :left, titlefontsize = 15,
+#     ylim = (0,1), c = :Black, 3, ylab = "Enf. Use-Rights", grid = false)  
+#     plot!([0.01, .1, .2, .3, .4, .5], LIM["out"]/5.1, label = "", c = :Black)
 
 ########################
 ###### TESTING #########
@@ -110,7 +110,7 @@ temp=load("C:/Users/jeffr/Documents/Work/cpr/data/regulate_outgroup2.jld2")["out
 OutgroupR = plot(title = "(i)", titlelocation = :left, titlefontsize = 15,
  xticks = (collect(0:.2:1), ("0", "0.2", "0.4", "0.6", "0.8", "1")))
 for i in 1:11 scatter!(fill(x[i], 50).+rand(Normal(0,.02),50), temp[i], label = "", c = :black, alpha = .2) end
-plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "Regulate", xlab = "Out-Group learning", grid = false)
+plot!(x, vec([median(temp[i]) for i in 1:11]), w =3, label = "", c = :black, ylab = "Enf. Use-Rights", xlab = "Out-Group learning", grid = false)
 
 x = [0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]
 temp=load("C:/Users/jeffr/Documents/Work/cpr/data/stock_outgroup2.jld2")["out"]

@@ -91,19 +91,19 @@ dat = load("C:/Users/jeffr/Documents/Work/cpr/data/borders_on_reg.jld2")
 dat = dat["out"]
 
 groups = 1:9
-x = []
-y =[]
+global x = []
+global y =[]
 for i in 1:19
     a=[mean(dat[i][j][:punish2][4500:5000,groups,:], dims = 1) for j in 1:50]
     a=reduce(vcat, a)
     a=reduce(vcat, a)
-    x = [x; a]
-    y = [y; fill(i, size(a)[1])]
+    global x = [x; a]
+    global y = [y; fill(i, size(a)[1])]
 end
 
 
 borders_on_self_regulation_new = plot([mean([mean(dat[i][j][:punish2][4500:5000,:,:]) for j in 1:50]) for i in 1:19], c=:black, label = false,
-xlab = "Boundaries", ylab = "Regulation", w = 3,
+xlab = "Access-Rights", ylab = "Enf. Use-Rights", w = 3,
 xticks = (collect(0:4:20), ("0", "0.2", "0.4", "0.6", "0.8", "1")),
 title = "(h)", titlelocation = :left, titlefontsize = 15, ylim = (0, 1), xlim = (0, 20))
 scatter!(y, x, label = "", c=:black, alpha = .05,  markerstrokecolor = :black,  grid = false)
