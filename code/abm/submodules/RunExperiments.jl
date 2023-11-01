@@ -9,7 +9,8 @@ function RunExperiment(;experiment = experiment, experiment_group = experiment_g
  experiment_punish1 =  experiment_punish1,
  experiment_punish2 =  experiment_punish2,
  experiment_leak =  experiment_leak,
- experiment_price = experiment_price
+ experiment_price = experiment_price,
+ special_experiment_effort = special_experiment_effort
  )
  if experiment
     for i = 1:length(experiment_group)
@@ -37,8 +38,12 @@ function RunExperiment(;experiment = experiment, experiment_group = experiment_g
         end
         if special_leakage_group != nothing
             for j in 1:length(special_leakage_group)
-                println(special_leakage_group)
+                #println(special_leakage_group)
                 traits.leakage_type[agents.gid .== special_leakage_group[j]] = rbinom(sum(agents.gid.==special_leakage_group[j]),1, special_experiment_leak)
+                if special_experiment_effort !== nothing 
+                    effort[agents.gid .== special_leakage_group[j],2] .= special_experiment_effort
+                    effort[agents.gid .== special_leakage_group[j],1] .= 1-special_experiment_effort
+                 end
             end
         end
     end

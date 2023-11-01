@@ -3,7 +3,7 @@
        b = zeros(ngroups)
        X =zeros(ngroups)
        for i in 1:ngroups
-         X[i] =tech[i]*((sum(effort[loc .== i])^labor[i])*K[i]^degrade[i])
+         X[i] =tech[i]*(((sum(effort[loc .== i])*100)^labor[i])*K[i]^degrade[i])
        end
        return(X)
       end

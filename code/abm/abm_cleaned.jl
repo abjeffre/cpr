@@ -122,6 +122,7 @@ function cpr_abm(
   pgrowth_data = nothing,
   unitTest = false,
   special_experiment_leak = nothing,
+  special_experiment_effort = nothing,
   α = 1,
   population_data = nothing,
   new_leakage_experiment = nothing,
@@ -129,7 +130,9 @@ function cpr_abm(
   limit_seed_override = nothing,
   effort_seed = nothing,
   density_alpha = 0,
-  wage_data = nothing
+  wage_data = nothing,
+  congestion = 0, 
+  labor_market = false, # This can be false or a scalar between zero and
 ) 
   # Make sure all potential parameters are converted into floats for multiple dispatch
   wages=Float64.(wages)
@@ -210,9 +213,9 @@ function cpr_abm(
     if length(labor) == 1 labor = fill(labor, ngroups) end
     if length(tech) == 1 tech = fill(tech, ngroups) end
     if length(degrade) == 1 degrade = fill(degrade, ngroups) end
-    if length(wages) == 1 wages = fill(wages, ngroups) end
+    #if length(wages) == 1 wages = fill(wages, ngroups) end
     if length(labor) == ngroups labor= labor[agents.gid] end
-    if length(wages) == ngroups wages= wages[agents.gid] end   
+    #if length(wages) == ngroups wages= wages[agents.gid] end   
     #set defensibility
     def = zeros(ngroups)
     for i in 1:ngroups
@@ -251,7 +254,8 @@ function cpr_abm(
                                       experiment_punish1 =  experiment_punish1,
                                       experiment_punish2 =  experiment_punish2,
                                       experiment_leak =  experiment_leak,
-                                      experiment_price = experiment_price
+                                      experiment_price = experiment_price,
+                                      special_experiment_effort = special_experiment_effort
                                       )
       if verbose== true print(string("Experiment: COMPLETED"))end      
       ####################
@@ -342,12 +346,22 @@ function cpr_abm(
       ######## ECOSYSTEM SERVICES ######
       ecosys ? ECO =  GetEcoSysServ(ngroups, eco_slope, eco_C, K, kmax) :  ECO = zeros(n)
       pollution ? POL =  GetPollution(effort[:,2], loc, ngroups, pol_slope, pol_C, K, kmax) : POL = zeros(n)     
+      
+      ##################################
+      ########## CONGESTION ############
+
+      cong=GetCongestion(effort[:,2], loc, ngroups, congestion)
+      
       ##################################
       ###### PAYOFFS ###################
       #Wage Labor Market
       if wage_data !== nothing wages = fill(wage_data[t], n) end
-      WL = wages[agents.gid].*effort[:,1] #tech
-      WL = GetWages(effort[:,1], wages, agents) #tech
+      if labor_market == false 
+        WL = GetWages(effort[:,1], wages) #tech # NOTE THIS BROKEN FOR WHEN WE HAVE DIFFRENT WAGES
+      else
+        WL = GetWages(effort[:,1], wages, n, ngroups, labor_market) #tech
+      end
+
       agents.payoff_round = 
       (HG .*(1 .- caught_sum).*price + # Payoff from harvesting
       SP1.*price + # Payoff from Seizures Access Rights
@@ -361,6 +375,7 @@ function cpr_abm(
        TC- # Minus Travel costs
        POL[agents.gid] + # Minus Polution costs
        ECO[agents.gid] - # Plus Ecosystem Services
+       cong[loc].*effort[:,2] - # Minus congestion
        ifelse(catch_before == true, (caught1).*groups.fine1[loc], HG .*(caught1).*groups.fine1[loc]) - # Minuse fines if must be paid
        HG .*(caught2).*groups.fine2[agents.gid] # Minus fines from ingroup
       
