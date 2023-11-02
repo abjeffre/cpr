@@ -85,7 +85,7 @@ for i in 1:20
         fm = @formula(caught ~ wage + climate)
         lm_bau = glm(fm, dat, Poisson())
         pvals =coeftable(lm_bau).cols[4][2:3]
-        push!(pbauc, pvals[1])
+        push!(pbauw, pvals[1])
         push!(pbauc, pvals[2])
 
 
@@ -100,7 +100,7 @@ for i in 1:20
         fm = @formula(caught ~ wage + climate)
         lm_high = glm(fm, dat, Poisson())
         pvals =coeftable(lm_high).cols[4][2:3]
-        push!(phighc, pvals[1])
+        push!(phighw, pvals[1])
         push!(phighc, pvals[2])
 end
 
