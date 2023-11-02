@@ -63,7 +63,7 @@ function cpr_abm(
   pun2_on = true,                 # Turns punishment on or off. 
   pun1_on = true,                 # Turns group borders on or lff
   seized_on = true,               # Turns seizures on or nff
-  fines_evolve = true,            # If false fines stay fixed at initial value
+  fines_evolve = false,            # If false fines stay fixed at initial value
   fines1_on = false,              # Turns on fines for local agents
   fines2_on = false,              # Turns on fines for non locals
   fine_start = 1,                 # Determine mean fine value for all populations at the beginiing SET TO NOHTING TO TURN OFF
@@ -133,6 +133,7 @@ function cpr_abm(
   wage_data = nothing,
   congestion = 0, 
   labor_market = false, # This can be false or a scalar between zero and
+  set_stock = nothing
 ) 
   # Make sure all potential parameters are converted into floats for multiple dispatch
   wages=Float64.(wages)
@@ -355,7 +356,7 @@ function cpr_abm(
       ##################################
       ###### PAYOFFS ###################
       #Wage Labor Market
-      if wage_data !== nothing wages = fill(wage_data[t], n) end
+      if wage_data !== nothing wages = wage_data[t] end
       if labor_market == false 
         WL = GetWages(effort[:,1], wages) #tech # NOTE THIS BROKEN FOR WHEN WE HAVE DIFFRENT WAGES
       else
@@ -408,6 +409,11 @@ function cpr_abm(
             K = kmax 
          end
       end
+      
+      if set_stock !== nothing
+        K = kmax.*set_stock
+      end
+
       if experiment_stock !== false
         K.=experiment_stock
       end

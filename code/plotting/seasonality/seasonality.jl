@@ -1,84 +1,232 @@
 
-###################################################### 
-########## Set up Seasonal Variation in Wages ########
+nrounds = 500
+capture_rate = .00001
+price = .3
+mah = .15
+welast = 0
+labor = rand(Uniform(.9, 1), 300)
+##############################################################
+################ MOST SIMPLE MODEL ########################### 
+w = cos.(collect(1:nrounds)./(pi*1.5)) + rand(Normal(0,0.1), nrounds)
+c = cos.(collect(1:nrounds)./(pi*1.5)) + rand(Normal(0,0.1), nrounds)
+g = ((c+w)./10) .+ -minimum((c+w)./10)
+g2 =((c.*2+w)./10) .+ -minimum((c+w)./10)
+y = reduce(vcat, rand.(Poisson.(exp.(g.*.5)), 1))
+d= DataFrame(y =y,
+          g = g,
+          c = c)
+formula = @formula(y ~ c)
+glm(formula, d, Poisson())
 
-nrounds = 1500
-reset_stock=fill(true, nrounds)
-wage_scalar =  0.1
-wave_frequency = .03
-amplitude =5
-wage1 =  wage_scalar .* ((sin.(wave_frequency .*collect(1:nrounds)) .+ 1)*amplitude/2)
-plot(wage1)
+formula = @formula(y ~ g)
+glm(formula, d, Poisson())
+
+formula = @formula(y ~ c + g)
+glm(formula, d, Poisson())
+
+
+
+plot(weather, wages, ylim = (0, .4))
 
 a = cpr_abm(tech =.000002,
  leak = false,
- experiment_limit = .2,
+ experiment_limit = mah,
  regrow = 0.007,
- experiment_punish2 = .2,
+ experiment_punish2 = capture_rate,
  outgroup = 0.001,
- wage_data = wage1,
- price = .25, 
+ wage_data = g,
+ price = price, 
  nrounds = nrounds,
  max_forest = 20000,
- #reset_stock = reset_stock,
- nsim = 1)
+ set_stock = .5,
+ nsim = 1,
+ nmodels=50,
+ labor = labor,
+ labor_market = welast,
+ genetic_evolution = false)
 
- high=plot(mean(a[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015")
- plot!(wage1, label = "", c = "black")
- plot!(mean(a[:stock][:,1,:], dims = 2), label = "")
- 
-
+baup=scatter(mean(a[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015", msc ="#CA2015", alpha = .3)
 
 b = cpr_abm(tech =.000002,
  leak = false,
- experiment_limit = .2,
+ experiment_limit = mah,
  regrow = 0.007,
- experiment_punish2 = .2,
+ experiment_punish2 = capture_rate,
  outgroup = 0.001,
- wages = .25,
- price = .25, 
+ wage_data = g2,
+ price = price, 
  nrounds = nrounds,
  max_forest = 20000,
- #reset_stock = reset_stock,
- nsim = 30)
+ set_stock = .5,
+ nsim = 1,
+ nmodels=50,
+ labor = labor,
+ labor_market = welast,
+ genetic_evolution = false)
 
-low=plot(mean(b[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015")
- hline!((.25, .25), label = "", c = "black")
- plot!(mean(b[:stock][:,1,:], dims = 2), label = "")
+
+scatter(mean(b[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015", msc ="#CA2015",  alpha = 1)
+scatter!(mean(a[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#15bfca", msc ="#15bfca",  alpha = 1)
+
+
+############################################
+############ CHECK INFERENCE ###############
+
+# Notes: Well at first it appears that there is an error as 
+# the estimator thinks that there is a relationship between climate 
+# and illegal harvest even when there is none
+
+###################################
+########## FIRST CHECK HARVEST ####
+
+harvest = Int64.(round.(a[:harvest][1:end,1,1].*300, digits=0))
+dat=DataFrame(harvest = harvest,
+        wage = g[1:end],
+        climate = c[1:end])
+# Weather and Wages
+fm = @formula(harvest ~ wage + climate)
+lm_bau = glm(fm, dat, Poisson())
+
+# High Var
+
+harvest = Int64.(round.(b[:harvest][1:end,1,1].*300, digits=0))
+dat=DataFrame(harvest = harvest,
+        wage = g2[1:end],
+        climate = c[1:end]*2)
+# Weather and Wages
+fm = @formula(harvest ~ wage + climate)
+lm_bau = glm(fm, dat, Poisson())
+
+
+
+
+
+##################################
+############ BAU #################
+
+caught = Int64.(round.(a[:caught2][1:end,1,1].*300, digits=0))
+dat=DataFrame(caught = caught,
+        wage = g[1:end],
+        climate = c[1:end])
+# Weather only
+fm = @formula(caught ~ climate)
+lm_bau = glm(fm, dat, Poisson())
+
+# Wages only
+fm = @formula(caught ~ wage )
+lm_bau = glm(fm, dat, Poisson())
+
+# Weather and Wages
+fm = @formula(caught ~ wage + climate)
+lm_bau = glm(fm, dat, Poisson())
+
+######################################
+############ HIGH VAR #################
+
+caught = Int64.(round.(b[:caught2][1:end,1,1].*300, digits=0))
+dat=DataFrame(caught = caught,
+        wage = g2[1:end],
+        climate = c[1:end]*2)
+# Weather only
+fm = @formula(caught ~ climate)
+lm_bau = glm(fm, dat, Poisson())
+
+# Wages only
+fm = @formula(caught ~ wage )
+lm_bau = glm(fm, dat, Poisson())
+
+# Weather and Wages
+fm = @formula(caught ~ wage + climate)
+lm_bau = glm(fm, dat, Poisson())
+
+
+##################################################################
+############## INTRODUCE MONITORING COVARYING WITH WAGES #########
+
+# Notes: In the Pemba 
+
+
+
+# plot!(high, label = "#high", c = "black", ylim = (0, .5), alpha = .5)
+# plot!(bau, label = "bau", c = "#15bfca", ylim = (0, .5), alpha = .5)
+
+
+# # It appears that the marginal increase in the rate of illegal activity is sensitve to 
+# # The 
+
+# c = .1
+
+# #################
+# function overharvest(; w1=.25, b= .25, c  = .1, h1 = .1)
+#         ifelse.(c .< b.*h1 .- w1.*h1, 1 ,0)
+# end
+
+# plot(overharvest(w1= bau, b= 1.1))
+
+# plot(b[:effort][:,1,:])
+
+# plot(baup)
+# plot!(highp) 
+
+
+
+#  plot!(mean(a[:stock][:,1,:], dims = 2), label = "")
+#  plot!(mean(a[:payoffR][:,1,:], dims = 2), label = "", ylim = (0, 1))
+#  plot!(mean(a[:effort][:,1,:], dims = 2), label = "", ylim = (0, 1))
+#  plot!(mean(a[:harvest][:,1,:], dims = 2), label = "", ylim = (0, 1))
+
+
+
+# b = cpr_abm(tech =.000002,
+#  leak = false,
+#  experiment_limit = .2,
+#  regrow = 0.007,
+#  experiment_punish2 = .2,
+#  outgroup = 0.001,
+#  wages = .25,
+#  price = .25, 
+#  nrounds = nrounds,
+#  max_forest = 20000,
+#  #reset_stock = reset_stock,
+#  nsim = 30)
+
+# low=plot(mean(b[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015")
+#  hline!((.25, .25), label = "", c = "black")
+#  plot!(mean(b[:stock][:,1,:], dims = 2), label = "")
  
 
-plot(low, high, size = (900, 400), bottom_margin = 20px, grid = false, lw =2)
-savefig("simulation_predictions.pdf")
+# plot(low, high, size = (900, 400), bottom_margin = 20px, grid = false, lw =2)
+# savefig("simulation_predictions.pdf")
 
-############################
-#### CHECK RELATIONSHIP ####
+# ############################
+# #### CHECK RELATIONSHIP ####
 
-# Check Coefs
-acoefs=[]
-for i in 1:30
-    caught = Float64.(a[:caught2][100:end,1,i])
-    dat=DataFrame(caught = caught,
-            wage = wage[100:end])
-    fm = @formula(caught ~ wage)
-    lm1 = glm(fm, dat, Normal())
-    push!(acoefs, coef(lm1)[2])
-   # push!(bstd, stder(lm1)[2])
-end
-scatter(acoefs)
+# # Check Coefs
+# acoefs=[]
+# for i in 1:30
+#     caught = Float64.(a[:caught2][100:end,1,i])
+#     dat=DataFrame(caught = caught,
+#             wage = wage[100:end])
+#     fm = @formula(caught ~ wage)
+#     lm1 = glm(fm, dat, Normal())
+#     push!(acoefs, coef(lm1)[2])
+#    # push!(bstd, stder(lm1)[2])
+# end
+# scatter(acoefs)
 
 
 
-# Check Coefs
-bcoefs=[]
-for i in 1:30
-    caught = Float64.(b[:caught2][100:end,1,i])
-    dat=DataFrame(caught = caught,
-            wage = wage[100:end])
-    fm = @formula(caught ~ wage)
-    lm1 = glm(fm, dat, Normal())
-    push!(bcoefs, coef(lm1)[2])
-   # push!(bstd, stder(lm1)[2])
-end
-scatter(bcoefs)
+# # Check Coefs
+# bcoefs=[]
+# for i in 1:30
+#     caught = Float64.(b[:caught2][100:end,1,i])
+#     dat=DataFrame(caught = caught,
+#             wage = wage[100:end])
+#     fm = @formula(caught ~ wage)
+#     lm1 = glm(fm, dat, Normal())
+#     push!(bcoefs, coef(lm1)[2])
+#    # push!(bstd, stder(lm1)[2])
+# end
+# scatter(bcoefs)
 
 

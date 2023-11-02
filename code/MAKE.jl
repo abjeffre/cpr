@@ -16,7 +16,8 @@ using Distributed
 @everywhere using Serialization
 @everywhere using Statistics
 @everywhere using ColorSchemes
-@everywhere using Serialization
+@everywhere using GLM
+
 
 
 if gethostname()  == "ECOD038"
@@ -32,9 +33,10 @@ end
 @everywhere include(string(pwd(), "\\functions\\utility.jl"))
 
 ######################################
-#### Initalize submodules ############
+#### Initalize all submodules ############
 
-@everywhere include(string(pwd(), "\\cpr\\code\\abm\\initalize_home.jl"))
+files =readdir(string(pwd(), "\\cpr\\code\\abm\\submodules\\"))
+for i in files include(string(pwd(), "\\cpr\\code\\abm\\submodules\\$i")) end
 
 ######################################
 ######### CHOOSE ABM VERSION #########
