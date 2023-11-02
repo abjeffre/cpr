@@ -1,143 +1,110 @@
 
 nrounds = 500
-capture_rate = .00001
-price = .3
-mah = .15
+capture_rate = .05
+price = .20
+mah = .5
 welast = 0
-labor = rand(Uniform(.9, 1), 300)
-##############################################################
-################ MOST SIMPLE MODEL ########################### 
-w = cos.(collect(1:nrounds)./(pi*1.5)) + rand(Normal(0,0.1), nrounds)
-c = cos.(collect(1:nrounds)./(pi*1.5)) + rand(Normal(0,0.1), nrounds)
-g = ((c+w)./10) .+ -minimum((c+w)./10)
-g2 =((c.*2+w)./10) .+ -minimum((c+w)./10)
-y = reduce(vcat, rand.(Poisson.(exp.(g.*.5)), 1))
-d= DataFrame(y =y,
-          g = g,
-          c = c)
-formula = @formula(y ~ c)
-glm(formula, d, Poisson())
+labor = rand(Uniform(.99, 1), 300)
+freq = 5
 
-formula = @formula(y ~ g)
-glm(formula, d, Poisson())
+pbauw = []
+pbauc = []
+phighw = []
+phighc = []
 
-formula = @formula(y ~ c + g)
-glm(formula, d, Poisson())
+for i in 1:20
+        ##############################################################
+        ################ MOST SIMPLE MODEL ########################### 
+        w = cos.(collect(1:nrounds)./(pi*freq)) + rand(Normal(0,0.1), nrounds)
+        c = cos.(collect(1:nrounds)./(pi*freq)) + rand(Normal(0,0.1), nrounds)
+        g = ((c+w)./10) .+ -minimum((c+w)./10)
+        g2 =((c.*2+w)./10) .+ -minimum((c+w)./10)
+        y = reduce(vcat, rand.(Poisson.(exp.(g.*.5)), 1))
+        d= DataFrame(y =y,
+                g = g,
+                c = c)
+        formula = @formula(y ~ c)
+        glm(formula, d, Poisson())
 
+        formula = @formula(y ~ g)
+        glm(formula, d, Poisson())
 
-
-plot(weather, wages, ylim = (0, .4))
-
-a = cpr_abm(tech =.000002,
- leak = false,
- experiment_limit = mah,
- regrow = 0.007,
- experiment_punish2 = capture_rate,
- outgroup = 0.001,
- wage_data = g,
- price = price, 
- nrounds = nrounds,
- max_forest = 20000,
- set_stock = .5,
- nsim = 1,
- nmodels=50,
- labor = labor,
- labor_market = welast,
- genetic_evolution = false)
-
-baup=scatter(mean(a[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015", msc ="#CA2015", alpha = .3)
-
-b = cpr_abm(tech =.000002,
- leak = false,
- experiment_limit = mah,
- regrow = 0.007,
- experiment_punish2 = capture_rate,
- outgroup = 0.001,
- wage_data = g2,
- price = price, 
- nrounds = nrounds,
- max_forest = 20000,
- set_stock = .5,
- nsim = 1,
- nmodels=50,
- labor = labor,
- labor_market = welast,
- genetic_evolution = false)
-
-
-scatter(mean(b[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#CA2015", msc ="#CA2015",  alpha = 1)
-scatter!(mean(a[:caught2][:,1,:], dims = 2), label = "", xlab = "Time", c = "#15bfca", msc ="#15bfca",  alpha = 1)
-
-
-############################################
-############ CHECK INFERENCE ###############
-
-# Notes: Well at first it appears that there is an error as 
-# the estimator thinks that there is a relationship between climate 
-# and illegal harvest even when there is none
-
-###################################
-########## FIRST CHECK HARVEST ####
-
-harvest = Int64.(round.(a[:harvest][1:end,1,1].*300, digits=0))
-dat=DataFrame(harvest = harvest,
-        wage = g[1:end],
-        climate = c[1:end])
-# Weather and Wages
-fm = @formula(harvest ~ wage + climate)
-lm_bau = glm(fm, dat, Poisson())
-
-# High Var
-
-harvest = Int64.(round.(b[:harvest][1:end,1,1].*300, digits=0))
-dat=DataFrame(harvest = harvest,
-        wage = g2[1:end],
-        climate = c[1:end]*2)
-# Weather and Wages
-fm = @formula(harvest ~ wage + climate)
-lm_bau = glm(fm, dat, Poisson())
+        formula = @formula(y ~ c + g)
+        glm(formula, d, Poisson())
 
 
 
+        plot(weather, wages, ylim = (0, .4))
+
+        a = cpr_abm(tech =.000002,
+        leak = false,
+        experiment_limit = mah,
+        regrow = 0.007,
+        experiment_punish2 = capture_rate,
+        outgroup = 0.001,
+        wage_data = g,
+        price = price, 
+        nrounds = nrounds,
+        max_forest = 20000,
+        set_stock = .5,
+        nsim = 1,
+        nmodels=5,
+        labor = 1,
+        fidelity = .2,
+        labor_market = false,
+        genetic_evolution = false)
+
+        b = cpr_abm(tech =.000002,
+        leak = false,
+        experiment_limit = mah,
+        regrow = 0.007,
+        experiment_punish2 = capture_rate,
+        outgroup = 0.001,
+        wage_data = g2,
+        price = price, 
+        nrounds = nrounds,
+        max_forest = 20000,
+        set_stock = .5,
+        nsim = 1,
+        nmodels=5,
+        labor = 1,
+        fidelity = .2,
+        labor_market = false,
+        genetic_evolution = false)
 
 
-##################################
-############ BAU #################
+        ##################################
+        ############ BAU #################
 
-caught = Int64.(round.(a[:caught2][1:end,1,1].*300, digits=0))
-dat=DataFrame(caught = caught,
-        wage = g[1:end],
-        climate = c[1:end])
-# Weather only
-fm = @formula(caught ~ climate)
-lm_bau = glm(fm, dat, Poisson())
+        caught = Int64.(round.(a[:caught2][1:end,1,1].*300, digits=0))
+        dat=DataFrame(caught = caught,
+                wage = g[1:end],
+                climate = c[1:end])
 
-# Wages only
-fm = @formula(caught ~ wage )
-lm_bau = glm(fm, dat, Poisson())
+        # Weather and Wages
+        fm = @formula(caught ~ wage + climate)
+        lm_bau = glm(fm, dat, Poisson())
+        pvals =coeftable(lm_bau).cols[4][2:3]
+        push!(pbauc, pvals[1])
+        push!(pbauc, pvals[2])
 
-# Weather and Wages
-fm = @formula(caught ~ wage + climate)
-lm_bau = glm(fm, dat, Poisson())
 
-######################################
-############ HIGH VAR #################
+        ######################################
+        ############ HIGH VAR #################
 
-caught = Int64.(round.(b[:caught2][1:end,1,1].*300, digits=0))
-dat=DataFrame(caught = caught,
-        wage = g2[1:end],
-        climate = c[1:end]*2)
-# Weather only
-fm = @formula(caught ~ climate)
-lm_bau = glm(fm, dat, Poisson())
+        caught = Int64.(round.(b[:caught2][1:end,1,1].*300, digits=0))
+        dat=DataFrame(caught = caught,
+                wage = g2[1:end],
+                climate = c[1:end]*2)
+        # Weather and Wages
+        fm = @formula(caught ~ wage + climate)
+        lm_high = glm(fm, dat, Poisson())
+        pvals =coeftable(lm_high).cols[4][2:3]
+        push!(phighc, pvals[1])
+        push!(phighc, pvals[2])
+end
 
-# Wages only
-fm = @formula(caught ~ wage )
-lm_bau = glm(fm, dat, Poisson())
 
-# Weather and Wages
-fm = @formula(caught ~ wage + climate)
-lm_bau = glm(fm, dat, Poisson())
 
 
 ##################################################################

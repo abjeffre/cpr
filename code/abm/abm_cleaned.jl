@@ -211,11 +211,11 @@ function cpr_abm(
     children = Vector{Int}[]  # Set up Array To contain Family history
     for i in 1:n push!(children, Vector{Int}[]) end
     # Build in heterogentiy - fed in through data - 
-    if length(labor) == 1 labor = fill(labor, ngroups) end
-    if length(tech) == 1 tech = fill(tech, ngroups) end
-    if length(degrade) == 1 degrade = fill(degrade, ngroups) end
+   # if length(labor) == 1 labor = fill(labor, ngroups) end
+    # if length(tech) == 1 tech = fill(tech, ngroups) end
+    # if length(degrade) == 1 degrade = fill(degrade, ngroups) end
     #if length(wages) == 1 wages = fill(wages, ngroups) end
-    if length(labor) == ngroups labor= labor[agents.gid] end
+   # if length(labor) == ngroups labor= labor[agents.gid] end
     #if length(wages) == ngroups wages= wages[agents.gid] end   
     #set defensibility
     def = zeros(ngroups)
