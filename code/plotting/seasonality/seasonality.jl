@@ -1,45 +1,45 @@
-
-nrounds = 500
+function standardize(x) 
+        μ = mean(x)
+        σ = std(x)
+        return((x .- μ)/σ)
+ end
+nrounds = 3600
 capture_rate = .05
-price = .20
+price = 3.2
 mah = .5
 welast = 0
 labor = rand(Uniform(.99, 1), 300)
 freq = 5
+climate_var =1
 
 pbauw = []
 pbauc = []
 phighw = []
 phighc = []
+coefhighw =[]
+coefbauw =[] 
+
+################ MOST SIMPLE MODEL ########################### 
+w = rand(Normal(0,1), nrounds) 
+c1 = cos.(collect(1:nrounds)/(15*pi))   + rand(Normal(0,climate_var), nrounds)
+c2 = -cos.(collect(1:nrounds)/(14*pi))   + rand(Normal(0,climate_var), nrounds)
+c3 = sin.(collect(1:nrounds)/(16*pi))   + rand(Normal(0,climate_var), nrounds)
+c4 = -sin.(collect(1:nrounds)/(12*pi))   + rand(Normal(0,climate_var), nrounds)
+U = -sin.(collect(1:nrounds)/(10*pi))   + rand(Normal(0,climate_var), nrounds)
+
+g = c1 .* .7 .+ c2 .* -.3 .+ c3 .* -.2 .+ c4 .* .1 + U * .3
+g = g.+3
+
+plot(g)
 
 for i in 1:20
-        ##############################################################
-        ################ MOST SIMPLE MODEL ########################### 
-        w = cos.(collect(1:nrounds)./(pi*freq)) + rand(Normal(0,0.1), nrounds)
-        c = cos.(collect(1:nrounds)./(pi*freq)) + rand(Normal(0,0.1), nrounds)
-        g = ((c+w)./10) .+ -minimum((c+w)./10)
-        g2 =((c.*2+w)./10) .+ -minimum((c+w)./10)
-        y = reduce(vcat, rand.(Poisson.(exp.(g.*.5)), 1))
-        d= DataFrame(y =y,
-                g = g,
-                c = c)
-        formula = @formula(y ~ c)
-        glm(formula, d, Poisson())
-
-        formula = @formula(y ~ g)
-        glm(formula, d, Poisson())
-
-        formula = @formula(y ~ c + g)
-        glm(formula, d, Poisson())
-
-
-
-        plot(weather, wages, ylim = (0, .4))
-
+        println(i)
+        seed = i
         a = cpr_abm(tech =.000002,
         leak = false,
         experiment_limit = mah,
         regrow = 0.007,
+        n = 300,
         experiment_punish2 = capture_rate,
         outgroup = 0.001,
         wage_data = g,
@@ -50,60 +50,120 @@ for i in 1:20
         nsim = 1,
         nmodels=5,
         labor = 1,
-        fidelity = .2,
+        fidelity = .3,
         labor_market = false,
         genetic_evolution = false)
 
-        b = cpr_abm(tech =.000002,
-        leak = false,
-        experiment_limit = mah,
-        regrow = 0.007,
-        experiment_punish2 = capture_rate,
-        outgroup = 0.001,
-        wage_data = g2,
-        price = price, 
-        nrounds = nrounds,
-        max_forest = 20000,
-        set_stock = .5,
-        nsim = 1,
-        nmodels=5,
-        labor = 1,
-        fidelity = .2,
-        labor_market = false,
-        genetic_evolution = false)
+      #   plot(a[:harvest][:,1,1])
+      caught = Int64.(round.(a[:caught2][50:end,1,1].*300, digits=0))
+      dat=DataFrame(caught = caught,
+              wage = g[50:end],
+              climate = c4[50:end])
+      plot(caught)
+
+      # Weather and Wages
+      fm = @formula(caught ~ wage)
+      lm_bau = glm(fm, dat, Poisson())
+      pvals =coeftable(lm_bau).cols[4][2]
+      push!(pbauw, pvals[1])
+      push!(coefbauw, coef(lm_bau)[2])
+
+
+        
+        
+
+#         b = cpr_abm(tech =.000002,
+#         leak = false,
+#         experiment_limit = mah,
+#         regrow = 0.007,
+#         n = 150,
+#         experiment_punish2 = capture_rate,
+#         outgroup = 0.001,
+#         wage_data = g2,
+#         price = price, 
+#         nrounds = nrounds,
+#         max_forest = 20000,
+#         set_stock = .5,
+#         nsim = 1,
+#         nmodels=5,
+#         labor = 1,
+#         fidelity = .2,
+#         labor_market = false,
+#         genetic_evolution = false)
+
+#        #  plot(b[:harvest][:,1,1])
+#         # plot!(g2)
+
 
 
         ##################################
         ############ BAU #################
 
-        caught = Int64.(round.(a[:caught2][1:end,1,1].*300, digits=0))
-        dat=DataFrame(caught = caught,
-                wage = g[1:end],
-                climate = c[1:end])
+        # ######################################
+        # ############ HIGH VAR #################
 
-        # Weather and Wages
-        fm = @formula(caught ~ wage + climate)
-        lm_bau = glm(fm, dat, Poisson())
-        pvals =coeftable(lm_bau).cols[4][2:3]
-        push!(pbauw, pvals[1])
-        push!(pbauc, pvals[2])
+        # caught = Int64.(round.(b[:caught2][50:end,1,1].*300, digits=0))
+        # dat=DataFrame(caught = caught,
+        #         wage = g2[50:end],
+        #         climate = c2[50:end]) 
+        # # Weather and Wages
+        # fm = @formula(caught ~ wage + climate)
+        # lm_high = glm(fm, dat, Poisson())
+        # pvals =coeftable(lm_high).cols[4][2:3]
+        # push!(phighw, pvals[1])
+        # push!(phighc, pvals[2])
+        # push!(coefhighw, coef(lm_high)[2])
 
-
-        ######################################
-        ############ HIGH VAR #################
-
-        caught = Int64.(round.(b[:caught2][1:end,1,1].*300, digits=0))
-        dat=DataFrame(caught = caught,
-                wage = g2[1:end],
-                climate = c[1:end]*2)
-        # Weather and Wages
-        fm = @formula(caught ~ wage + climate)
-        lm_high = glm(fm, dat, Poisson())
-        pvals =coeftable(lm_high).cols[4][2:3]
-        push!(phighw, pvals[1])
-        push!(phighc, pvals[2])
 end
 
+scatter(coefbauw, label = "")
+
+bau_p_values = scatter(pbauw, label = "wages")
+hline!([.05])
+hline!([.01])
+sum(pbauw .< 0.01)
+
+
+
+####################################
+############ RECOVER WAGE ##########
+
+dat=DataFrame(g = g,
+c1 = c1,
+c2 = c2,
+c3 = c3,
+c4 = c4)
+
+fm = @formula(g ~ c1 + c2 + c3 + c4)
+lm_bau = glm(fm, dat, Normal())
+
+########################################################
+########### SEE IF WE CAN GET IT FOR ONE YEAR ##########
+
+dat=DataFrame(g = g[1:26],
+c1 = c1[1:26],
+c2 = c2[1:26],
+c3 = c3[1:26],
+c4 = c4[1:26])
+
+
+fm = @formula(g ~ c1 + c2 + c3 + c4)
+lm_bau = glm(fm, dat, Normal())
+β=coef(lm_bau)
+g_est = β[1].+ β[2] .*c1 .+ β[3].*c2 .+ β[4].*c3 .+ β[5] .*c4  
+
+
+dat=DataFrame(g_est = g_est[1:end],
+c1 = c1[1:end],
+c2 = c2[1:end],
+c3 = c3[1:end],
+c4 = c4[1:end],
+caught = Int64.(round.(a[:caught2][1:end,1,1].*300)))
+
+fm = @formula(caught ~ g_est )
+lm_bau = glm(fm, dat, Poisson())
+
+CSV.write("cpr\\data\\test.csv", dat)
 
 
 

@@ -17,7 +17,7 @@ using Distributed
 @everywhere using Statistics
 @everywhere using ColorSchemes
 @everywhere using GLM
-
+@everywhere using CSV
 
 
 if gethostname()  == "ECOD038"
@@ -33,10 +33,10 @@ end
 @everywhere include(string(pwd(), "\\functions\\utility.jl"))
 
 ######################################
-#### Initalize all submodules ############
+#### Initalize submodules ############
 
-files =readdir(string(pwd(), "\\cpr\\code\\abm\\submodules\\"))
-for i in files include(string(pwd(), "\\cpr\\code\\abm\\submodules\\$i")) end
+files = readdir(string(pwd(), ("\\cpr\\code\\abm\\submodules")))
+@everywhere for i in files include(string(pwd(), "\\cpr\\code\\abm\\submodules\\$i")) end
 
 ######################################
 ######### CHOOSE ABM VERSION #########
@@ -71,3 +71,5 @@ include(string(pwd(), "\\cpr\\code\\plotting\\main_fig.jl"))
 
 ######################################
 ############ PLOTS FOR SI 1 ##########
+
+using GLM
