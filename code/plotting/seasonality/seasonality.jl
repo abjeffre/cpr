@@ -163,6 +163,20 @@ caught = Int64.(round.(a[:caught2][1:end,1,1].*300)))
 fm = @formula(caught ~ g_est )
 lm_bau = glm(fm, dat, Poisson())
 
+fm = @formula(caught ~ g_est + c1 + c2 + c3 + c4)
+lm_bau = glm(fm, dat, Poisson())
+
+
+
+dat=DataFrame(g = g,
+c1 = c1[1:end],
+c2 = c2[1:end],
+c3 = c3[1:end],
+c4 = c4[1:end],
+caught = Int64.(round.(a[:caught2][1:end,1,1].*300)))
+
+
+
 CSV.write("cpr\\data\\test.csv", dat)
 
 
