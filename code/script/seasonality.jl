@@ -16,9 +16,9 @@ inspect = collect(.01 : .05 : .65)
 price = collect(2.5:.2:5)
 
 S=expand_grid(price, inspect)
-nsim = 20
+nsim = 25
 
-for i in size(S)[1]
+for i in 1:size(S)[1]
         pri = fill(S[i, 1], nsim)
         ins = fill(S[i, 2], nsim)
         c1list = []
@@ -63,18 +63,18 @@ for i in size(S)[1]
         out=pmap(multi_core, pri, ins, glist)
         
         for j in 1:nsim
-               dat=DataFrame(
-                 g = glist[j],
-                 c1 = c1list[j],
-                 c2 = c1list[j],
-                 c3 = c1list[j],
-                 c4 = c1list[j],
-                 caught = Int64.(round.(out[j][:caught2][:,1,1].*150)))
-                 pr = pri[1]
-                 in = ins[1]
-                 CSV.write(string("cpr\\data\\kesi_sweep\\price$pr", "inspect$in","sim$j"), dat)
-        end
-
+                dat=DataFrame(
+                  g = glist[j],
+                  c1 = c1list[j],
+                  c2 = c1list[j],
+                  c3 = c1list[j],
+                  c4 = c1list[j],
+                  caught = Int64.(round.(out[j][:caught2][:,1,1].*150)))
+                  pr = pri[1]
+                  in = ins[1]
+                  CSV.write(string("cpr/data/kesi_sweep/price$pr", "inspect$in","sim$j",".csv"), dat)
+         end
+ 
 end
 
 

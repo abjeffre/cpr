@@ -35,8 +35,8 @@ end
 ######################################
 #### Initalize submodules ############
 
-files = readdir(string(pwd(), ("\\cpr\\code\\abm\\submodules")))
-@everywhere for i in files include(string(pwd(), "\\cpr\\code\\abm\\submodules\\$i")) end
+@everywhere files = readdir(string(pwd(), ("\\cpr\\code\\abm\\submodules")))
+@everywhere for i in files  include(string(pwd(), "\\cpr\\code\\abm\\submodules\\$i")) end
 
 ######################################
 ######### CHOOSE ABM VERSION #########
