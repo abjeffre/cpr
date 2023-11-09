@@ -133,7 +133,8 @@ function cpr_abm(
   wage_data = nothing,
   congestion = 0, 
   labor_market = false, # This can be false or a scalar between zero and
-  set_stock = nothing
+  set_stock = nothing,
+  seizure_pun2_correlation = nothing
 ) 
   # Make sure all potential parameters are converted into floats for multiple dispatch
   wages=Float64.(wages)
@@ -231,6 +232,9 @@ function cpr_abm(
     
     if verbose ==true println(string("Sim: ", sim, ", Initiation: COMPLETED ")) end
 
+    #for testing purposes
+    caught2 = zeros(n)
+
     ############################################
     ############# Begin years ##################
     year = 1
@@ -247,6 +251,13 @@ function cpr_abm(
 
       ############################
       ### RUN EXPERIMENT #########
+       if t > 1 
+          if seizure_pun2_correlation !== nothing
+            last_round_caught2 =round.(report(caught2, agents.gid, ngroups), digits =2)
+            experiment_punish2 =last_round_caught2[1]*seizure_pun2_correlation # Note that this .2 is a scalar 
+          end
+        end
+
       effort, traits = RunExperiment(;experiment = experiment, experiment_group = experiment_group, traits = traits,
                                       effort = effort, agents = agents, t= t, begin_leakage_experiment = begin_leakage_experiment,
                                       special_experiment_leak = special_experiment_leak, special_leakage_group = special_leakage_group,
@@ -325,6 +336,7 @@ function cpr_abm(
         FP2=GetFinesPay(SP2, groups.fine2, agents.gid, ngroups)
         
       end
+
       if bsm == "collective"
         group_size = convert(Int64, n/ngroups)
         SP1 = seized1./group_size

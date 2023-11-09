@@ -1,4 +1,5 @@
  function GetInspection(harvest, x, loc, gid, policy, monitor_tech, def, type)
+  # println(length(x))
   caught = asInt.(zeros(length(x)))
   for i = 1:length(x)
     if type == "nonlocal"
@@ -16,6 +17,7 @@
        end
      end
     end
+  #  println(length(caught))
     return(caught)
   end
 
